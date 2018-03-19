@@ -1,0 +1,46 @@
+language: php
+git:
+  depth: 1
+cache:
+  directories:
+  - "$HOME/.composer/cache"
+sudo: false
+env:
+  global:
+  - COMPOSER_ALLOW_XDEBUG=0
+matrix:
+  include:
+    - php: 7.1
+      env: CONTAO_VERSION='4.4.*'
+    - php: 7.2
+      env: CONTAO_VERSION='4.4.*'
+    - php: 7.1
+      env: CONTAO_VERSION='4.5.*'
+    - php: 7.2
+      env: CONTAO_VERSION='4.5.*'
+    - php: 7.2
+      env: COVERAGE=1 CONTAO_VERSION='4.5.*'
+  allow_failures:
+    - env: COVERAGE=1 DEFAULT=0
+  fast_finish: true
+before_install:
+- if [[ "$COVERAGE" != "1" ]]; then phpenv config-rm xdebug.ini || true; fi
+install:
+- if [[ "$COMPOSER_FLAGS" == *"--prefer-lowest"* ]]; then composer update --no-interaction --quiet; fi
+- composer update $COMPOSER_FLAGS --no-interaction --no-suggest
+notifications:
+  email:
+    recipients:
+    - digitales@heimrich-hannot.de
+    on_success: never
+    on_failure: always
+  hipchat:
+    rooms:
+      secure: rgKkEZcd1kENwBFU1Paf8j2arSuOw71ew20RH68XlXcHT07ywwgum+/tgIQVLpVI/LHwImVVLdAd3OXJyCgN2+wrl6O++fjvBxvi0mpAb64JcxRgTWguv4JoBDZzvq5SCmDej2hPvCh339b6a4ExGDqRHKjPn2+NKNW/YYaW0mvoun6UTXlErULVJOjiUONG1ePIVXpl3qmA2fye/LJQpBi3AdpSI7bNiv/Xj+LfG6XGjicHcY0Xd1ir0kmFf9lT4jtjcCz0zVjW6XbzdCZLfbnadHcvaDy3yh0ZgWsbEvGDR18BhINGADOs5Zzy4dU1nQqdf0wkp8qMWztJy7dFDhBTFGVPXoFOgv9FVxJLjuRc+u+wA4bPW8iQ2HU5dGFXyqyDUPzwZ9HWX/KNy32Iq9blZSCnw6FeLe09cO9MVB61zjZDcxHpzB2J23c7J/pSVo4+aTZGoMZZmIFNxxpoeNdm1PWpafYRJrxDnJO9nOfjSRWEU3mHudEcYzZAN0Amegp4jK/6I88/auOgln3eVpADAq/s85MbSt8q41y97Zs7peBDOfJm+ZWuBj6/4Ya2S2/vsNtz/RA0yywpdvJ/ZZUHOIKij39iNWkuynqC5/5t5jExcbc4Taay6Mvjixyk7/ibbpYOwpZ54ycBSOjLzMoiyyMKjK7dKCrl+SrsZ70=
+before_script:
+- travis_wait composer install --no-interaction
+script:
+- if [[ "$COVERAGE" = "1" ]]; then travis_retry mkdir -p build/logs; fi
+- if [[ "$COVERAGE" = "1" ]]; then travis_retry php vendor/bin/phpunit --coverage-clover build/logs/clover.xml || true; fi
+after_script:
+- if [[ "$COVERAGE" = "1" ]]; then travis_retry php vendor/bin/php-coveralls -v; fi

@@ -1,0 +1,49 @@
+{
+  "name": "heimrichhannot/contao-encore-bundle",
+  "type": "contao-bundle",
+  "description": "This bundle offers a wrapper for comfortably using symfony encore asset management in Contao projects (3rd party bundles are also supported if compatible).",
+  "license": "LGPL-3.0-or-later",
+  "require": {
+    "php": "^7.1",
+    "contao/core-bundle": "^4.4",
+    "symfony/framework-bundle": "^3.4",
+    "heimrichhannot/contao-utils-bundle": "^2.0"
+  },
+  "require-dev": {
+    "contao/test-case": "^1.1",
+    "contao/manager-plugin": "^2.0",
+    "friendsofphp/php-cs-fixer": "^2.2",
+    "phpunit/phpunit": "^6.5",
+    "phpunit/phpunit-mock-objects": "^4.0|^5.0",
+    "phpunit/php-token-stream": "^1.4|^2.0|^3.0",
+    "php-http/guzzle6-adapter": "^1.1",
+    "php-http/message-factory": "^1.0.2",
+    "satooshi/php-coveralls": "^2.0",
+    "symfony/phpunit-bridge": "^3.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "HeimrichHannot\\EncoreBundle\\": "src/"
+    },
+    "classmap": [
+      "src/"
+    ],
+    "exclude-from-classmap": [
+      "src/Resources/contao/config/",
+      "src/Resources/contao/dca/",
+      "src/Resources/contao/languages/",
+      "src/Resources/contao/templates/"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HeimrichHannot\\EncoreBundle\\Test\\": "tests/"
+    }
+  },
+  "config": {
+    "preferred-install": "dist"
+  },
+  "extra": {
+    "contao-manager-plugin": "HeimrichHannot\\EncoreBundle\\ContaoManager\\Plugin"
+  }
+}

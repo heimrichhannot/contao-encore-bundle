@@ -1,0 +1,8 @@
+.idea
+Thumbs.db
+.DS_Store
+.sass-cache
+vendor
+composer.lock
+composer.json~
+composer.phar
