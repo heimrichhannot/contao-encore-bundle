@@ -30,7 +30,7 @@ class Configuration implements ConfigurationInterface
 
     public function getConfigTreeBuilder()
     {
-        return;
+        return new TreeBuilder();
 
         $treeBuilder = new TreeBuilder();
 
