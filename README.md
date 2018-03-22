@@ -12,9 +12,9 @@ This bundle offers the opportunity to specify which webpack entries (JavaScript,
 1. Install via composer: `composer require heimrichhannot/contao-encore-bundle` and update your database.
 2. Read https://symfony.com/doc/current/frontend.html in order to understand the core concepts of webpack and symfony encore.
 3. Now you can enable encore for a particular page root in the Contao backend and specify various options.
-4. For pages with activated encore support you can then specify which webpack entries should be loaded on this page and its sub pages (inheritance is supported).
+4. For pages with activated encore support you can then specify which webpack entries should be loaded on this page and its sub pages (inheritance is supported).<br>
    *NOTE: In order to see entries here, see chapter "Define webpack entries for Contao Encore Bundle"*
-5. In your `fe_page.html5` add the following before `<?= $this->head ?>`:
+5. In your `fe_page.html5` add the following before `<?= $this->head ?>`:<br>
    `<?= $this->encore ?>`
    This will add the necessary link and script tags automatically.
 6. If one of your webpack entries requires jQuery, of course you can deactivate jQuery in the Contao layout now.
@@ -92,13 +92,17 @@ huh:
 3\. The last step is to merge your config with the default one of Contao Encore Bundle. For this adjust your bundle's `Plugin.php` by implementing `Contao\ManagerPlugin\Config\ExtensionPluginInterface` and adding the code in `getExtensionConfig()`:
 
 ```php
-public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container) {
-    return ContainerUtil::mergeConfigFile(
-        'huh_encore',
-        $extensionName,
-        $extensionConfigs,
-        $container->getParameter('kernel.project_dir').'/vendor/acme/contao-my-project-bundle/src/Resources/config/config_encore.yml'
-    );
+class Plugin implements BundlePluginInterface, ExtensionPluginInterface
+{
+    // ...
+    public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container) {
+        return ContainerUtil::mergeConfigFile(
+            'huh_encore',
+            $extensionName,
+            $extensionConfigs,
+            $container->getParameter('kernel.project_dir').'/vendor/acme/contao-my-project-bundle/src/Resources/config/config_encore.yml'
+        );
+    }
 }
 ```
 
@@ -112,7 +116,7 @@ For this you can do a dynamic webpack import of a *chunk* (webpack code splittin
 
 ```javascript
 document.addEventListener("DOMContentLoaded", e => import(/* webpackChunkName: "some-dependency" */ './some-dependency.js').then(module => {
-  // module now contains any exported functions or attributes
+    // module now contains any exported functions or attributes
 }));
 ```
 
