@@ -1,7 +1,7 @@
 {
   "name": "heimrichhannot/contao-encore-bundle",
   "type": "contao-bundle",
-  "description": "This bundle offers a wrapper for comfortably using symfony encore asset management in Contao projects (3rd party bundles are also supported if compatible).",
+  "description": "This bundle offers the opportunity to specify which webpack modules should be loaded on a per page level (3rd party bundles are also supported if compatible).",
   "license": "LGPL-3.0-or-later",
   "require": {
     "php": "^7.1",

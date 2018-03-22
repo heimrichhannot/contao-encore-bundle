@@ -1,0 +1,5 @@
+huh:
+    encore:
+        templates:
+            imports:
+                - { name: default, template: "@HeimrichHannotContaoEncore/imports/encore_imports.html.twig" }

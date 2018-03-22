@@ -1,0 +1,22 @@
+{% for entry in cssEntries %}
+    <link rel="stylesheet" href="{{ asset(entry) }}">
+{% endfor %}
+
+{% if addDynamicEncoreImports|default() %}
+    <script src="{{ asset(encorePublicPath ~ '/manifest.js') }}"></script>
+{% endif %}
+
+{% if addEncoreSharedEntry|default() %}
+    <script src="{{ asset(encorePublicPath ~ '/' ~ encoreSharedEntryName ~ '.js') }}"></script>
+{% endif %}
+
+{% if addEncoreBabelPolyfill|default() %}
+    <script type="text/javascript">
+        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+            document.write('<script src="{{ asset(encorePublicPath ~ '/' ~ encoreBabelPolyfillEntryName ~ '.js') }}"><\/script>');
+    </script>
+{% endif %}
+
+{% for entry in jsEntries %}
+    <script src="{{ asset(entry) }}"></script>
+{% endfor %}

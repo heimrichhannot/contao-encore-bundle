@@ -34,8 +34,6 @@ class Plugin implements BundlePluginInterface, ExtensionPluginInterface
      */
     public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container)
     {
-        return $extensionConfigs;
-
         return ContainerUtil::mergeConfigFile(
             'huh_encore',
             $extensionName,
