@@ -21,7 +21,7 @@ This bundle offers the opportunity to specify which webpack entries (JavaScript,
 
 ## Configuration
 
-### Define webpack entries for Contao Encore Bundle
+### Define webpack entries for Contao Encore Bundle in your project
 
 In webpack an entry usually results in a JavaScript file generated in an output directory. These files are included in the final HTML page.
 
@@ -30,7 +30,8 @@ Please do the following steps:
 1\. At first webpack entries must be specified in your `webpack.config.js` (as normally with webpack). Here's how this file could look like:
 
 ```javascript
-var Encore = require('@symfony/webpack-encore');
+let Encore = require('@symfony/webpack-encore'),
+    encoreBundles = require('./encore.bundles');
 
 Encore
     .setOutputPath('web/build/')
@@ -59,32 +60,48 @@ Encore
     .addEntry('babel-polyfill', [
         'babel-polyfill'
     ])
-
-    // bundles
-    .addEntry('contao-list-bundle', './vendor/heimrichhannot/contao-list-bundle/src/Resources/public/js/jquery.list-bundle.es6.js')
-
-    // project
-    .addEntry('contao-my-project-bundle', './vendor/acme/contao-my-project-bundle/src/Resources/assets/js/jquery.my-project-bundle.js')
 ;
 
+// this function adds entries for all contao encore compatible bundles automatically
+// -> the source of that is the file "encore.bundles.js" in your project root which is
+// generated automatically using the contao command "vendor/bin/contao-console encore:prepare"
+// -> you can pass an array to the function if you want to skip certain entries
+encoreBundles.addEntries([
+    'my-skipped-bundle'
+]);
+
 // support dynamic chunks
-var config = Encore.getWebpackConfig();
+let config = Encore.getWebpackConfig();
 
 config.output.chunkFilename = '[name].bundle.js';
 
 // support symlinks
 config.resolve.symlinks = false;
 
+config.externals = {
+    jquery: 'jQuery'
+};
+
 module.exports = config;
 ```
 
-2\. Now in order to make your entries for Contao Encore Bundle you have to create a `config_encore.yml` file (or whatever name you like) in your bundle containing the following structure:
+_NOTE: Ignore possible warnings that the module `./encore.bundles` couldn't be found. We'll create this module in step 4 ;-)_
+
+2\. Now in order to make your entries visible to Contao Encore Bundle you have to create a `config_encore.yml` file (or whatever name you like) in your project bundle containing the following structure:
 
 ```yaml
 huh:
     encore:
         entries:
             - { name: contao-my-project-bundle, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/jquery.my-project-bundle.js", requiresCss: true }
+    legacy:
+        # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
+        # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
+        js:
+            - contao-my-project-bundle
+            - some-other-dependency
+        css:
+            - contao-my-project-bundle
 ```
 
 *NOTE: If your entry doesn't require any css, set `requiresCss` to `false`, of course*
@@ -105,6 +122,54 @@ class Plugin implements BundlePluginInterface, ExtensionPluginInterface
     }
 }
 ```
+
+4\. Now clear `var/cache` and run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
+    This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.<br><br>
+    _IMPORTANT: You have to call this command everytime you want your webpack entries to be updated, e.g. if you added new entries to your yml configuration or removed some._
+
+### Preparing a library bundle for Contao Encore Bundle
+
+Basically preparing a bundle acting as a library bundle for your projects is similar to preparing the project's main bundle. Do the following steps:
+
+1\. In order to make your entries visible to Contao Encore Bundle you have to create a `config_encore.yml` file (or whatever name you like) in your bundle containing the following structure:
+
+```yaml
+huh:
+    encore:
+        entries:
+            - { name: contao-my-lib-bundle, file: "vendor/acme/contao-my-lib-bundle/src/Resources/public/js/jquery.my-lib-bundle.js" }
+    legacy:
+        # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
+        # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
+        js:
+            - contao-lib-bundle
+        css:
+            - contao-lib-bundle
+            - some-other-dependency
+```
+
+*NOTE: If your entry doesn't require any css, set `requiresCss` to `false`, of course*
+
+2\. Then merge your config with the default one of Contao Encore Bundle. For this adjust your bundle's `Plugin.php` by implementing `Contao\ManagerPlugin\Config\ExtensionPluginInterface` and adding the code in `getExtensionConfig()`:
+
+```php
+class Plugin implements BundlePluginInterface, ExtensionPluginInterface
+{
+    // ...
+    public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container) {
+        return ContainerUtil::mergeConfigFile(
+            'huh_encore',
+            $extensionName,
+            $extensionConfigs,
+            $container->getParameter('kernel.project_dir').'/vendor/acme/contao-my-project-bundle/src/Resources/config/config_encore.yml'
+        );
+    }
+}
+```
+
+3\. After installing your bundle clear `var/cache` and run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
+    This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.<br><br>
+    _IMPORTANT: You have to call this command everytime you want your webpack entries to be updated, e.g. if you added new entries to your yml configuration or removed some._
 
 ### Dynamically importing common dependencies asynchronously
 

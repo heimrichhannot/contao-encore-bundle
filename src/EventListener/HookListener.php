@@ -149,7 +149,7 @@ class HookListener
         {
             if ($row['entry'] === $entry)
             {
-                return $row['active'];
+                return $row['active'] ? true : false;
             }
 
         }
@@ -157,14 +157,8 @@ class HookListener
         return null;
     }
 
-    public function cleanGlobalArray()
+    public function cleanGlobalArrays()
     {
-        $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
-
-        if (!is_array($jsFiles)) {
-            return;
-        }
-
         global $objPage;
 
         /** @var PageModel $rootPage */
@@ -177,16 +171,38 @@ class HookListener
 
         $config = System::getContainer()->getParameter('huh.encore');
 
-        if (!isset($config['encore']['entries']))
+        // js
+        if (isset($config['encore']['legacy']['js']) && is_array($config['encore']['legacy']['js']))
         {
-            return;
+            $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
+
+            if (is_array($jsFiles)) {
+                foreach ($config['encore']['legacy']['js'] as $jsFile)
+                {
+                    if (isset($jsFiles[$jsFile]))
+                    {
+                        unset($jsFiles[$jsFile]);
+                    }
+                }
+            }
         }
 
-        foreach ($config['encore']['entries'] as $entry)
+        // css
+        if (isset($config['encore']['legacy']['css']) && is_array($config['encore']['legacy']['css']))
         {
-            if (isset($jsFiles[$entry['name']]))
+            foreach (['TL_USER_CSS', 'TL_CSS'] as $arrayKey)
             {
-                unset($jsFiles[$entry['name']]);
+                $cssFiles = &$GLOBALS[$arrayKey];
+
+                if (is_array($cssFiles)) {
+                    foreach ($config['encore']['legacy']['css'] as $cssFile)
+                    {
+                        if (isset($cssFiles[$cssFile]))
+                        {
+                            unset($cssFiles[$cssFile]);
+                        }
+                    }
+                }
             }
         }
     }
