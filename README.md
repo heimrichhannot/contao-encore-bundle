@@ -49,7 +49,6 @@ Encore
     .configureBabel(function(babelConfig) {
         babelConfig.plugins.push('syntax-dynamic-import');
     })
-    .autoProvidejQuery()
     .enableSourceMaps(!Encore.isProduction())
     .createSharedEntry('vendor', [
         'jquery',
@@ -78,10 +77,6 @@ config.output.chunkFilename = '[name].bundle.js';
 // support symlinks
 config.resolve.symlinks = false;
 
-config.externals = {
-    jquery: 'jQuery'
-};
-
 module.exports = config;
 ```
 
@@ -93,7 +88,7 @@ _NOTE: Ignore possible warnings that the module `./encore.bundles` couldn't be f
 huh:
     encore:
         entries:
-            - { name: contao-my-project-bundle, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/jquery.my-project-bundle.js", requiresCss: true }
+            - { name: contao-my-project-bundle, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/my-project-bundle.js", requiresCss: true }
     legacy:
         # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
         # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
@@ -106,7 +101,24 @@ huh:
 
 *NOTE: If your entry doesn't require any css, set `requiresCss` to `false`, of course*
 
-3\. The last step is to merge your config with the default one of Contao Encore Bundle. For this adjust your bundle's `Plugin.php` by implementing `Contao\ManagerPlugin\Config\ExtensionPluginInterface` and adding the code in `getExtensionConfig()`:
+An example of `my-project-bundle.js` would be:
+
+```javascript
+// only if you need jQuery
+let $ = require('jquery');
+
+// assign jQuery to a global for legacy modules
+window.$ = window.jQuery = $;
+
+// require your styleshets if needed
+require('../scss/project.scss');
+
+$(document).ready(function() {
+
+});
+```
+
+3\. The next step is to merge your config with the default one of Contao Encore Bundle. For this adjust your bundle's `Plugin.php` by implementing `Contao\ManagerPlugin\Config\ExtensionPluginInterface` and adding the code in `getExtensionConfig()`:
 
 ```php
 class Plugin implements BundlePluginInterface, ExtensionPluginInterface
@@ -123,7 +135,7 @@ class Plugin implements BundlePluginInterface, ExtensionPluginInterface
 }
 ```
 
-4\. Now clear `var/cache` and run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
+4\. Now run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
     This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.<br><br>
     _IMPORTANT: You have to call this command everytime you want your webpack entries to be updated, e.g. if you added new entries to your yml configuration or removed some._
 
