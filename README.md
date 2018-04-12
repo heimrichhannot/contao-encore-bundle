@@ -14,8 +14,10 @@ This bundle offers the opportunity to specify which webpack entries (JavaScript,
 3. Now you can enable encore for a particular page root in the Contao backend and specify various options.
 4. For pages with activated encore support you can then specify which webpack entries should be loaded on this page and its sub pages (inheritance is supported).<br>
    *NOTE: In order to see entries here, see chapter "Define webpack entries for Contao Encore Bundle"*
-5. In your `fe_page.html5` add the following before `<?= $this->head ?>`:<br>
-   `<?= $this->encore ?>`
+5. In your `fe_page.html5` add the following in `<head>` region:<br>
+   `<?= $this->encoreStylesheets; ?>` <br>
+   and add the following into the footer region:<br>
+   `<?= $this->encoreScripts; ?>` 
    This will add the necessary link and script tags automatically.
 6. If one of your webpack entries requires jQuery, of course you can deactivate jQuery in the Contao layout now.
 

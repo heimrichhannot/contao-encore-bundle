@@ -103,9 +103,14 @@ class HookListener
         $templateData['jsEntries'] = $jsEntries;
         $templateData['cssEntries'] = $cssEntries;
 
-        // render
-        $pageRegular->Template->encore = $this->twig->render(
-            $this->getItemTemplateByName($rootPage->encoreImportsTemplate ?: 'default'), $templateData
+        // render css alone (should be used in <head>)
+        $pageRegular->Template->encoreStylesheets = $this->twig->render(
+            $this->getItemTemplateByName($rootPage->encoreStylesheetsImportsTemplate ?: 'default_css'), $templateData
+        );
+
+        // render js alone (should be used to render js in footer region)
+        $pageRegular->Template->encoreScripts = $this->twig->render(
+            $this->getItemTemplateByName($rootPage->encoreScriptsImportsTemplate ?: 'default_js'), $templateData
         );
     }
 

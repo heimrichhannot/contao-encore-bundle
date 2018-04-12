@@ -2,4 +2,5 @@ huh:
     encore:
         templates:
             imports:
-                - { name: default, template: "@HeimrichHannotContaoEncore/encore_imports.html.twig" }
+                - { name: default_css, template: "@HeimrichHannotContaoEncore/encore_css_imports.html.twig" }
+                - { name: default_js, template: "@HeimrichHannotContaoEncore/encore_js_imports.html.twig" }
