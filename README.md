@@ -91,14 +91,14 @@ huh:
     encore:
         entries:
             - { name: contao-my-project-bundle, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/my-project-bundle.js", requiresCss: true }
-    legacy:
-        # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
-        # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
-        js:
-            - contao-my-project-bundle
-            - some-other-dependency
-        css:
-            - contao-my-project-bundle
+        legacy:
+            # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
+            # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
+            js:
+                - contao-my-project-bundle
+                - some-other-dependency
+            css:
+                - contao-my-project-bundle
 ```
 
 *NOTE: If your entry doesn't require any css, set `requiresCss` to `false`, of course*
@@ -152,14 +152,14 @@ huh:
     encore:
         entries:
             - { name: contao-my-lib-bundle, file: "vendor/acme/contao-my-lib-bundle/src/Resources/public/js/jquery.my-lib-bundle.js" }
-    legacy:
-        # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
-        # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
-        js:
-            - contao-lib-bundle
-        css:
-            - contao-lib-bundle
-            - some-other-dependency
+        legacy:
+            # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
+            # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
+            js:
+                - contao-lib-bundle
+            css:
+                - contao-lib-bundle
+                - some-other-dependency
 ```
 
 *NOTE: If your entry doesn't require any css, set `requiresCss` to `false`, of course*
