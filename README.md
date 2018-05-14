@@ -18,7 +18,8 @@ This bundle offers the opportunity to specify which webpack entries (JavaScript,
    `<?= $this->encoreStylesheets; ?>` <br>
    and add the following into the footer region:<br>
    `<?= $this->encoreScripts; ?>` 
-   This will add the necessary link and script tags automatically.
+   This will add the necessary link and script tags automatically.<br><br>
+   *NOTE: You can add javascript that should be explicitly loaded in the head region using `<?= $this->encoreHeadScripts; ?>`. Just add `head: true` to the entry in your yaml file. *
 6. If one of your webpack entries requires jQuery, of course you can deactivate jQuery in the Contao layout now.
 
 ## Configuration
@@ -92,7 +93,8 @@ _NOTE: Ignore possible warnings that the module `./encore.bundles` couldn't be f
 huh:
     encore:
         entries:
-            - { name: contao-my-project-bundle, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/my-project-bundle.js", requiresCss: true }
+            # set head to true in order to add the entry to "encoreHeadScripts" in your fe_page (see installation section)
+            - { name: contao-my-project-bundle, requiresCss: true, head: false, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/my-project-bundle.js" }
         legacy:
             # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
             # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
@@ -153,7 +155,8 @@ Basically preparing a bundle acting as a library bundle for your projects is sim
 huh:
     encore:
         entries:
-            - { name: contao-my-lib-bundle, file: "vendor/acme/contao-my-lib-bundle/src/Resources/public/js/jquery.my-lib-bundle.js" }
+            # set head to true in order to add the entry to "encoreHeadScripts" in your fe_page (see installation section)
+            - { name: contao-my-lib-bundle, requiresCss: true, head: false, file: "vendor/acme/contao-my-lib-bundle/src/Resources/public/js/jquery.my-lib-bundle.js" }
         legacy:
             # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
             # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
