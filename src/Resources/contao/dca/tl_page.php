@@ -87,6 +87,13 @@ $fields = [
                 'minRowCount' => 0,
                 'sortable'    => true,
                 'fields'      => [
+                    'active' => [
+                        'label'     => &$GLOBALS['TL_LANG']['tl_page']['encoreEntries_active'],
+                        'exclude'   => true,
+                        'default'   => true,
+                        'inputType' => 'checkbox',
+                        'eval'      => ['tl_class' => 'w50']
+                    ],
                     'entry'  => [
                         'label'            => &$GLOBALS['TL_LANG']['tl_page']['encoreEntries_entry'],
                         'exclude'          => true,
@@ -94,12 +101,6 @@ $fields = [
                         'inputType'        => 'select',
                         'options_callback' => ['huh.encore.choice.entry', 'getCachedChoices'],
                         'eval'             => ['tl_class' => 'w50', 'mandatory' => true, 'includeBlankOption' => true]
-                    ],
-                    'active' => [
-                        'label'     => &$GLOBALS['TL_LANG']['tl_page']['encoreEntries_active'],
-                        'exclude'   => true,
-                        'inputType' => 'checkbox',
-                        'eval'      => ['tl_class' => 'w50']
                     ]
                 ],
             ],

@@ -37,6 +37,8 @@ class Configuration implements ConfigurationInterface
                                     ->end()
                                     ->booleanNode('requiresCss')
                                     ->end()
+                                    ->booleanNode('head')
+                                    ->end()
                                 ->end()
                             ->end()
                         ->end()

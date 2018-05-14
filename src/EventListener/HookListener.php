@@ -46,16 +46,16 @@ class HookListener
      */
     public function __construct(ContaoFrameworkInterface $framework, ModelUtil $modelUtil, StringUtil $stringUtil, \Twig_Environment $twig)
     {
-        $this->framework = $framework;
-        $this->modelUtil = $modelUtil;
+        $this->framework  = $framework;
+        $this->modelUtil  = $modelUtil;
         $this->stringUtil = $stringUtil;
-        $this->twig      = $twig;
+        $this->twig       = $twig;
     }
 
     /**
      * Modify the page object.
      *
-     * @param PageModel   $page
+     * @param PageModel $page
      * @param LayoutModel $layout
      * @param PageRegular $pageRegular
      */
@@ -69,39 +69,42 @@ class HookListener
         /** @var PageModel $rootPage */
         $rootPage = $this->framework->getAdapter(PageModel::class);
 
-        if (null === ($rootPage = $rootPage->findByPk($rootId)) || !$rootPage->addEncore)
-        {
+        if (null === ($rootPage = $rootPage->findByPk($rootId)) || !$rootPage->addEncore) {
             return;
         }
 
-        $config        = System::getContainer()->getParameter('huh.encore');
-        $templateData  = $rootPage->row();
+        $config                           = System::getContainer()->getParameter('huh.encore');
+        $templateData                     = $rootPage->row();
         $templateData['encorePublicPath'] = $stringUtil->removeLeadingAndTrailingSlash($templateData['encorePublicPath']);
 
         // active entries
-        $jsEntries = [];
+        $jsEntries  = [];
         $cssEntries = [];
 
-        if (!isset($config['encore']['entries']))
-        {
+        if (!isset($config['encore']['entries'])) {
             return;
         }
 
-        foreach ($config['encore']['entries'] as $entry)
-        {
-            if ($this->isEntryActive($entry['name']))
-            {
-                $jsEntries[] = $this->stringUtil->removeLeadingAndTrailingSlash($rootPage->encorePublicPath) . '/' . $entry['name'] . '.js';
-
-                if ($entry['requiresCss'])
+        foreach ($config['encore']['entries'] as $entry) {
+            if ($this->isEntryActive($entry['name'])) {
+                if ($entry['head'])
                 {
+                    $jsHeadEntries[] = $this->stringUtil->removeLeadingAndTrailingSlash($rootPage->encorePublicPath) . '/' . $entry['name'] . '.js';
+                }
+                else
+                {
+                    $jsEntries[] = $this->stringUtil->removeLeadingAndTrailingSlash($rootPage->encorePublicPath) . '/' . $entry['name'] . '.js';
+                }
+
+                if ($entry['requiresCss']) {
                     $cssEntries[] = $this->stringUtil->removeLeadingAndTrailingSlash($rootPage->encorePublicPath) . '/' . $entry['name'] . '.css';
                 }
             }
         }
 
-        $templateData['jsEntries'] = $jsEntries;
-        $templateData['cssEntries'] = $cssEntries;
+        $templateData['jsEntries']     = $jsEntries;
+        $templateData['jsHeadEntries'] = $jsHeadEntries;
+        $templateData['cssEntries']    = $cssEntries;
 
         // render css alone (should be used in <head>)
         $pageRegular->Template->encoreStylesheets = $this->twig->render(
@@ -111,6 +114,10 @@ class HookListener
         // render js alone (should be used in footer region)
         $pageRegular->Template->encoreScripts = $this->twig->render(
             $this->getItemTemplateByName($rootPage->encoreScriptsImportsTemplate ?: 'default_js'), $templateData
+        );
+
+        $pageRegular->Template->encoreHeadScripts = $this->twig->render(
+            $this->getItemTemplateByName($rootPage->encoreScriptsImportsTemplate ?: 'default_head_js'), $templateData
         );
     }
 
@@ -127,12 +134,10 @@ class HookListener
 
         $result = false;
 
-        foreach (array_merge(is_array($parentPages) ? $parentPages : [], [$objPage]) as $i => $page)
-        {
+        foreach (array_merge(is_array($parentPages) ? $parentPages : [], [$objPage]) as $i => $page) {
             $isActive = $this->isEntryActiveForPage($entry, $page);
 
-            if (0 == $i || $isActive !== null)
-            {
+            if (0 == $i || $isActive !== null) {
                 $result = $isActive;
             }
         }
@@ -142,7 +147,7 @@ class HookListener
 
     /**
      * @param string $entry
-     * @param Model  $page
+     * @param Model $page
      *
      * @return null|bool Returns null, if no information about the entry is specified in the page; else bool
      */
@@ -150,10 +155,8 @@ class HookListener
     {
         $entries = \Contao\StringUtil::deserialize($page->encoreEntries, true);
 
-        foreach ($entries as $row)
-        {
-            if ($row['entry'] === $entry)
-            {
+        foreach ($entries as $row) {
+            if ($row['entry'] === $entry) {
                 return $row['active'] ? true : false;
             }
 
@@ -169,23 +172,19 @@ class HookListener
         /** @var PageModel $rootPage */
         $rootPage = $this->framework->getAdapter(PageModel::class);
 
-        if (null === ($rootPage = $rootPage->findByPk($objPage->rootId)) || !$rootPage->addEncore)
-        {
+        if (null === ($rootPage = $rootPage->findByPk($objPage->rootId)) || !$rootPage->addEncore) {
             return;
         }
 
         $config = System::getContainer()->getParameter('huh.encore');
 
         // js
-        if (isset($config['encore']['legacy']['js']) && is_array($config['encore']['legacy']['js']))
-        {
+        if (isset($config['encore']['legacy']['js']) && is_array($config['encore']['legacy']['js'])) {
             $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
 
             if (is_array($jsFiles)) {
-                foreach ($config['encore']['legacy']['js'] as $jsFile)
-                {
-                    if (isset($jsFiles[$jsFile]))
-                    {
+                foreach ($config['encore']['legacy']['js'] as $jsFile) {
+                    if (isset($jsFiles[$jsFile])) {
                         unset($jsFiles[$jsFile]);
                     }
                 }
@@ -193,17 +192,13 @@ class HookListener
         }
 
         // css
-        if (isset($config['encore']['legacy']['css']) && is_array($config['encore']['legacy']['css']))
-        {
-            foreach (['TL_USER_CSS', 'TL_CSS'] as $arrayKey)
-            {
+        if (isset($config['encore']['legacy']['css']) && is_array($config['encore']['legacy']['css'])) {
+            foreach (['TL_USER_CSS', 'TL_CSS'] as $arrayKey) {
                 $cssFiles = &$GLOBALS[$arrayKey];
 
                 if (is_array($cssFiles)) {
-                    foreach ($config['encore']['legacy']['css'] as $cssFile)
-                    {
-                        if (isset($cssFiles[$cssFile]))
-                        {
+                    foreach ($config['encore']['legacy']['css'] as $cssFile) {
+                        if (isset($cssFiles[$cssFile])) {
                             unset($cssFiles[$cssFile]);
                         }
                     }
