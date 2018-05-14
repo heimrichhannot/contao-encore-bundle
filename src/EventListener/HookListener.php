@@ -89,7 +89,7 @@ class HookListener
 
         foreach ($config['encore']['entries'] as $entry)
         {
-            if ($this->computeActiveEntries($entry['name']))
+            if ($this->isEntryActive($entry['name']))
             {
                 $jsEntries[] = $this->stringUtil->removeLeadingAndTrailingSlash($rootPage->encorePublicPath) . '/' . $entry['name'] . '.js';
 
@@ -108,7 +108,7 @@ class HookListener
             $this->getItemTemplateByName($rootPage->encoreStylesheetsImportsTemplate ?: 'default_css'), $templateData
         );
 
-        // render js alone (should be used to render js in footer region)
+        // render js alone (should be used in footer region)
         $pageRegular->Template->encoreScripts = $this->twig->render(
             $this->getItemTemplateByName($rootPage->encoreScriptsImportsTemplate ?: 'default_js'), $templateData
         );
@@ -119,7 +119,7 @@ class HookListener
      *
      * @return bool
      */
-    public function computeActiveEntries(string $entry): bool
+    public function isEntryActive(string $entry): bool
     {
         global $objPage;
 

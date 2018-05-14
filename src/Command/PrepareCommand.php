@@ -37,7 +37,7 @@ class PrepareCommand extends AbstractLockedCommand
         $this->io      = new SymfonyStyle($input, $output);
         $this->rootDir = $this->getContainer()->getParameter('kernel.project_dir');
         $twig          = $this->getContainer()->get('twig');
-        $resultFile = $this->rootDir . DIRECTORY_SEPARATOR . 'encore.bundles.js';
+        $resultFile    = $this->rootDir . DIRECTORY_SEPARATOR . 'encore.bundles.js';
 
         echo PHP_EOL;
 
@@ -46,12 +46,11 @@ class PrepareCommand extends AbstractLockedCommand
         $config = $this->getContainer()->getParameter('huh.encore');
 
         // js
-        if (isset($config['encore']['entries']) && is_array($config['encore']['entries']))
-        {
+        if (isset($config['encore']['entries']) && is_array($config['encore']['entries'])) {
+            // entries
             $entries = [];
 
-            foreach ($config['encore']['entries'] as $entry)
-            {
+            foreach ($config['encore']['entries'] as $entry) {
                 $preparedEntry = [
                     'name' => $entry['name']
                 ];
@@ -62,15 +61,13 @@ class PrepareCommand extends AbstractLockedCommand
             }
 
             $content = $twig->render('@HeimrichHannotContaoEncore/encore_bundles.js.twig', [
-                'entries' => $entries
+                'entries'       => $entries
             ]);
 
             file_put_contents($resultFile, $content);
 
             $this->io->success('Created encore.bundles.js in your project root. You can now require it in your webpack.config.js!');
-        }
-        else
-        {
+        } else {
             $this->io->warning('No entries found in yml config huh.encore.entries -> No encore.bundles.js is created.');
 //            echo 'Warning: No encore.bundles.js is created.' . PHP_EOL . PHP_EOL;
         }

@@ -39,7 +39,9 @@ Encore
     .setOutputPath('web/build/')
     .setPublicPath('/build')
     .cleanupOutputBeforeBuild()
-    .enableBuildNotifications()
+    .enableBuildNotifications(true, (options) => {
+        options.alwaysNotify = true;
+    })
     .enableVersioning()
 
     // css
