@@ -145,6 +145,10 @@ class Plugin implements BundlePluginInterface, ExtensionPluginInterface
     This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.<br><br>
     _IMPORTANT: You have to call this command everytime you want your webpack entries to be updated, e.g. if you added new entries to your yml configuration or removed some._
 
+5\. Now run `yarn encore dev --watch` to generate the final CSS.
+
+6\. If the generation succeeded without errors, you can now open up Contao and navigate to the configuration of the page in which you'd like to output the <link> tag to the generated CSS. Typically this is a root page but you can also set or override this setting in sub pages.
+
 ### Preparing a library bundle for Contao Encore Bundle
 
 Basically preparing a bundle acting as a library bundle for your projects is similar to preparing the project's main bundle. Do the following steps:
