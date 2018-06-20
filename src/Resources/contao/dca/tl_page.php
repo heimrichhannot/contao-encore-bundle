@@ -39,7 +39,7 @@ $fields = [
         'search'    => true,
         'inputType' => 'text',
         'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
-        'sql'       => "varchar(255) NOT NULL default ''"
+        'sql'       => "varchar(255) NOT NULL default 'build'"
     ],
     'addEncoreSharedEntry'             => [
         'label'     => &$GLOBALS['TL_LANG']['tl_page']['addEncoreSharedEntry'],
@@ -54,7 +54,7 @@ $fields = [
         'search'    => true,
         'inputType' => 'text',
         'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
-        'sql'       => "varchar(255) NOT NULL default ''"
+        'sql'       => "varchar(255) NOT NULL default 'vendor'"
     ],
     'addDynamicEncoreImports'          => [
         'label'     => &$GLOBALS['TL_LANG']['tl_page']['addDynamicEncoreImports'],
@@ -76,7 +76,7 @@ $fields = [
         'search'    => true,
         'inputType' => 'text',
         'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
-        'sql'       => "varchar(255) NOT NULL default ''"
+        'sql'       => "varchar(255) NOT NULL default 'babel-polyfill'"
     ],
     'encoreEntries'                    => [
         'label'     => &$GLOBALS['TL_LANG']['tl_page']['encoreEntries'],
