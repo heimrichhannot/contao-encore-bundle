@@ -92,7 +92,7 @@ $fields = [
                         'exclude'   => true,
                         'default'   => true,
                         'inputType' => 'checkbox',
-                        'eval'      => ['tl_class' => 'w50']
+                        'eval'      => ['tl_class' => 'w50', 'groupStyle' => 'width: 60px']
                     ],
                     'entry'  => [
                         'label'            => &$GLOBALS['TL_LANG']['tl_page']['encoreEntries_entry'],
@@ -100,7 +100,7 @@ $fields = [
                         'filter'           => true,
                         'inputType'        => 'select',
                         'options_callback' => ['huh.encore.choice.entry', 'getCachedChoices'],
-                        'eval'             => ['tl_class' => 'w50', 'mandatory' => true, 'includeBlankOption' => true]
+                        'eval'             => ['tl_class' => 'w50', 'mandatory' => true, 'includeBlankOption' => true, 'groupStyle' => 'width: 710px']
                     ]
                 ],
             ],
