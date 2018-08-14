@@ -11,6 +11,8 @@ If you want to add the frontend assets (JS & CSS) to your project using webpack,
 
 Using this, foxy will automatically add the needed yarn packages to your project's `node_modules` folder.
 
+If you don't want to have duplicate asset files (we know you don't want), you also need to unset the corresponding entries in $GLOBALS['TL_JAVASCRIPT']. If you use our [Encore bundle](https://github.com/heimrichhannot/contao-encore-bundle), we do the work for you, at least for prepared bundles. 
+
 If you want to specify which frontend assets to use on a per page level, you can use [heimrichhannot/contao-encore-bundle](https://github.com/heimrichhannot/contao-encore-bundle). 
 
 ## Packages
