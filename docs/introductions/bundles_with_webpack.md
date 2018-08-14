@@ -1,7 +1,6 @@
-# Install frontend assets using webpack
+# Install frontend assets using Webpack/Encore
 
-If you want to add the frontend assets (JS & CSS) to your project using webpack, please
-add [foxy/foxy](https://github.com/fxpio/foxy) to the dependencies of your project's `composer.json` and add the following to its `config` section:
+If you want to add the frontend assets (JS & CSS) to your project using webpack, please add [foxy/foxy](https://github.com/fxpio/foxy) to the dependencies of your project's `composer.json` and add the following to its `config` section:
 
 ```json
 "foxy": {
@@ -13,3 +12,53 @@ add [foxy/foxy](https://github.com/fxpio/foxy) to the dependencies of your proje
 Using this, foxy will automatically add the needed yarn packages to your project's `node_modules` folder.
 
 If you want to specify which frontend assets to use on a per page level, you can use [heimrichhannot/contao-encore-bundle](https://github.com/heimrichhannot/contao-encore-bundle). 
+
+## Packages
+
+### Modernizr
+If you need to configure [Modernizr] for your project, you need to update your webpack config and add an modernizr configuration file.
+
+The following provided example setup uses [Symfony Webpack Encore](https://github.com/symfony/webpack-encore) and [webpack-modernizr-loader](https://github.com/itgalaxy/webpack-modernizr-loader).
+
+```javascript
+// webpack.config.js
+
+Encore
+// Add modernizr as shared entry: 
+.createSharedEntry('vendor', [
+    'modernizr'
+])
+// Add modernizr loader
+.addLoader({
+    loader: "webpack-modernizr-loader",
+    test: /\.modernizrrc\.js$/
+})
+// Add path to modernizr config as alias
+.addAliases({
+    modernizr$: path.resolve(__dirname, '.modernizrrc.js')
+})
+;
+```
+
+```javascript
+// .modernizrrc.js
+module.exports = {
+    // Your modernizr config, like: 
+    "options": [
+        "domPrefixes",
+        "prefixes"
+    ],
+    "feature-detects": [
+        "test/applicationcache",
+        "test/touchevents"
+    ]
+}
+```
+
+Update the config file(`.modernizrrc.js`) with the necessary configuration. 
+
+If you need to add Modernizr by yourself to a bundle, just add following line to your main bundle javascript file:
+
+```javascript
+window.Modernizr = global.Modernizr = require('modernizr');
+```
