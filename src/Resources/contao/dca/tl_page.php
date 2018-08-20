@@ -9,7 +9,7 @@ $dca['palettes']['__selector__'][] = 'addEncore';
 $dca['palettes']['__selector__'][] = 'addEncoreSharedEntry';
 $dca['palettes']['__selector__'][] = 'addEncoreBabelPolyfill';
 
-foreach (['regular', 'root'] as $palette) {
+foreach (array_keys($dca['palettes']) as $palette) {
     $dca['palettes'][$palette] = str_replace(';{layout_legend', ';{encore_legend},encoreEntries;{layout_legend', $dca['palettes'][$palette]);
 }
 
