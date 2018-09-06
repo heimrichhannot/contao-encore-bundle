@@ -100,7 +100,7 @@ $fields = [
                         'filter'           => true,
                         'inputType'        => 'select',
                         'options_callback' => ['huh.encore.choice.entry', 'getCachedChoices'],
-                        'eval'             => ['tl_class' => 'w50', 'mandatory' => true, 'includeBlankOption' => true, 'groupStyle' => 'width: 710px']
+                        'eval'             => ['tl_class' => 'w50', 'mandatory' => true, 'includeBlankOption' => true, 'groupStyle' => 'width: 710px', 'chosen' => true]
                     ]
                 ],
             ],
