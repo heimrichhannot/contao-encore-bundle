@@ -38,7 +38,8 @@ class Plugin implements BundlePluginInterface, ExtensionPluginInterface
             'huh_encore',
             $extensionName,
             $extensionConfigs,
-            $container->getParameter('kernel.project_dir').'/vendor/heimrichhannot/contao-encore-bundle/src/Resources/config/config.yml'
+            __DIR__.'/../Resources/config/config.yml'
         );
     }
 }
+
