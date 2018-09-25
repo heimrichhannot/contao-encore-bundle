@@ -9,10 +9,13 @@ This bundle offers the opportunity to specify which webpack entries (JavaScript,
 
 ## Setup 
 
-### Prerequisites/Recommendations
+### Prerequisites
 
 * Read the [Encore Documentation](https://symfony.com/doc/current/frontend.html) in order to install Encore and understand the core concepts of Webpack and Symfony Encore.
-* Add [Foxy](docs/introductions/bundles_with_webpack.md) to your project
+
+Optional:
+
+* Add [Foxy](docs/introductions/bundles_with_webpack.md) to your project (for bundle dependency management)
 
 ### Project setup
 
