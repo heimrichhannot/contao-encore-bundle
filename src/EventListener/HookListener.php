@@ -190,6 +190,18 @@ class HookListener
                 }
             }
         }
+        // jquery
+        if (isset($config['encore']['legacy']['jquery']) && is_array($config['encore']['legacy']['jquery'])) {
+            $jqueryFiles = &$GLOBALS['TL_JQUERY'];
+
+            if (is_array($jqueryFiles)) {
+                foreach ($config['encore']['legacy']['jquery'] as $legacyFile) {
+                    if (isset($jqueryFiles[$legacyFile])) {
+                        unset($jqueryFiles[$legacyFile]);
+                    }
+                }
+            }
+        }
 
         // css
         if (isset($config['encore']['legacy']['css']) && is_array($config['encore']['legacy']['css'])) {

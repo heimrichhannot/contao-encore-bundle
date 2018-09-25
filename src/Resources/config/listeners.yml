@@ -1,9 +1,9 @@
 services:
-    huh.encore.listener.hooks:
-      class: HeimrichHannot\EncoreBundle\EventListener\HookListener
-      public: true
-      arguments:
-        - "@contao.framework"
-        - "@huh.utils.model"
-        - "@huh.utils.string"
-        - "@twig"
+  huh.encore.listener.hooks:
+    class: HeimrichHannot\EncoreBundle\EventListener\HookListener
+    public: true
+    arguments:
+    - "@contao.framework"
+    - "@huh.utils.model"
+    - "@huh.utils.string"
+    - "@twig"

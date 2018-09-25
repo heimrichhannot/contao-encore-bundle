@@ -7,30 +7,24 @@ This bundle offers the opportunity to specify which webpack entries (JavaScript,
 - conditionally load your project assets only if necessary on a particular page
 - asynchronously load shared dependency entries *on demand and cached* using webpack import() operator (see chapter "Dynamically importing common dependencies asynchronously")
 
-## Installation
+## Setup 
 
-1. Install via composer: `composer require heimrichhannot/contao-encore-bundle` and update your database.
-2. Read https://symfony.com/doc/current/frontend.html in order to understand the core concepts of webpack and symfony encore.
-3. Now you can enable encore for a particular page root in the Contao backend and specify various options.
-4. For pages with activated encore support you can then specify which webpack entries should be loaded on this page and its sub pages (inheritance is supported).<br>
-   *NOTE: In order to see entries here, see chapter "Define webpack entries for Contao Encore Bundle"*
-5. In your `fe_page.html5` add the following in `<head>` region:<br>
-   `<?= $this->encoreStylesheets; ?>` <br>
-   and add the following into the footer region:<br>
-   `<?= $this->encoreScripts; ?>` 
-   This will add the necessary link and script tags automatically.<br><br>
-   *NOTE: You can add javascript that should be explicitly loaded in the head region using `<?= $this->encoreHeadScripts; ?>`. Just add `head: true` to the entry in your yaml file. *
-6. If one of your webpack entries requires jQuery, of course you can deactivate jQuery in the Contao layout now.
+### Prerequisites/Recommendations
 
-## Configuration
+* Read the [Encore Documentation](https://symfony.com/doc/current/frontend.html) in order to install Encore and understand the core concepts of Webpack and Symfony Encore.
+* Add [Foxy](docs/introductions/bundles_with_webpack.md) to your project
 
-### Define webpack entries for Contao Encore Bundle in your project
+### Project setup
 
-In webpack an entry usually results in a JavaScript file generated in an output directory. These files are included in the final HTML page.
+**1\.** Install Encore bundle via composer 
 
-Please do the following steps:
+```composer require heimrichhannot/contao-encore-bundle```
 
-1\. At first webpack entries must be specified in your `webpack.config.js` (as normally with webpack). Here's how this file could look like:
+**2\.** Update your database
+
+**3\.** Create your webpack/encore config file (`webpack.config.js`) in your project root.
+
+Example:  
 
 ```javascript
 let Encore = require('@symfony/webpack-encore'),
@@ -87,112 +81,105 @@ module.exports = config;
 
 _NOTE: Ignore possible warnings that the module `./encore.bundles` couldn't be found. We'll create this module in step 4 ;-)_
 
-2\. Now in order to make your entries visible to Contao Encore Bundle you have to create a `config_encore.yml` file (or whatever name you like) in your project bundle containing the following structure:
+**4\.** In your `fe_page.html5` add the following in `<head>` region:
+
+```<?= $this->encoreStylesheets; ?>```
+
+and add the following into the footer region:
+
+```<?= $this->encoreScripts; ?>```
+   
+This will add the necessary link and script tags automatically.
+   
+*NOTE: You can add javascript that should be explicitly loaded in the head region using `<?= $this->encoreHeadScripts; ?>`. Just add `head: true` to the entry in your yaml file. *
+   
+**5\.** If one of your webpack entries requires jQuery, you can deactivate jQuery in the Contao layout to don't include it twice.
+
+
+### Bundle setup
+
+In webpack an entry usually results in a JavaScript file generated in an output directory. These files can be included in the final HTML page.
+
+**1\.** In order to make your entries visible to Contao Encore Bundle you have add them to the bundle configuration, typical `src/Resources/config/config.yml`. Full-featured example:
 
 ```yaml
-huh:
-    encore:
-        entries:
-            # set head to true in order to add the entry to "encoreHeadScripts" in your fe_page (see installation section)
-            - { name: contao-my-project-bundle, requiresCss: true, head: false, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/my-project-bundle.js" }
-        legacy:
-            # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
-            # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
-            js:
-                - contao-my-project-bundle
-                - some-other-dependency
-            css:
-                - contao-my-project-bundle
+huh_encore:
+  encore:
+    entries:
+      - { name: contao-my-project-bundle, requiresCss: true, head: false, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/my-project-bundle.js" }
+      - { name: special-feature, requiresCss: true, head: false, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/awesome-but-rare-used-feature.js" }
+    legacy:
+      js:
+        - contao-my-project-bundle
+        - some-other-dependency
+      jquery:
+        - my-jquery-dependency
+      css:
+        - contao-my-project-bundle
 ```
 
-*NOTE: If your entry doesn't require any css, set `requiresCss` to `false`, of course*
+Explanation:
+* Within `entries` you register Javascript files, which can be activated from the Contao backend
+    * you can register multiple entries per bundle, so you don't need to include all files/features in every page
+    * `name`: Will be shown in contao backend. Required.
+    * `file`: Path to the Javascript file. Required
+    * `requireCss`: Set to true, if entry requires css.
+    * `head`: Set to true, if entry should added to the `encoreHeadScripts` section (see project setup) in your page layout instead to the bottom (CSS will always be added to the head).
+* Within `legacy` you can define assets, that will be stripped from the global contao arrays. Here you can add assets, that you seve with webpack, so they won't be loaded twice or on the wrong page. IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
+    * `js`: Assets will be stripped from `$GLOBALS['TL_JAVASCRIPT']`
+    * `jquery`: Assets will be stripped from `$GLOBALS['TL_JQUERY']`
+    * `css`: Assets will be stripped from `$GLOBALS['TL_USER_CSS']` and `$GLOBALS['TL_CSS']`
 
-An example of `my-project-bundle.js` would be:
+**2\.** If your config isn't already registered in your Contao Manager `Plugin` class, you need to do this now: implement the `ConfigPluginInterface` class and register the config in the new `registerContainerConfiguration` method:
+
+```php
+class Plugin implements BundlePluginInterface, ConfigPluginInterface
+{
+    //...
+
+    public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
+    {
+        // The bundle id ("VendorProjectBundle" in this example) is typically your bundle class name
+        $loader->load('@VendorProjectBundle/Resources/config/config.yml');
+    }
+}
+```
+
+
+### Run Encore
+
+**1\.** Clear your cache (`vendor/bin/contao-console cache:clear -e dev`)
+
+**2\.** Run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
+This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.
+
+_IMPORTANT: You have to call this command everytime you want your webpack entries to be updated, e.g. if you added new entries to your yml configuration or removed some._
+
+**3\.** Now run `yarn encore dev --watch` to generate the final CSS.
+
+**4\.** If the generation succeeded without errors, you can now open up Contao and navigate to the configuration of the page in which you'd like to output the <link> tag to the generated entries. Typically this is a root page but you can also set or override this setting in sub pages.
+
+
+
+## Usage
+
+### JavaScript entires
+
+Require SASS/CSS is simple as: 
 
 ```javascript
-// only if you need jQuery
+require('../scss/project.scss');
+```
+
+Use jQuery: 
+
+```javascript
 let $ = require('jquery');
 
 // assign jQuery to a global for legacy modules
 window.$ = window.jQuery = $;
-
-// require your styleshets if needed
-require('../scss/project.scss');
-
-$(document).ready(function() {
-
-});
 ```
-
-3\. The next step is to merge your config with the default one of Contao Encore Bundle. For this adjust your bundle's `Plugin.php` by implementing `Contao\ManagerPlugin\Config\ExtensionPluginInterface` and adding the code in `getExtensionConfig()`:
-
-```php
-class Plugin implements BundlePluginInterface, ExtensionPluginInterface
-{
-    // ...
-    public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container) {
-        return ContainerUtil::mergeConfigFile(
-            'huh_encore',
-            $extensionName,
-            $extensionConfigs,
-            $container->getParameter('kernel.project_dir').'/vendor/acme/contao-my-project-bundle/src/Resources/config/config_encore.yml'
-        );
-    }
-}
-```
-
-4\. Now run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
-    This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.<br><br>
-    _IMPORTANT: You have to call this command everytime you want your webpack entries to be updated, e.g. if you added new entries to your yml configuration or removed some._
-
-5\. Now run `yarn encore dev --watch` to generate the final CSS.
-
-6\. If the generation succeeded without errors, you can now open up Contao and navigate to the configuration of the page in which you'd like to output the <link> tag to the generated CSS. Typically this is a root page but you can also set or override this setting in sub pages.
-
-### Preparing a library bundle for Contao Encore Bundle
-
-Basically preparing a bundle acting as a library bundle for your projects is similar to preparing the project's main bundle. Do the following steps:
-
-1\. In order to make your entries visible to Contao Encore Bundle you have to create a `config_encore.yml` file (or whatever name you like) in your bundle containing the following structure:
-
-```yaml
-huh:
-    encore:
-        entries:
-            # set head to true in order to add the entry to "encoreHeadScripts" in your fe_page (see installation section)
-            - { name: contao-my-lib-bundle, requiresCss: true, head: false, file: "vendor/acme/contao-my-lib-bundle/src/Resources/public/js/jquery.my-lib-bundle.js" }
-        legacy:
-            # Assets defined here are stripped from Contao's global arrays automatically (e.g. $GLOBALS['TL_JAVASCRIPT']) since they're not needed there if your assets are served through webpack
-            # IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
-            js:
-                - contao-lib-bundle
-            css:
-                - contao-lib-bundle
-                - some-other-dependency
-```
-
-*NOTE: If your entry doesn't require any css, set `requiresCss` to `false`, of course*
-
-2\. Then merge your config with the default one of Contao Encore Bundle. For this adjust your bundle's `Plugin.php` by implementing `Contao\ManagerPlugin\Config\ExtensionPluginInterface` and adding the code in `getExtensionConfig()`:
-
-```php
-class Plugin implements BundlePluginInterface, ExtensionPluginInterface
-{
-    // ...
-    public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container) {
-        return ContainerUtil::mergeConfigFile(
-            'huh_encore',
-            $extensionName,
-            $extensionConfigs,
-            $container->getParameter('kernel.project_dir').'/vendor/acme/contao-my-project-bundle/src/Resources/config/config_encore.yml'
-        );
-    }
-}
-```
-
-3\. After installing your bundle clear `var/cache` and run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
-    This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.<br><br>
-    _IMPORTANT: You have to call this command everytime you want your webpack entries to be updated, e.g. if you added new entries to your yml configuration or removed some._
+> If you use jQuery in webpack, you can deactive in the contao page layout to don't have include it twice.
 
 ### Dynamically importing common dependencies asynchronously
 
@@ -232,3 +219,4 @@ module.exports = config;
 ... and activate dynamic imports in your root page in Contao.
 
 Look at the webpack Code Splitting documentation section for more info on this topic: https://webpack.js.org/guides/code-splitting
+

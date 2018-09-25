@@ -1,9 +1,9 @@
 services:
-    huh.encore.choice.entry:
-        class: HeimrichHannot\EncoreBundle\Choice\EntryChoice
-        arguments:
-            - "@contao.framework"
-    huh.encore.choice.template.imports:
-        class: HeimrichHannot\EncoreBundle\Choice\ImportsTemplateChoice
-        arguments:
-            - "@contao.framework"
+  huh.encore.choice.entry:
+    class: HeimrichHannot\EncoreBundle\Choice\EntryChoice
+    arguments:
+    - "@contao.framework"
+  huh.encore.choice.template.imports:
+    class: HeimrichHannot\EncoreBundle\Choice\ImportsTemplateChoice
+    arguments:
+    - "@contao.framework"
