@@ -160,11 +160,19 @@ _IMPORTANT: You have to call this command everytime you want your webpack entrie
 
 **3\.** Now run `yarn encore dev --watch` to generate the final CSS.
 
-**4\.** If the generation succeeded without errors, you can now open up Contao and navigate to the configuration of the page in which you'd like to output the <link> tag to the generated entries. Typically this is a root page but you can also set or override this setting in sub pages.
+**4\.** If the generation succeeded without errors, you can now active encore entries. See Usage -> Activate encore entries for  how to do that.
 
 
 
 ## Usage
+
+### Activate encore entries
+
+* Go in the contao backend to site structure and choose the website root
+* Scroll to encore settings and check "Activate Webpack Encore"
+* fill the (mandatory) fields
+* if you have an main project bundle entry containing the main stylesheets, add it as active entry, add also all other entries you want to have activated on every page. Be patient that you check all entries as active (if you want them to be loaded)!
+* for page specific features, go to this page settings and add it as active entry. NOTICE: if you active an entry on an page with subpages, they will inherit the settings from their parents. You can deactivate an inherit entry by adding it and don't check "active".
 
 ### JavaScript entires
 
@@ -223,3 +231,18 @@ module.exports = config;
 
 Look at the webpack Code Splitting documentation section for more info on this topic: https://webpack.js.org/guides/code-splitting
 
+### Custom import templates
+
+If you need custom templates for the import of javascript and stylesheet assets files, Encore Bundle provide support for this. 
+Create a twig template (see `src/Resources/views` for examples) and register them in your (project) bundle config.
+
+Example:
+
+```yml
+huh_encore:
+  encore:
+    templates:
+      imports:
+      - { name: default_css, template: "@HeimrichHannotContaoEncore/encore_css_imports.html.twig" }
+      - { name: default_js, template: "@HeimrichHannotContaoEncore/encore_js_imports.html.twig" }
+```

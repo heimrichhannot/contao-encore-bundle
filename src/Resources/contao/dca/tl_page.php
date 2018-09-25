@@ -92,7 +92,7 @@ $fields = [
                         'exclude'   => true,
                         'default'   => true,
                         'inputType' => 'checkbox',
-                        'eval'      => ['tl_class' => 'w50', 'groupStyle' => 'width: 60px']
+                        'eval'      => ['tl_class' => 'w50', 'groupStyle' => 'width: 65px']
                     ],
                     'entry'  => [
                         'label'            => &$GLOBALS['TL_LANG']['tl_page']['encoreEntries_entry'],
