@@ -124,7 +124,7 @@ huh_encore:
 Explanation:
 * Within `entries` you register Javascript files, which can be activated from the Contao backend
     * you can register multiple entries per bundle, so you don't need to include all files/features in every page
-    * `name`: Will be shown in contao backend. Required.
+    * `name`: Will be shown in contao backend and will be used as alias/identifier in the datebase. Required.
     * `file`: Path to the Javascript file. Required
     * `requireCss`: Set to true, if entry requires css.
     * `head`: Set to true, if entry should added to the `encoreHeadScripts` section (see project setup) in your page layout instead to the bottom (CSS will always be added to the head).
