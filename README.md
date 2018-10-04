@@ -21,7 +21,9 @@ Optional:
 
 **1\.** Install Encore bundle via composer 
 
-```composer require heimrichhannot/contao-encore-bundle```
+```
+composer require heimrichhannot/contao-encore-bundle
+```
 
 **2\.** Update your database
 
@@ -148,6 +150,10 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
 }
 ```
 
+**3\.** Add encore bundle to your composer.json file (See Project setup step 1).
+
+> If you want encore bundle to be an optional dependency, please see "Usage -> Make encore bundle an optional dependency"
+
 
 ### Run Encore
 
@@ -191,6 +197,35 @@ let $ = require('jquery');
 window.$ = window.jQuery = $;
 ```
 > If you use jQuery in webpack, you can deactive in the contao page layout to don't have include it twice.
+
+
+### Make encore bundle an optional dependency
+
+If you create an reusable bundle and want to support setups that don't use encore, you need adjust the encore bundle confiuration:
+
+**1\.** Move your `huh_encore` configuration to an own config file, for example `config_encore.yml`.
+
+**2\.** In your `Plugin` class implement the `ExtensionPluginInterface` and merge the configs. Our [Utils Bundle](https://github.com/heimrichhannot/contao-utils-bundle) includes a method to do this for you. 
+
+```php
+public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container)
+{
+    return ContainerUtil::mergeConfigFile(
+        'huh_encore',
+        $extensionName,
+        $extensionConfigs,
+        __DIR__.'/../Resources/config/config_encore.yml'
+    );
+}
+```
+
+**3\.** Optional: Add encore bundle to your composer.json suggest section.
+
+```json
+"suggest": {
+    "heimrichhannot/contao-encore-bundle": "Symfony Webpack Encore integration for Contao.",
+  }
+``` 
 
 ### Dynamically importing common dependencies asynchronously
 
