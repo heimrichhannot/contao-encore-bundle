@@ -61,6 +61,11 @@ class HookListener
      */
     public function addEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular)
     {
+        $this->doAddEncore($page, $layout, $pageRegular);
+    }
+
+    public function doAddEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular, string $encoreField = 'encoreEntries', bool $includeInline = false)
+    {
         global $objPage;
         $stringUtil = $this->stringUtil;
 
@@ -86,7 +91,7 @@ class HookListener
         }
 
         foreach ($config['encore']['entries'] as $entry) {
-            if ($this->isEntryActive($entry['name'])) {
+            if ($this->isEntryActive($entry['name'], $encoreField)) {
                 if ($entry['head'])
                 {
                     $jsHeadEntries[] = $this->stringUtil->removeLeadingAndTrailingSlash($rootPage->encorePublicPath) . '/' . $entry['name'] . '.js';
@@ -111,6 +116,11 @@ class HookListener
             $this->getItemTemplateByName($rootPage->encoreStylesheetsImportsTemplate ?: 'default_css'), $templateData
         );
 
+        if ($includeInline)
+        {
+            $pageRegular->Template->encoreStylesheetsInline = $this->getInlineStylesheets($pageRegular->Template->encoreStylesheets);
+        }
+
         // render js alone (should be used in footer region)
         $pageRegular->Template->encoreScripts = $this->twig->render(
             $this->getItemTemplateByName($rootPage->encoreScriptsImportsTemplate ?: 'default_js'), $templateData
@@ -121,12 +131,27 @@ class HookListener
         );
     }
 
+    public function getInlineStylesheets(string $styleTags) {
+        preg_match_all('@<link rel="stylesheet" href="([^"]+)">@i', $styleTags, $matches);
+
+        if (isset($matches[1]) && !empty($matches[1]))
+        {
+            $inlineCss = implode("\n", array_map(function($path) {
+                return file_get_contents(System::getContainer()->get('huh.utils.container')->getWebDir() . preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
+            }, $matches[1]));
+
+            return $inlineCss;
+        }
+
+        return false;
+    }
+
     /**
      * @param string $entry
      *
      * @return bool
      */
-    public function isEntryActive(string $entry): bool
+    public function isEntryActive(string $entry, string $encoreField = 'encoreEntries'): bool
     {
         global $objPage;
 
@@ -135,7 +160,7 @@ class HookListener
         $result = false;
 
         foreach (array_merge(is_array($parentPages) ? $parentPages : [], [$objPage]) as $i => $page) {
-            $isActive = $this->isEntryActiveForPage($entry, $page);
+            $isActive = $this->isEntryActiveForPage($entry, $page, $encoreField);
 
             if (0 == $i || $isActive !== null) {
                 $result = $isActive;
@@ -151,9 +176,9 @@ class HookListener
      *
      * @return null|bool Returns null, if no information about the entry is specified in the page; else bool
      */
-    public function isEntryActiveForPage(string $entry, Model $page)
+    public function isEntryActiveForPage(string $entry, Model $page, string $encoreField = 'encoreEntries')
     {
-        $entries = \Contao\StringUtil::deserialize($page->encoreEntries, true);
+        $entries = \Contao\StringUtil::deserialize($page->{$encoreField}, true);
 
         foreach ($entries as $row) {
             if ($row['entry'] === $entry) {

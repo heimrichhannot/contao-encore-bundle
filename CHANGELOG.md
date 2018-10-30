@@ -1,21 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2018-10-30
+
+### Added
+- inline stylesheets (if needed)
+
 ## [0.1.2] - 2018-10-04
 
 ### Changed
-* updated readme
+- updated readme
 
 ## [0.1.1] - 2018-09-25
 
 ### Changed
-* updated readme
+- updated readme
 
 ## [0.1.0] - 2018-09-25
 
 ### Added
-* english translation
-* support for legacy TL_JQUERY
+- english translation
+- support for legacy TL_JQUERY
 
 ### Changed
-* updated readme
+- updated readme
