@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2018-12-14
+
+### Added
+- symfony/webpack-encore-bundle as dependency
+
 ## [0.2.0] - 2018-10-30
 
 ### Added

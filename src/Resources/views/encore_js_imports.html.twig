@@ -1,5 +1,5 @@
 {% if addDynamicEncoreImports|default() %}
-    <script src="{{ asset(encorePublicPath ~ '/manifest.js') }}"></script>
+    <script src="{{ asset(encorePublicPath ~ '/runtime.js') }}"></script>
 {% endif %}
 
 {% if addEncoreSharedEntry|default() %}
