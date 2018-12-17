@@ -25,7 +25,7 @@ class EncoreExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configuration = new Configuration(true);
+        $configuration = new Configuration();
         $processedConfig = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('huh.encore', $processedConfig);

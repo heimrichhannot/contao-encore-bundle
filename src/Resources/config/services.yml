@@ -2,8 +2,13 @@ services:
   huh.encore.choice.entry:
     class: HeimrichHannot\EncoreBundle\Choice\EntryChoice
     arguments:
-    - "@contao.framework"
+      - "@contao.framework"
   huh.encore.choice.template.imports:
     class: HeimrichHannot\EncoreBundle\Choice\ImportsTemplateChoice
     arguments:
-    - "@contao.framework"
+      - "@contao.framework"
+  huh.twig.extension.entry_files:
+    class: Symfony\WebpackEncoreBundle\Twig\EntryFilesTwigExtension
+    tags: [twig.extension]
+    arguments:
+      - "@service_container"

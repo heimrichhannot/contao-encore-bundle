@@ -5,7 +5,7 @@ This bundle offers the opportunity to specify which webpack entries (JavaScript,
 ## Features
 
 - conditionally load your project assets only if necessary on a particular page
-- asynchronously load shared dependency entries *on demand and cached* using webpack import() operator (see chapter "Dynamically importing common dependencies asynchronously")
+- asynchronously load dependency entries *on demand and cached* using webpack import() operator (see chapter "Dynamically importing common dependencies asynchronously")
 
 ## Setup 
 

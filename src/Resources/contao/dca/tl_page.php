@@ -6,7 +6,6 @@ $dca = &$GLOBALS['TL_DCA']['tl_page'];
  * Palettes
  */
 $dca['palettes']['__selector__'][] = 'addEncore';
-$dca['palettes']['__selector__'][] = 'addEncoreSharedEntry';
 $dca['palettes']['__selector__'][] = 'addEncoreBabelPolyfill';
 
 foreach (array_keys($dca['palettes']) as $palette) {
@@ -18,8 +17,7 @@ $dca['palettes']['root'] = str_replace('encoreEntries', 'addEncore', $dca['palet
 /**
  * Subpalettes
  */
-$dca['subpalettes']['addEncore']              = 'encorePublicPath,addEncoreSharedEntry,addDynamicEncoreImports,addEncoreBabelPolyfill,encoreEntries,encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
-$dca['subpalettes']['addEncoreSharedEntry']   = 'encoreSharedEntryName';
+$dca['subpalettes']['addEncore']              = 'encorePublicPath,addEncoreBabelPolyfill,encoreEntries,encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
 $dca['subpalettes']['addEncoreBabelPolyfill'] = 'encoreBabelPolyfillEntryName';
 
 /**
@@ -40,28 +38,6 @@ $fields = [
         'inputType' => 'text',
         'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
         'sql'       => "varchar(255) NOT NULL default 'build'"
-    ],
-    'addEncoreSharedEntry'             => [
-        'label'     => &$GLOBALS['TL_LANG']['tl_page']['addEncoreSharedEntry'],
-        'exclude'   => true,
-        'inputType' => 'checkbox',
-        'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
-        'sql'       => "char(1) NOT NULL default ''"
-    ],
-    'encoreSharedEntryName'            => [
-        'label'     => &$GLOBALS['TL_LANG']['tl_page']['encoreSharedEntryName'],
-        'exclude'   => true,
-        'search'    => true,
-        'inputType' => 'text',
-        'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
-        'sql'       => "varchar(255) NOT NULL default 'vendor'"
-    ],
-    'addDynamicEncoreImports'          => [
-        'label'     => &$GLOBALS['TL_LANG']['tl_page']['addDynamicEncoreImports'],
-        'exclude'   => true,
-        'inputType' => 'checkbox',
-        'eval'      => ['tl_class' => 'w50'],
-        'sql'       => "char(1) NOT NULL default ''"
     ],
     'addEncoreBabelPolyfill'           => [
         'label'     => &$GLOBALS['TL_LANG']['tl_page']['addEncoreBabelPolyfill'],

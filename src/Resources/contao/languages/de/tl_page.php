@@ -10,14 +10,6 @@ $lang['addEncore'][1]                        = 'Wählen Sie diese Option, wenn S
 $lang['encorePublicPath'][0]                 = 'Öffentlicher Pfad';
 $lang['encorePublicPath'][1]                 =
     'Geben Sie hier ein Verzeichnis relativ zum /web-Verzeichnis aus, in dem die von Encore generierten Asset-Dateien gespeichert werden (Beispiel: build).';
-$lang['addEncoreSharedEntry'][0]             = 'Shared Entry hinzufügen';
-$lang['addEncoreSharedEntry'][1]             = 'Wählen Sie diese Option, wenn Sie in Ihrer webpack.config.js einen Shared Entry definiert haben.';
-$lang['encoreSharedEntryName'][0]            = 'Shared Entry-Name';
-$lang['encoreSharedEntryName'][1]            =
-    'Geben Sie hier den Namen des Shared Entry ein, wie er Encore.createSharedEntry() als erster Parameter übergeben wird.';
-$lang['addDynamicEncoreImports'][0]          = 'Dynamische Importe aktivieren';
-$lang['addDynamicEncoreImports'][1]          =
-    'Wählen Sie diese Option, wenn die JavaScript-Dateien, die Sie einbinden, dynamische Importe mittels des webpack-Operators "import()" enthalten.';
 $lang['addEncoreBabelPolyfill'][0]           = 'babel-polyfill hinzufügen (für IE <= 11)';
 $lang['addEncoreBabelPolyfill'][1]           =
     'Wählen Sie diese Option, wenn der Internet Explorer in Version <= 11 unterstützt werden soll. In modernen Browsern (auch Edge) wird das Polyfill, das u.a. Promises bereitstellt, in der Regel nicht benötigt.';

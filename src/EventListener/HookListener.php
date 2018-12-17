@@ -80,7 +80,6 @@ class HookListener
 
         $config                           = System::getContainer()->getParameter('huh.encore');
         $templateData                     = $rootPage->row();
-        $templateData['encorePublicPath'] = $stringUtil->removeLeadingAndTrailingSlash($templateData['encorePublicPath']);
 
         // active entries
         $jsEntries  = [];
@@ -94,15 +93,15 @@ class HookListener
             if ($this->isEntryActive($entry['name'], $encoreField)) {
                 if ($entry['head'])
                 {
-                    $jsHeadEntries[] = $this->stringUtil->removeLeadingAndTrailingSlash($rootPage->encorePublicPath) . '/' . $entry['name'] . '.js';
+                    $jsHeadEntries[] = $entry['name'];
                 }
                 else
                 {
-                    $jsEntries[] = $this->stringUtil->removeLeadingAndTrailingSlash($rootPage->encorePublicPath) . '/' . $entry['name'] . '.js';
+                    $jsEntries[] = $entry['name'];
                 }
 
                 if ($entry['requiresCss']) {
-                    $cssEntries[] = $this->stringUtil->removeLeadingAndTrailingSlash($rootPage->encorePublicPath) . '/' . $entry['name'] . '.css';
+                    $cssEntries[] = $entry['name'];
                 }
             }
         }

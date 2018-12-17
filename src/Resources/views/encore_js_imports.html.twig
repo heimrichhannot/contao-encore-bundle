@@ -1,10 +1,6 @@
-{% if addDynamicEncoreImports|default() %}
-    <script src="{{ asset(encorePublicPath ~ '/runtime.js') }}"></script>
-{% endif %}
-
-{% if addEncoreSharedEntry|default() %}
-    <script src="{{ asset(encorePublicPath ~ '/' ~ encoreSharedEntryName ~ '.js') }}"></script>
-{% endif %}
+{% for entry in jsEntries %}
+    {{ encore_entry_script_tags(entry) }}
+{% endfor %}
 
 {% if addEncoreBabelPolyfill|default() %}
     <script type="text/javascript">
@@ -12,7 +8,3 @@
             document.write('<script src="{{ asset(encorePublicPath ~ '/' ~ encoreBabelPolyfillEntryName ~ '.js') }}"><\/script>');
     </script>
 {% endif %}
-
-{% for entry in jsEntries %}
-    <script src="{{ asset(entry) }}"></script>
-{% endfor %}
