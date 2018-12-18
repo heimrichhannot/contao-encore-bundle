@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2018-12-18
+
+### Added
+- webpack 0.22.* as foxy dependency
+
 ## [0.4.0] - 2018-12-17
 
 ### Added

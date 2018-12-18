@@ -23,6 +23,9 @@
     "satooshi/php-coveralls": "^2.0",
     "symfony/phpunit-bridge": "^3.2"
   },
+  "suggest": {
+    "foxy/foxy": "Install this bundle in your project so that node extensions are automatically installed to your project's node_modules directory."
+  },
   "autoload": {
     "psr-4": {
       "HeimrichHannot\\EncoreBundle\\": "src/"
@@ -46,6 +49,7 @@
     "preferred-install": "dist"
   },
   "extra": {
-    "contao-manager-plugin": "HeimrichHannot\\EncoreBundle\\ContaoManager\\Plugin"
+    "contao-manager-plugin": "HeimrichHannot\\EncoreBundle\\ContaoManager\\Plugin",
+    "foxy": true
   }
 }
