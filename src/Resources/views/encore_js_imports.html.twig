@@ -5,6 +5,10 @@
 {% if addEncoreBabelPolyfill|default() %}
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
-            document.write('<script src="{{ asset(encorePublicPath ~ '/' ~ encoreBabelPolyfillEntryName ~ '.js') }}"><\/script>');
+        {
+            {% for entry in encore_entry_js_files(encoreBabelPolyfillEntryName) %}
+                document.write('<script src="{{ entry }}"><\/script>');
+            {% endfor %}
+        }
     </script>
 {% endif %}
