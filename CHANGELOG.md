@@ -1,10 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.3] - 2018-12-20
+
+### Changed
+- enhanced and updated readme
+
 ## [0.4.2] - 2018-12-19
 
-### Added
-- fixed ie babel polyfill
+### Fixed
+- ie babel polyfill no loading
 
 ## [0.4.1] - 2018-12-18
 
