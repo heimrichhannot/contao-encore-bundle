@@ -1,10 +1,12 @@
 # Contao Encore Bundle
 
-This bundle offers the opportunity to specify which webpack entries (JavaScript, CSS, i.e. whatever webpack supports) should be loaded on a per page level. 3rd party bundles are also supported if they're made compatible.
+This bundle brings integration between symfony encore and contao. You can prepare your packages for encore workflow by defining your own webpack entries. You also have the option to strip legacy assets from the contao global array. In the contao backend you can configure to load packages on a **per page** level for having a great performance.
 
 ## Features
 
-- conditionally load your project assets only if necessary on a particular page
+- use symfony encore ([symfony/webpack-encore](https://github.com/symfony/webpack-encore) and [symfony/webpack-encore-bundle](https://github.com/symfony/webpack-encore-bundle)) to enhance your contao assets workflow
+- conditionally load your project assets only if necessary on a particular page (including page inheritance)
+- use  
 - asynchronously load dependency entries *on demand and cached* using webpack import() operator (see chapter "Dynamically importing common dependencies asynchronously")
 
 ## Setup 
@@ -13,9 +15,9 @@ This bundle offers the opportunity to specify which webpack entries (JavaScript,
 
 * Read the [Encore Documentation](https://symfony.com/doc/current/frontend.html) in order to install Encore and understand the core concepts of Webpack and Symfony Encore.
 
-Optional:
+**Recommended:**
 
-* Add [Foxy](docs/introductions/bundles_with_webpack.md) to your project (for bundle dependency management)
+* In order to add the node dependencies required by composer bundles, you probably want to add them to your project's node dependencies when running webpack in the project's scope. You can use [Foxy](docs/introductions/bundles_with_webpack.md) for this task.
 
 ### Project setup
 
@@ -49,29 +51,26 @@ Encore
     .enablePostCssLoader()
 
     // js
-    // needed for dynamic imports
     .configureBabel(function(babelConfig) {
-        babelConfig.plugins.push('syntax-dynamic-import');
+        // Add plugins here
     })
     .enableSourceMaps(!Encore.isProduction())
-    .createSharedEntry('vendor', [
-        'jquery',
-        'bootstrap'
-    ])
+    
+    .splitEntryChunks()
+    .enableSingleRuntimeChunk()
 
     // babel polyfill e.g. for IE <= 11 Promise support (with Contao Encore Bundle this entry is added only if necessary, i.e. for IE <= 11)
     .addEntry('babel-polyfill', [
-        'babel-polyfill'
+        '@babel/polyfill'
     ])
+    
 ;
 
 // this function adds entries for all contao encore compatible bundles automatically
 // -> the source of that is the file "encore.bundles.js" in your project root which is
 // generated automatically using the contao command "vendor/bin/contao-console encore:prepare"
 // -> you can pass an array to the function if you want to skip certain entries
-encoreBundles.addEntries([
-    'my-skipped-bundle'
-]);
+encoreBundles.addEntries();
 
 // support dynamic chunks
 let config = Encore.getWebpackConfig();
@@ -126,11 +125,11 @@ huh_encore:
 Explanation:
 * Within `entries` you register Javascript files, which can be activated from the Contao backend
     * you can register multiple entries per bundle, so you don't need to include all files/features in every page
-    * `name`: Will be shown in contao backend and will be used as alias/identifier in the datebase. Required.
+    * `name`: Will be shown in contao backend and will be used as alias/identifier in the database. Required.
     * `file`: Path to the Javascript file. Required
     * `requireCss`: Set to true, if entry requires css.
     * `head`: Set to true, if entry should added to the `encoreHeadScripts` section (see project setup) in your page layout instead to the bottom (CSS will always be added to the head).
-* Within `legacy` you can define assets, that will be stripped from the global contao arrays. Here you can add assets, that you seve with webpack, so they won't be loaded twice or on the wrong page. IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
+* Within `legacy` you can define assets, that will be stripped from the global contao arrays. Here you can add assets, that you serve with webpack, so they won't be loaded twice or on the wrong page. IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
     * `js`: Assets will be stripped from `$GLOBALS['TL_JAVASCRIPT']`
     * `jquery`: Assets will be stripped from `$GLOBALS['TL_JQUERY']`
     * `css`: Assets will be stripped from `$GLOBALS['TL_USER_CSS']` and `$GLOBALS['TL_CSS']`
@@ -154,10 +153,12 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
 
 > If you want encore bundle to be an optional dependency, please see "Usage -> Make encore bundle an optional dependency"
 
+**4\.** You probably want to have your bundle's node dependencies added automatically to the project's node_modules directory when installed. You can simply use [Foxy](https://github.com/fxpio/foxy) for this task. To keep it simple: besides having foxy installed in your project, you need to set `"foxy": true` in the `extra` section of your bundle's `composer.json` and add an ordinary `package.json` as usual for node modules. See [heimrichhannot/contao-list-bundle](https://github.com/heimrichhannot/contao-list-bundle) for an example.
+
 
 ### Run Encore
 
-**1\.** Clear your cache (`vendor/bin/contao-console cache:clear -e dev`)
+**1\.** Clear your cache (`vendor/bin/contao-console cache:clear`)
 
 **2\.** Run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
 This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.
@@ -176,8 +177,8 @@ _IMPORTANT: You have to call this command everytime you want your webpack entrie
 
 * Go in the contao backend to site structure and choose the website root
 * Scroll to encore settings and check "Activate Webpack Encore"
-* fill the (mandatory) fields
-* if you have an main project bundle entry containing the main stylesheets, add it as active entry, add also all other entries you want to have activated on every page. Be patient that you check all entries as active (if you want them to be loaded)!
+* fill in the (mandatory) fields
+* if you have a main project bundle entry containing the main stylesheets, add it as active entry, add also all other entries you want to have activated on every page. Pay attention that you check all entries as active (if you want them to be loaded)!
 * for page specific features, go to this page settings and add it as active entry. NOTICE: if you active an entry on an page with subpages, they will inherit the settings from their parents. You can deactivate an inherit entry by adding it and don't check "active".
 
 ### JavaScript entires
@@ -196,7 +197,7 @@ let $ = require('jquery');
 // assign jQuery to a global for legacy modules
 window.$ = window.jQuery = $;
 ```
-> If you use jQuery in webpack, you can deactive in the contao page layout to don't have include it twice.
+> If you use jQuery in webpack, you can deactivate it in the contao page layout in order to avoid including it twice.
 
 
 ### Make encore bundle an optional dependency
@@ -227,44 +228,6 @@ public function getExtensionConfig($extensionName, array $extensionConfigs, Cont
   }
 ``` 
 
-### Dynamically importing common dependencies asynchronously
-
-Sometimes you have webpack entries (i.e. dependencies) that should be loaded on *every* page, like jQuery or Bootstrap's JavaScript.
-
-And sometimes you have webpack entries (i.e. dependencies) that should only be loaded, if necessary on a particular page. One option would be to use `require()` in all of your modules. But this would result in duplicate code in every module depending on your dependency module. In this case it's best to load this dependency on demand asynchronously (and only this atomic dependency so that it can be cached).
-
-For this you can do a dynamic webpack import of a *chunk* (webpack code splitting). See the following code for an example:
-
-```javascript
-document.addEventListener("DOMContentLoaded", e => import(/* webpackChunkName: "some-dependency" */ './some-dependency.js').then(module => {
-    // module now contains any exported functions or attributes
-}));
-```
-
-*NOTE: Of course, you could also use the `import()` operator on some button click to improve performance even more.*
-
-In order to make the `import()` operator work you must include babel's `syntax-dynamic-import` plugin and support chunks in your `webpack.config.js`:
-
-```javascript
-Encore.configureBabel(function(babelConfig) {
-    babelConfig.plugins.push('syntax-dynamic-import');
-});
-
-//...
-
-var config = Encore.getWebpackConfig();
-
-config.output.chunkFilename = '[name].bundle.js';
-
-// support symlinks
-config.resolve.symlinks = false;
-
-module.exports = config;
-```
-
-... and activate dynamic imports in your root page in Contao.
-
-Look at the webpack Code Splitting documentation section for more info on this topic: https://webpack.js.org/guides/code-splitting
 
 ### Custom import templates
 
