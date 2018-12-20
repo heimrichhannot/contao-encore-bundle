@@ -6,7 +6,6 @@ This bundle brings integration between symfony encore and contao. You can prepar
 
 - use symfony encore ([symfony/webpack-encore](https://github.com/symfony/webpack-encore) and [symfony/webpack-encore-bundle](https://github.com/symfony/webpack-encore-bundle)) to enhance your contao assets workflow
 - conditionally load your project assets only if necessary on a particular page (including page inheritance)
-- use  
 - asynchronously load dependency entries *on demand and cached* using webpack import() operator (see chapter "Dynamically importing common dependencies asynchronously")
 
 ## Setup 
