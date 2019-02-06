@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.4] - 2019-02-03
+
+### Fixed
+- added `exclude=true` to `tl_page.encoreEntries`
+
 ## [0.4.3] - 2018-12-20
 
 ### Changed

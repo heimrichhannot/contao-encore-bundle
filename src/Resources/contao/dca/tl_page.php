@@ -56,6 +56,7 @@ $fields = [
     ],
     'encoreEntries'                    => [
         'label'     => &$GLOBALS['TL_LANG']['tl_page']['encoreEntries'],
+        'exclude'   => true,
         'inputType' => 'multiColumnEditor',
         'eval'      => [
             'tl_class'          => 'long clr',
