@@ -167,6 +167,7 @@ _IMPORTANT: You have to call this command everytime you want your webpack entrie
 **3\.** Now run `yarn encore dev --watch` to generate the final CSS. If you like to generate the production mode css, run `yarn encore production`
 
 **3\.1\.** If you have a large set of entries and the generation takes very long, you can use the command line parameter `--entries` in order to limit the generation to certain entries: `yarn encore dev --entries="entry1,entry2,entry3"` (the entry names can be taken from the generated file `encore.bundles.js`).
+**3\.2\.** You can also explicitly skip certain entries for generation by using the command line parameter `--skip-entries`: `yarn encore dev --skip-entries="entry1,entry2,entry3"`.
 
 **4\.** If the generation succeeded without errors, you can now active encore entries. See Usage -> Activate encore entries for  how to do that.
 

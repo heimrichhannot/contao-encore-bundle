@@ -8,6 +8,7 @@ let Encore = require('@symfony/webpack-encore');
 module.exports = {
     addEntries: function(skipEntries) {
         let bundles = module.exports.bundles,
+            skipEntriesRegExp = new RegExp('--skip-entries=([^=]+)', 'i'),
             entriesRegExp = new RegExp('--entries=([^=]+)', 'i');
 
         // check for a command line parameter
@@ -17,17 +18,82 @@ module.exports = {
 
             if (entriesRegExp.test(part))
             {
-                let entries = part.match(entriesRegExp);
+                let cmdEntries = part.match(entriesRegExp);
 
-                if (entries.length > 1)
+                if (cmdEntries.length > 1)
                 {
-                    entries = entries[1].split(',');
+                    cmdEntries = cmdEntries[1].split(',');
 
-                    if (entries.length > 0)
+                    if (cmdEntries.length > 0)
                     {
-                        entries.forEach(function(entry) {
-                            module.exports.addEntry(entry);
-                        });
+                        for (let j = 0; j < cmdEntries.length; j++)
+                        {
+                            if (typeof bundles[cmdEntries[j]] === 'undefined')
+                            {
+                                console.error('The entry "' + cmdEntries[j] + '" doesn\'t exist.');
+                                return;
+                            }
+                        }
+
+                        for (name in bundles)
+                        {
+                            if (!bundles.hasOwnProperty(name) || (skipEntries instanceof Array && skipEntries.indexOf(name) > -1))
+                            {
+                                continue;
+                            }
+
+                            if (cmdEntries.indexOf(name) > -1)
+                            {
+                                module.exports.addEntry(name);
+                            }
+                            else
+                            {
+                                // add empty entry so that no error occurs with insertion in twig template "encore_css_imports.html.twig"
+                                Encore.addEntry(name, './vendor/heimrichhannot/contao-encore-bundle/src/Resources/assets/js/encore.empty-entry.js');
+                            }
+                        }
+
+                        return;
+                    }
+                }
+            }
+
+            if (skipEntriesRegExp.test(part))
+            {
+                let cmdEntries = part.match(skipEntriesRegExp);
+
+                if (cmdEntries.length > 1)
+                {
+                    cmdEntries = cmdEntries[1].split(',');
+
+                    if (cmdEntries.length > 0)
+                    {
+                        for (let j = 0; j < cmdEntries.length; j++)
+                        {
+                            if (typeof bundles[cmdEntries[j]] === 'undefined')
+                            {
+                                console.error('The entry "' + cmdEntries[j] + '" doesn\'t exist.');
+                                return;
+                            }
+                        }
+
+                        for (name in bundles)
+                        {
+                            if (!bundles.hasOwnProperty(name) || (skipEntries instanceof Array && skipEntries.indexOf(name) > -1))
+                            {
+                                continue;
+                            }
+
+                            if (cmdEntries.indexOf(name) > -1)
+                            {
+                                // add empty entry so that no error occurs with insertion in twig template "encore_css_imports.html.twig"
+                                Encore.addEntry(name, './vendor/heimrichhannot/contao-encore-bundle/src/Resources/assets/js/encore.empty-entry.js');
+                            }
+                            else
+                            {
+                                module.exports.addEntry(name);
+                            }
+                        }
 
                         return;
                     }

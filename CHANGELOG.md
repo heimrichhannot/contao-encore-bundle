@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2019-02-22
+
+### Added
+- command line option `skip-entries` to explicitly skip the webpack generation of certain entry points (IMPORTANT: you have to rerun `vendor/bin/contao-console encore:prepare` if you already generated a `encore.bundles.js` file; see README.md for more detail)
+
 ## [0.5.0] - 2019-02-22
 
 ### Added
