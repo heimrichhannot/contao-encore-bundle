@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2019-02-22
+
+### Added
+- command line option `entries` to limit the webpack generation to certain entry points (IMPORTANT: you have to rerun `vendor/bin/contao-console encore:prepare` if you already generated a `encore.bundles.js` file; see README.md for more detail)
+
 ## [0.4.4] - 2019-02-03
 
 ### Fixed

@@ -7,8 +7,35 @@ let Encore = require('@symfony/webpack-encore');
 
 module.exports = {
     addEntries: function(skipEntries) {
-        let bundles = module.exports.bundles;
+        let bundles = module.exports.bundles,
+            entriesRegExp = new RegExp('--entries=([^=]+)', 'i');
 
+        // check for a command line parameter
+        for (let i = 0; i < process.argv.length; i++)
+        {
+            let part = process.argv[i];
+
+            if (entriesRegExp.test(part))
+            {
+                let entries = part.match(entriesRegExp);
+
+                if (entries.length > 1)
+                {
+                    entries = entries[1].split(',');
+
+                    if (entries.length > 0)
+                    {
+                        entries.forEach(function(entry) {
+                            module.exports.addEntry(entry);
+                        });
+
+                        return;
+                    }
+                }
+            }
+        }
+
+        // no command line parameter has been found
         for (name in bundles)
         {
             if (!bundles.hasOwnProperty(name) || (skipEntries instanceof Array && skipEntries.indexOf(name) > -1))
@@ -18,6 +45,17 @@ module.exports = {
 
             Encore.addEntry(name, bundles[name]);
         }
+    },
+    addEntry: function(name) {
+        let bundles = module.exports.bundles;
+
+        if (typeof bundles[name] === 'undefined')
+        {
+            console.error('The entry "' + name + '" doesn\'t exist.');
+            return;
+        }
+
+        Encore.addEntry(name, bundles[name]);
     },
     bundles: {
 {% for entry in entries %}
