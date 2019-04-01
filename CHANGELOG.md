@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - 2019-04-01
+
+### Removed
+- symfony framework as dependency
+
 ## [0.7.0] - 2019-03-19
 
 ### Added
