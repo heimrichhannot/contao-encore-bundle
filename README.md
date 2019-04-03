@@ -157,19 +157,19 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
 
 ### Run Encore
 
-**1\.** Clear your cache (`vendor/bin/contao-console cache:clear`)
+1. Clear your cache (`vendor/bin/contao-console cache:clear`)
 
-**2\.** Run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
+1. Run the Contao command `vendor/bin/contao-console encore:prepare`. This generates a file called `encore.bundles.js` in your project root.
 This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.
 
-_IMPORTANT: You have to call this command everytime you want your webpack entries to be updated, e.g. if you added new entries to your yml configuration or removed some._
+    _IMPORTANT: You have to call this command everytime you want your webpack entries to be updated, e.g. if you added new entries to your yml configuration or removed some._
 
-**3\.** Now run `yarn encore dev --watch` to generate the final CSS. If you like to generate the production mode css, run `yarn encore production`
+1.  Now run `yarn encore dev --watch` to generate the final CSS. If you like to generate the production mode css, run `yarn encore production`   
+  
+    * If you have a large set of entries and the generation takes very long, you can use the command line parameter `--entries` in order to limit the generation to certain entries: `yarn encore dev --entries="entry1,entry2,entry3"` (the entry names can be taken from the generated file `encore.bundles.js`).
+    * You can also explicitly skip certain entries for generation by using the command line parameter `--skip-entries`: `yarn encore dev --skip-entries="entry1,entry2,entry3"`.
 
-**3\.1\.** If you have a large set of entries and the generation takes very long, you can use the command line parameter `--entries` in order to limit the generation to certain entries: `yarn encore dev --entries="entry1,entry2,entry3"` (the entry names can be taken from the generated file `encore.bundles.js`).
-**3\.2\.** You can also explicitly skip certain entries for generation by using the command line parameter `--skip-entries`: `yarn encore dev --skip-entries="entry1,entry2,entry3"`.
-
-**4\.** If the generation succeeded without errors, you can now active encore entries. See Usage -> Activate encore entries for  how to do that.
+1. If the generation succeeded without errors, you can now active encore entries. See Usage -> Activate encore entries for  how to do that.
 
 
 
