@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.1] - 2019-04-03
+
+### Fixed
+- symfony 4 error due dublicate service registration
+
 ## [0.8.0] - 2019-04-01
 
 ### Removed

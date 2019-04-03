@@ -7,8 +7,3 @@ services:
     class: HeimrichHannot\EncoreBundle\Choice\ImportsTemplateChoice
     arguments:
       - "@contao.framework"
-  huh.twig.extension.entry_files:
-    class: Symfony\WebpackEncoreBundle\Twig\EntryFilesTwigExtension
-    tags: [twig.extension]
-    arguments:
-      - "@service_container"
