@@ -29,10 +29,5 @@ class EncoreExtension extends Extension
         $processedConfig = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('huh.encore', $processedConfig);
-
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-
-        $loader->load('listeners.yml');
-        $loader->load('services.yml');
     }
 }

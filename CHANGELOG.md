@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.8.3] - 2019-04-23
+
+### Changed
+- register prepare command as service for symfony 4 compatibility
+
 ## [0.8.2] - 2019-04-12
 
 ### Fixed
