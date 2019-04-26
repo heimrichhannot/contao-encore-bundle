@@ -7,7 +7,8 @@
     "php": "^7.1",
     "contao/core-bundle": "^4.4",
     "symfony/webpack-encore-bundle": "^1.0",
-    "heimrichhannot/contao-multi-column-editor-bundle": "^2.0"
+    "heimrichhannot/contao-multi-column-editor-bundle": "^2.0",
+    "twig/twig": "^1.38.3|^2.7"
   },
   "require-dev": {
     "contao/test-case": "^1.1",

@@ -13,9 +13,9 @@ use Contao\LayoutModel;
 use Contao\Model;
 use Contao\PageModel;
 use Contao\PageRegular;
-use Contao\System;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
-use HeimrichHannot\UtilsBundle\String\StringUtil;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Twig\Environment;
 
 class HookListener
 {
@@ -25,31 +25,24 @@ class HookListener
     private $framework;
 
     /**
-     * @var ModelUtil
-     */
-    private $modelUtil;
-
-    /**
-     * @var StringUtil
-     */
-    private $stringUtil;
-
-    /**
-     * @var \Twig_Environment
+     * @var Environment
      */
     private $twig;
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
 
     /**
      * Constructor.
      *
      * @param ContaoFrameworkInterface $framework
      */
-    public function __construct(ContaoFrameworkInterface $framework, ModelUtil $modelUtil, StringUtil $stringUtil, \Twig_Environment $twig)
+    public function __construct(ContainerInterface $container, Environment $twig)
     {
-        $this->framework  = $framework;
-        $this->modelUtil  = $modelUtil;
-        $this->stringUtil = $stringUtil;
+        $this->framework  = $container->get('contao.framework');
         $this->twig       = $twig;
+        $this->container = $container;
     }
 
     /**
@@ -67,19 +60,13 @@ class HookListener
     public function doAddEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular, string $encoreField = 'encoreEntries', bool $includeInline = false)
     {
         global $objPage;
-        $stringUtil = $this->stringUtil;
 
-        $rootId = $page->rootId ?: $objPage->id;
-
-        /** @var PageModel $rootPage */
-        $rootPage = $this->framework->getAdapter(PageModel::class);
-
-        if (null === ($rootPage = $rootPage->findByPk($rootId)) || !$rootPage->addEncore) {
+        if (!$layout->addEncore) {
             return;
         }
 
-        $config                           = System::getContainer()->getParameter('huh.encore');
-        $templateData                     = $rootPage->row();
+        $config                           = $this->container->getParameter('huh.encore');
+        $templateData                     = $layout->row();
 
         // active entries
         $jsEntries  = [];
@@ -90,7 +77,7 @@ class HookListener
         }
 
         foreach ($config['encore']['entries'] as $entry) {
-            if ($this->isEntryActive($entry['name'], $encoreField)) {
+            if ($this->isEntryActive($entry['name'], $layout, $objPage, $encoreField)) {
                 if ($entry['head'])
                 {
                     $jsHeadEntries[] = $entry['name'];
@@ -112,7 +99,7 @@ class HookListener
 
         // render css alone (should be used in <head>)
         $pageRegular->Template->encoreStylesheets = $this->twig->render(
-            $this->getItemTemplateByName($rootPage->encoreStylesheetsImportsTemplate ?: 'default_css'), $templateData
+            $this->getItemTemplateByName($layout->encoreStylesheetsImportsTemplate ?: 'default_css'), $templateData
         );
 
         if ($includeInline)
@@ -122,11 +109,11 @@ class HookListener
 
         // render js alone (should be used in footer region)
         $pageRegular->Template->encoreScripts = $this->twig->render(
-            $this->getItemTemplateByName($rootPage->encoreScriptsImportsTemplate ?: 'default_js'), $templateData
+            $this->getItemTemplateByName($layout->encoreScriptsImportsTemplate ?: 'default_js'), $templateData
         );
 
         $pageRegular->Template->encoreHeadScripts = $this->twig->render(
-            $this->getItemTemplateByName($rootPage->encoreScriptsImportsTemplate ?: 'default_head_js'), $templateData
+            $this->getItemTemplateByName($layout->encoreScriptsImportsTemplate ?: 'default_head_js'), $templateData
         );
     }
 
@@ -136,7 +123,7 @@ class HookListener
         if (isset($matches[1]) && !empty($matches[1]))
         {
             $inlineCss = implode("\n", array_map(function($path) {
-                return file_get_contents(System::getContainer()->get('huh.utils.container')->getWebDir() . preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
+                return file_get_contents($this->container->get('huh.utils.container')->getWebDir() . preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
             }, $matches[1]));
 
             return $inlineCss;
@@ -150,15 +137,19 @@ class HookListener
      *
      * @return bool
      */
-    public function isEntryActive(string $entry, string $encoreField = 'encoreEntries'): bool
+    public function isEntryActive(string $entry, LayoutModel $layout, PageModel $currentPage, string $encoreField = 'encoreEntries'): bool
     {
-        global $objPage;
+        $parents = [$layout];
 
-        $parentPages = $this->modelUtil->findParentsRecursively('pid', 'tl_page', $objPage);
+        $parentPages = $this->container->get('huh.utils.model')->findParentsRecursively('pid', 'tl_page', $currentPage);
+        if (is_array($parentPages))
+        {
+            $parents = array_merge($parents, $parentPages);
+        }
 
         $result = false;
 
-        foreach (array_merge(is_array($parentPages) ? $parentPages : [], [$objPage]) as $i => $page) {
+        foreach (array_merge($parents, [$currentPage]) as $i => $page) {
             $isActive = $this->isEntryActiveForPage($entry, $page, $encoreField);
 
             if (0 == $i || $isActive !== null) {
@@ -191,16 +182,17 @@ class HookListener
 
     public function cleanGlobalArrays()
     {
+        /** @var PageModel $objPage */
         global $objPage;
 
-        /** @var PageModel $rootPage */
-        $rootPage = $this->framework->getAdapter(PageModel::class);
+        /** @var LayoutModel $layout */
+        $layout = $this->framework->getAdapter(LayoutModel::class);
 
-        if (null === ($rootPage = $rootPage->findByPk($objPage->rootId)) || !$rootPage->addEncore) {
+        if (null === ($layout = $layout->findByPk($objPage->layout)) || !$layout->addEncore) {
             return;
         }
 
-        $config = System::getContainer()->getParameter('huh.encore');
+        $config = $this->container->getParameter('huh.encore');
 
         // js
         if (isset($config['encore']['legacy']['js']) && is_array($config['encore']['legacy']['js'])) {
@@ -245,7 +237,7 @@ class HookListener
 
     public function getItemTemplateByName(string $name)
     {
-        $config = System::getContainer()->getParameter('huh.encore');
+        $config = $this->container->getParameter('huh.encore');
 
         if (!isset($config['encore']['templates']['imports'])) {
             return null;

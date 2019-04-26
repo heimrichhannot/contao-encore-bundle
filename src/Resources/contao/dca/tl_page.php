@@ -12,12 +12,48 @@ foreach (array_keys($dca['palettes']) as $palette) {
     $dca['palettes'][$palette] = str_replace(';{layout_legend', ';{encore_legend},encoreEntries;{layout_legend', $dca['palettes'][$palette]);
 }
 
+$dca['palettes']['root'] = str_replace('encoreEntries', 'addEncore', $dca['palettes']['root']);
 
+/**
+ * Subpalettes
+ */
+$dca['subpalettes']['addEncore']              = 'encorePublicPath,addEncoreBabelPolyfill,encoreEntries,encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
+$dca['subpalettes']['addEncoreBabelPolyfill'] = 'encoreBabelPolyfillEntryName';
 
 /**
  * Fields
  */
 $fields = [
+    'addEncore'                        => [
+        'label'     => &$GLOBALS['TL_LANG']['tl_page']['addEncore'],
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
+        'sql'       => "char(1) NOT NULL default ''"
+    ],
+    'encorePublicPath'                 => [
+        'label'     => &$GLOBALS['TL_LANG']['tl_page']['encorePublicPath'],
+        'exclude'   => true,
+        'search'    => true,
+        'inputType' => 'text',
+        'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
+        'sql'       => "varchar(255) NOT NULL default 'build'"
+    ],
+    'addEncoreBabelPolyfill'           => [
+        'label'     => &$GLOBALS['TL_LANG']['tl_page']['addEncoreBabelPolyfill'],
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
+        'sql'       => "char(1) NOT NULL default ''"
+    ],
+    'encoreBabelPolyfillEntryName'     => [
+        'label'     => &$GLOBALS['TL_LANG']['tl_page']['encoreBabelPolyfillEntryName'],
+        'exclude'   => true,
+        'search'    => true,
+        'inputType' => 'text',
+        'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
+        'sql'       => "varchar(255) NOT NULL default 'babel-polyfill'"
+    ],
     'encoreEntries'                    => [
         'label'     => &$GLOBALS['TL_LANG']['tl_page']['encoreEntries'],
         'exclude'   => true,
@@ -47,6 +83,22 @@ $fields = [
             ],
         ],
         'sql'       => "blob NULL",
+    ],
+    'encoreStylesheetsImportsTemplate' => [
+        'label'            => &$GLOBALS['TL_LANG']['tl_page']['encoreStylesheetsImportsTemplate'],
+        'exclude'          => true,
+        'inputType'        => 'select',
+        'options_callback' => ['huh.encore.choice.template.imports', 'getCachedChoices'],
+        'eval'             => ['tl_class' => 'w50 clr', 'includeBlankOption' => true],
+        'sql'              => "varchar(128) NOT NULL default ''",
+    ],
+    'encoreScriptsImportsTemplate' => [
+        'label'            => &$GLOBALS['TL_LANG']['tl_page']['encoreScriptsImportsTemplate'],
+        'exclude'          => true,
+        'inputType'        => 'select',
+        'options_callback' => ['huh.encore.choice.template.imports', 'getCachedChoices'],
+        'eval'             => ['tl_class' => 'w50 clr', 'includeBlankOption' => true],
+        'sql'              => "varchar(128) NOT NULL default ''",
     ],
 ];
 
