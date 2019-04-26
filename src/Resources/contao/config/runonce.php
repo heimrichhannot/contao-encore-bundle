@@ -97,10 +97,14 @@ class EncoreBundleMigration
             if ($rootPage->addEncore)
             {
                 reset($encoreFields);
-                foreach ($encoreFields as $field) {
-                    $layout->{$field} = $rootPage->{$field};
+                $updateString = implode('=?, ', $encoreFields).'=?';
+                $values = [];
+                foreach ($encoreFields as $field)
+                {
+                    $values[] = $rootPage->{$field};
                 }
-                $layout->save();
+
+                $result = $this->database->prepare('UPDATE tl_layout SET '.$updateString)->execute($values);
                 $processedLayouts[] = $layout->id;
             }
         }
