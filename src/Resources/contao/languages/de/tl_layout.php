@@ -1,10 +1,20 @@
 <?php
 
-$lang = &$GLOBALS['TL_LANG']['tl_page'];
+$lang = &$GLOBALS['TL_LANG']['tl_layout'];
 
 /**
  * Fields
  */
+$lang['addEncore'][0]                        = 'Webpack Encore aktivieren';
+$lang['addEncore'][1]                        = 'Wählen Sie diese Option, wenn Sie die Encore-Unterstützung aktivieren möchten.';
+$lang['encorePublicPath'][0]                 = 'Öffentlicher Pfad';
+$lang['encorePublicPath'][1]                 =
+    'Geben Sie hier ein Verzeichnis relativ zum /web-Verzeichnis aus, in dem die von Encore generierten Asset-Dateien gespeichert werden (Beispiel: build).';
+$lang['addEncoreBabelPolyfill'][0]           = 'babel-polyfill hinzufügen (für IE <= 11)';
+$lang['addEncoreBabelPolyfill'][1]           =
+    'Wählen Sie diese Option, wenn der Internet Explorer in Version <= 11 unterstützt werden soll. In modernen Browsern (auch Edge) wird das Polyfill, das u.a. Promises bereitstellt, in der Regel nicht benötigt.';
+$lang['encoreBabelPolyfillEntryName'][0]     = 'babel-polyfill-Entry-Name';
+$lang['encoreBabelPolyfillEntryName'][1]     =
     'Geben Sie hier den Namen des babel-polyfill-Entry ein, wie er Encore.addEntry() als erster Parameter übergeben wird.';
 $lang['encoreEntries'][0]                    = 'Aktive Entrys';
 $lang['encoreEntries'][1]                    =
