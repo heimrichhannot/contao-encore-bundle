@@ -100,6 +100,8 @@ class EncoreBundleMigration
                 foreach ($encoreFields as $field) {
                     $layout->{$field} = $rootPage->{$field};
                 }
+                $layout->save();
+                $processedLayouts[] = $layout->id;
             }
         }
     }
