@@ -9,10 +9,6 @@
  * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
  */
 
-
-namespace HeimrichHannot\EncoreBundle\ContaoManager;
-
-
 use Contao\Controller;
 use Contao\Database;
 use Contao\LayoutModel;
@@ -20,7 +16,7 @@ use Contao\PageModel;
 use Contao\System;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class Migration
+class EncoreBundleMigration
 {
     /**
      * @var ContainerInterface
@@ -46,7 +42,7 @@ class Migration
         $this->migrationTo090();
     }
 
-    function migrationTo090()
+    protected function migrationTo090()
     {
         // tl_page.addEncore was deleted on version 0.9.0
         if (!$this->database->fieldExists('addEncore', 'tl_page'))
@@ -108,3 +104,6 @@ class Migration
         }
     }
 }
+
+$migration = new EncoreBundleMigration();
+$migration->run();
