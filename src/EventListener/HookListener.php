@@ -13,7 +13,6 @@ use Contao\LayoutModel;
 use Contao\Model;
 use Contao\PageModel;
 use Contao\PageRegular;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
@@ -172,16 +171,24 @@ class HookListener
 
         foreach ($entries as $row) {
             if ($row['entry'] === $entry) {
+                if ($page instanceof LayoutModel)
+                {
+                    return true;
+                }
                 return $row['active'] ? true : false;
             }
 
         }
-
         return null;
     }
 
     public function cleanGlobalArrays()
     {
+        if (!$this->container->get('huh.utils.container')->isFrontend())
+        {
+            return;
+        }
+
         /** @var PageModel $objPage */
         global $objPage;
 
