@@ -1,4 +1,8 @@
 # Contao Encore Bundle
+[![Latest Stable Version](https://poser.pugx.org/heimrichhannot/contao-encore-bundle/v/stable)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
+[![Total Downloads](https://poser.pugx.org/heimrichhannot/contao-encore-bundle/downloads)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
+[![Build Status](https://travis-ci.org/heimrichhannot/contao-encore-bundle.svg?branch=master)](https://travis-ci.org/heimrichhannot/contao-encore-bundle)
+[![Coverage Status](https://coveralls.io/repos/github/heimrichhannot/contao-encore-bundle/badge.svg?branch=master)](https://coveralls.io/github/heimrichhannot/contao-encore-bundle?branch=master)
 
 This bundle brings integration between symfony encore and contao. You can prepare your packages for encore workflow by defining your own webpack entries. You also have the option to strip legacy assets from the contao global array. In the contao backend you can configure to load packages on a **per page** level for having a great performance.
 
