@@ -8,10 +8,11 @@
     "contao/core-bundle": "^4.4",
     "symfony/webpack-encore-bundle": "^1.0",
     "heimrichhannot/contao-multi-column-editor-bundle": "^2.0",
+    "heimrichhannot/contao-utils-bundle": "^2.90",
     "twig/twig": "^1.38.3|^2.7"
   },
   "require-dev": {
-    "contao/test-case": "^1.1",
+    "contao/test-case": "1.1.*",
     "contao/manager-plugin": "^2.0",
     "friendsofphp/php-cs-fixer": "^2.2",
     "phpunit/phpunit": "^6.5",

@@ -8,7 +8,7 @@
 
 namespace HeimrichHannot\EncoreBundle\EventListener;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\LayoutModel;
 use Contao\Model;
 use Contao\PageModel;
@@ -19,7 +19,7 @@ use Twig\Environment;
 class HookListener
 {
     /**
-     * @var ContaoFrameworkInterface
+     * @var ContaoFramework
      */
     private $framework;
 
@@ -56,11 +56,14 @@ class HookListener
         $this->doAddEncore($page, $layout, $pageRegular);
     }
 
-    public function doAddEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular, string $encoreField = 'encoreEntries', bool $includeInline = false)
+    public function doAddEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular, ?string $encoreField = 'encoreEntries', bool $includeInline = false): void
     {
-        global $objPage;
-
         if (!$layout->addEncore) {
+            return;
+        }
+
+        if (!$this->container->hasParameter('huh.encore'))
+        {
             return;
         }
 
@@ -71,13 +74,16 @@ class HookListener
         $jsEntries  = [];
         $cssEntries = [];
 
-        if (!isset($config['encore']['entries'])) {
+        if (!isset($config['encore']['entries']) || !is_array($config['encore']['entries']) || empty($config['encore']['entries'])) {
             return;
         }
 
         foreach ($config['encore']['entries'] as $entry) {
-            if ($this->isEntryActive($entry['name'], $layout, $objPage, $encoreField)) {
-                if ($entry['head'])
+            if (!isset($entry['name'])) {
+                continue;
+            }
+            if ($this->isEntryActive($entry['name'], $layout, $page, $encoreField)) {
+                if (isset($entry['head']) && $entry['head'])
                 {
                     $jsHeadEntries[] = $entry['name'];
                 }
@@ -86,7 +92,7 @@ class HookListener
                     $jsEntries[] = $entry['name'];
                 }
 
-                if ($entry['requiresCss']) {
+                if (isset($entry['requiresCss']) && $entry['requiresCss']) {
                     $cssEntries[] = $entry['name'];
                 }
             }
@@ -122,7 +128,7 @@ class HookListener
         if (isset($matches[1]) && !empty($matches[1]))
         {
             $inlineCss = implode("\n", array_map(function($path) {
-                return file_get_contents($this->container->get('huh.utils.container')->getWebDir() . preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
+                return file_get_contents($this->container->getParameter('contao.web_dir') . preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
             }, $matches[1]));
 
             return $inlineCss;
