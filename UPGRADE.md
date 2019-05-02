@@ -2,6 +2,11 @@
 
 Upgrade notice for breaking changes
 
+
+## 0.* to 1.0
+
+The main encore configuration moved from root page to layout settings. We provide an runonce, which should cover the most cases for moving the configuration, but you should check the configuration. Also no entries are transferred, this must be done manually (since the entries in the page root still exist, everthing should also work if no entries transferred).
+
 ## 0.2 to 0.4
 
 The are changes to increasing encore version to 0.22 and use symfony encore bundle.

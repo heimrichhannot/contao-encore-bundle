@@ -177,11 +177,13 @@ This file contains entries for all contao encore compatible bundles that are add
 
 ### Activate encore entries
 
-* Go in the contao backend to site structure and choose the website root
-* Scroll to encore settings and check "Activate Webpack Encore"
-* fill in the (mandatory) fields
-* if you have a main project bundle entry containing the main stylesheets, add it as active entry, add also all other entries you want to have activated on every page. Pay attention that you check all entries as active (if you want them to be loaded)!
-* for page specific features, go to this page settings and add it as active entry. NOTICE: if you active an entry on an page with subpages, they will inherit the settings from their parents. You can deactivate an inherit entry by adding it and don't check "active".
+1. In the contao backend, go to page layout configuration
+1. Check "Activate Webpack Encore" and fill the mandatory fields
+1. If you have a main project bundle entry containing the main stylesheets, add it as active entry, add also all other entries you want to have activated on every page. 
+1. For page specific features, you can activate additional entries in page setting (site structure).
+    * Be aware, that child pages will inherit settings from their parants
+    * Pay attention that you check entries as active (if you want them to be loaded)!
+    * If you want an already added entry to be not loaded on an specific page, select it as entry and don't check "active".
 
 ### JavaScript entires
 
