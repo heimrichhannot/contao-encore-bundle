@@ -1,0 +1,25 @@
+{
+  "entrypoints": {
+    "main": {
+      "js": [
+        "/build/runtime.2cd2a110.js",
+        "/build/main.53cd3347.js"
+      ],
+      "css": [
+        "/build/main.fddbc675.css"
+      ]
+    },
+    "babel-polyfill": {
+      "js": [
+        "/build/runtime.2cd2a110.js",
+        "/build/babel-polyfill.5cbe8eb8.js"
+      ]
+    },
+    "contao-project-bundle": {
+      "js": [
+        "/build/runtime.2cd2a110.js",
+        "/build/contao-project-bundle.d57e544a.js"
+      ]
+    }
+  }
+}
