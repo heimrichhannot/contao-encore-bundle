@@ -24,83 +24,94 @@ This bundle brings integration between symfony encore and contao. You can prepar
 
 ### Project setup
 
-**1\.** Install Encore bundle via composer 
+1. Install Encore bundle via composer 
 
-```
-composer require heimrichhannot/contao-encore-bundle
-```
+    ```
+    composer require heimrichhannot/contao-encore-bundle
+    ```
 
-**2\.** Update your database
+1. Update your database
 
-**3\.** Create your webpack/encore config file (`webpack.config.js`) in your project root.
+1. Create your webpack/encore config file (`webpack.config.js`) in your project root.
 
-Example:  
-
-```javascript
-let Encore = require('@symfony/webpack-encore'),
-    encoreBundles = require('./encore.bundles');
-
-Encore
-    .setOutputPath('web/build/')
-    .setPublicPath('/build')
-    .cleanupOutputBeforeBuild()
-    .enableBuildNotifications(true, (options) => {
-        options.alwaysNotify = true;
-    })
-    .enableVersioning()
-
-    // css
-    .enableSassLoader()
-    .enablePostCssLoader()
-
-    // js
-    .configureBabel(function(babelConfig) {
-        // Add plugins here
-    })
-    .enableSourceMaps(!Encore.isProduction())
+    1. Require the generated `encore.bundles.js`
     
-    .splitEntryChunks()
-    .enableSingleRuntimeChunk()
-
-    // babel polyfill e.g. for IE <= 11 Promise support (with Contao Encore Bundle this entry is added only if necessary, i.e. for IE <= 11)
-    .addEntry('babel-polyfill', [
-        '@babel/polyfill'
-    ])
+        ```js
+        let encoreBundles = require('./encore.bundles');
+        ```
     
-;
+    1. Call `encoreBundles.addEntries()`
 
-// this function adds entries for all contao encore compatible bundles automatically
-// -> the source of that is the file "encore.bundles.js" in your project root which is
-// generated automatically using the contao command "vendor/bin/contao-console encore:prepare"
-// -> you can pass an array to the function if you want to skip certain entries
-encoreBundles.addEntries();
+    Example:  
+    
+    ```javascript
+    let Encore = require('@symfony/webpack-encore'),
+        encoreBundles = require('./encore.bundles');
+    
+    Encore
+        .setOutputPath('web/build/')
+        .setPublicPath('/build')
+        .cleanupOutputBeforeBuild()
+        .enableBuildNotifications(true, (options) => {
+            options.alwaysNotify = true;
+        })
+        .enableVersioning()
+    
+        // css
+        .enableSassLoader()
+        .enablePostCssLoader()
+    
+        // js
+        .configureBabel(function(babelConfig) {
+            // Add plugins here
+        })
+        .enableSourceMaps(!Encore.isProduction())
+        
+        .splitEntryChunks()
+        .enableSingleRuntimeChunk()
+    
+        // babel polyfill e.g. for IE <= 11 Promise support (with Contao Encore Bundle this entry is added only if necessary, i.e. for IE <= 11)
+        .addEntry('babel-polyfill', [
+            '@babel/polyfill'
+        ])
+        
+    ;
+    
+    // this function adds entries for all contao encore compatible bundles automatically
+    // -> the source of that is the file "encore.bundles.js" in your project root which is
+    // generated automatically using the contao command "vendor/bin/contao-console encore:prepare"
+    // -> you can pass an array to the function if you want to skip certain entries
+    encoreBundles.addEntries();
+    
+    // support dynamic chunks
+    let config = Encore.getWebpackConfig();
+    
+    config.output.chunkFilename = '[name].bundle.js';
+    
+    // support symlinks
+    config.resolve.symlinks = false;
+    
+    module.exports = config;
+    ```
 
-// support dynamic chunks
-let config = Encore.getWebpackConfig();
+    _NOTE: Ignore possible warnings that the module `./encore.bundles` couldn't be found. We'll create this module in step 4 ;-)_
 
-config.output.chunkFilename = '[name].bundle.js';
+1. In your `fe_page.html5` add the following in `<head>` region:
 
-// support symlinks
-config.resolve.symlinks = false;
-
-module.exports = config;
-```
-
-_NOTE: Ignore possible warnings that the module `./encore.bundles` couldn't be found. We'll create this module in step 4 ;-)_
-
-**4\.** In your `fe_page.html5` add the following in `<head>` region:
-
-```<?= $this->encoreStylesheets; ?>```
-
-and add the following into the footer region:
-
-```<?= $this->encoreScripts; ?>```
-   
-This will add the necessary link and script tags automatically.
-   
-*NOTE: You can add javascript that should be explicitly loaded in the head region using `<?= $this->encoreHeadScripts; ?>`. Just add `head: true` to the entry in your yaml file. *
-   
-**5\.** If one of your webpack entries requires jQuery, you can deactivate jQuery in the Contao layout to don't include it twice.
+    ```php
+    <?= $this->encoreStylesheets; ?>
+    <?= $this->encoreHeadScripts; ?>
+    ```
+    
+    and add the following into the footer region:
+    
+    ```php
+    <?= $this->encoreScripts; ?>
+    ```
+       
+    This will add the necessary link and script tags automatically.
+          
+1. If one of your webpack entries requires jQuery, you can deactivate jQuery in the Contao layout to don't include it twice. (See [Usage/Javascript entries](#javascript-entries))
 
 
 ### Bundle setup
@@ -189,7 +200,7 @@ This file contains entries for all contao encore compatible bundles that are add
     * Pay attention that you check entries as active (if you want them to be loaded)!
     * If you want an already added entry to be not loaded on an specific page, select it as entry and don't check "active".
 
-### JavaScript entires
+### JavaScript entries
 
 Require SASS/CSS is simple as: 
 
