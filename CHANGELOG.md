@@ -1,7 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2019-04-26
+## [1.0.1] - 2019-05-15
+
+### Fixed
+- missing variable declaration in generated encore.bundles.js code (#5)
+
+## [1.0.0] - 2019-05-15
 
 ### Changed
 - [POSSIBLE BC BREAK] moved main configurations from page root to layout (cause this is the please where it belongs)! While we provide a runonce that do some migration, we strongly recommend to check your configuration. Also no entries are moved to the layout (which issn't breaking, cause they still are loaded from page since entry overriding not changed.
@@ -15,17 +20,17 @@ All notable changes to this project will be documented in this file.
 ## [0.8.3] - 2019-04-23
 
 ### Changed
-- register prepare command as service for symfony 4 compatibility
+- register prepare command as service for symfony 4 compatibility (#3)
 
 ## [0.8.2] - 2019-04-12
 
 ### Fixed
-- symfony 4 errors due non public services
+- symfony 4 errors due non public services (#2)
 
 ## [0.8.1] - 2019-04-03
 
 ### Fixed
-- symfony 4 error due dublicate service registration
+- symfony 4 error due dublicate service registration (#1)
 
 ## [0.8.0] - 2019-04-01
 

@@ -77,7 +77,7 @@ module.exports = {
                             }
                         }
 
-                        for (name in bundles)
+                        for (let name in bundles)
                         {
                             if (!bundles.hasOwnProperty(name) || (skipEntries instanceof Array && skipEntries.indexOf(name) > -1))
                             {
