@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-DEV] - 2019-04-26
+## [1.0.0] - 2019-04-26
 
 ### Changed
 - [POSSIBLE BC BREAK] moved main configurations from page root to layout (cause this is the please where it belongs)! While we provide a runonce that do some migration, we strongly recommend to check your configuration. Also no entries are moved to the layout (which issn't breaking, cause they still are loaded from page since entry overriding not changed.
