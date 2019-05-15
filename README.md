@@ -34,7 +34,7 @@ This bundle brings integration between symfony encore and contao. You can prepar
 
 1. Create your webpack/encore config file (`webpack.config.js`) in your project root.
 
-    1. Require the generated `encore.bundles.js`
+    1. Require the generated `encore.bundles.js` (this file will be generated in the [Run Encore](#run-encore) step)
     
         ```js
         let encoreBundles = require('./encore.bundles');
@@ -94,8 +94,6 @@ This bundle brings integration between symfony encore and contao. You can prepar
     module.exports = config;
     ```
 
-    _NOTE: Ignore possible warnings that the module `./encore.bundles` couldn't be found. We'll create this module in step 4 ;-)_
-
 1. In your `fe_page.html5` add the following in `<head>` region:
 
     ```php
@@ -148,7 +146,7 @@ Explanation:
     * `jquery`: Assets will be stripped from `$GLOBALS['TL_JQUERY']`
     * `css`: Assets will be stripped from `$GLOBALS['TL_USER_CSS']` and `$GLOBALS['TL_CSS']`
 
-**2\.** If your config isn't already registered in your Contao Manager `Plugin` class, you need to do this now: implement the `ConfigPluginInterface` class and register the config in the new `registerContainerConfiguration` method:
+**2\.** If your config isn't already registered in your Contao Manager `Plugin` class (or in the bundle extension class), you need to do this now: implement the `ConfigPluginInterface` class and register the config in the new `registerContainerConfiguration` method:
 
 ```php
 class Plugin implements BundlePluginInterface, ConfigPluginInterface
