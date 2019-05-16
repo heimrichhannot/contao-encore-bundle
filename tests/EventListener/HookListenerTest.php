@@ -48,7 +48,7 @@ class HookListenerTest extends ContaoTestCase
 
         if (!$entrypointsJsonLookup)
         {
-            $entrypointsJsonLookup = new EntrypointsJsonLookup();
+            $entrypointsJsonLookup = new EntrypointsJsonLookup($container, null);
         }
 
         if (!$mock)

@@ -9,9 +9,45 @@
 namespace HeimrichHannot\EncoreBundle\Asset;
 
 
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 class EntrypointsJsonLookup
 {
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cache;
 
+    /**
+     * @var bool
+     */
+    private $useCache = false;
+
+    /**
+     * EntrypointsJsonLookup constructor.
+     * @param ContainerInterface $container
+     * @param CacheItemPoolInterface|null $cache
+     */
+    public function __construct(ContainerInterface $container, CacheItemPoolInterface $cache = null)
+    {
+        $this->cache = $cache;
+
+        if ($container->hasParameter('huh.encore'))
+        {
+            $config = $container->getParameter('huh.encore');
+            if (isset($config['encore']['encoreCacheEnabled'])) {
+                $this->useCache = $config['encore']['encoreCacheEnabled'];
+            }
+        }
+    }
+
+    /**
+     * @param array $entrypointsJsons
+     * @param array $entries
+     * @param string|null $babelPolyfillEntryName
+     * @return array
+     */
     public function mergeEntries(array $entrypointsJsons, array $entries, string $babelPolyfillEntryName = null) : array
     {
         foreach ($entrypointsJsons as $entrypointsJson) {
@@ -51,6 +87,17 @@ class EntrypointsJsonLookup
 
     public function parseEntrypoints(string $entrypointsJson) : array
     {
+        $cached = null;
+        if ($this->cache && $this->useCache) {
+            // '_default' is the default cache key for single encore builds
+            $cached = $this->cache->getItem('_default');
+
+            if ($cached->isHit()) {
+                $entriesData = $cached->get();
+                return $entriesData['entrypoints'];
+            }
+        }
+
         if (!file_exists($entrypointsJson)) {
             throw new \InvalidArgumentException(sprintf('Could not find the entrypoints.json: the file "%s" does not exist.', $entrypointsJson));
         }
@@ -63,6 +110,10 @@ class EntrypointsJsonLookup
 
         if (!isset($entriesData['entrypoints'])) {
             throw new \InvalidArgumentException(sprintf('There is no "entrypoints" key in "%s"', $entrypointsJson));
+        }
+
+        if ($cached !== null && !$cached->isHit()) {
+            $this->cache->save($cached->set($entriesData));
         }
 
         return $entriesData['entrypoints'];

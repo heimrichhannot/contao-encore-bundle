@@ -16,6 +16,8 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
 {
     private $entrypointsJsons = [];
 
+    private $encoreCacheEnabled = false;
+
     public function getAlias()
     {
         return 'huh_encore';
@@ -31,11 +33,12 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
 
         $processedConfigs = $this->processConfiguration(new \Symfony\WebpackEncoreBundle\DependencyInjection\Configuration(), $configs);
 
+        $this->encoreCacheEnabled = $processedConfigs['cache'];
         if ($processedConfigs['output_path'] !== false) {
             $this->entrypointsJsons[] = $processedConfigs['output_path'] . '/entrypoints.json';
         } else {
             // TODO: multiple builds are not supported yet
-            throw new \Exception('Multiple encore are currently not supported by the Contao Encore Bundle');
+            throw new \Exception('Multiple encore builds are currently not supported by the Contao Encore Bundle');
         }
     }
 
@@ -48,6 +51,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
         $processedConfig = $this->processConfiguration($configuration, $configs);
 
         $processedConfig['encore']['entrypointsJsons'] = $this->entrypointsJsons;
+        $processedConfig['encore']['encoreCacheEnabled'] = $this->encoreCacheEnabled;
 
         $container->setParameter('huh.encore', $processedConfig);
     }

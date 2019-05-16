@@ -1,5 +1,8 @@
 services:
-  HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup: ~
+  HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup:
+    arguments:
+      - "@service_container"
+      - "@webpack_encore.cache"
 
   huh.encore.choice.entry:
     class: HeimrichHannot\EncoreBundle\Choice\EntryChoice
