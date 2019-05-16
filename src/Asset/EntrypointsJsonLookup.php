@@ -9,8 +9,6 @@
 namespace HeimrichHannot\EncoreBundle\Asset;
 
 
-use Symfony\Component\DependencyInjection\Container;
-
 class EntrypointsJsonLookup
 {
 
@@ -30,7 +28,7 @@ class EntrypointsJsonLookup
 
             foreach ($entrypoints as $name=>$entrypoint) {
                 // Ignore the babel-polyfill entry
-                if ($name == $babelPolyfillEntryName) continue;
+                if ($babelPolyfillEntryName !== null && $name == $babelPolyfillEntryName) continue;
 
                 // Only add entries that not already exist in the symfony config
                 if (!isset($entriesMap[$name])) {

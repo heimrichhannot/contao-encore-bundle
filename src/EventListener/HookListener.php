@@ -85,10 +85,6 @@ class HookListener
         $cssEntries    = [];
         $jsHeadEntries = [];
 
-        if (!isset($config['encore']['entries']) || !is_array($config['encore']['entries']) || empty($config['encore']['entries'])) {
-            return;
-        }
-
         // add entries from the entrypoints.json
         if (isset($config['encore']['entrypointsJsons']) && is_array($config['encore']['entrypointsJsons']) && !empty($config['encore']['entrypointsJsons'])) {
             if (!isset($config['encore']['entries'])) {
@@ -102,6 +98,10 @@ class HookListener
                 $config['encore']['entries'],
                 $layout->encoreBabelPolyfillEntryName
             );
+        }
+
+        if (!isset($config['encore']['entries']) || !is_array($config['encore']['entries']) || empty($config['encore']['entries'])) {
+            return;
         }
 
         foreach ($config['encore']['entries'] as $entry) {

@@ -45,10 +45,12 @@ class EntryChoice extends AbstractChoice
             }
 
             $dc = $this->getContext();
+            $isBabelPolyfillAdded = ($dc instanceof DataContainer && $dc->activeRecord != null && $dc->activeRecord->addEncoreBabelPolyfill);
+
             $config['encore']['entries'] = $this->entrypointsJsonLookup->mergeEntries(
                 $config['encore']['entrypointsJsons'],
                 $config['encore']['entries'],
-                $dc instanceof DataContainer && $dc->activeRecord != null ? $dc->activeRecord->encoreBabelPolyfillEntryName : null);
+                $isBabelPolyfillAdded ? $dc->activeRecord->encoreBabelPolyfillEntryName : null);
         }
 
         if (!isset($config['encore']['entries'])) {
