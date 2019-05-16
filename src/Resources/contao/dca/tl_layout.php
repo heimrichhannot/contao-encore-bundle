@@ -21,7 +21,7 @@ $dca['palettes']['default'] = str_replace('{jquery_legend', '{encore_legend},add
 /**
  * Subpalettes
  */
-$dca['subpalettes']['addEncore']              = 'encorePublicPath,addEncoreBabelPolyfill,encoreEntries,encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
+$dca['subpalettes']['addEncore']              = 'addEncoreBabelPolyfill,encoreEntries,encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
 $dca['subpalettes']['addEncoreBabelPolyfill'] = 'encoreBabelPolyfillEntryName';
 
 /**
@@ -34,14 +34,6 @@ $fields = [
         'inputType' => 'checkbox',
         'eval'      => ['tl_class' => 'w50', 'submitOnChange' => true],
         'sql'       => "char(1) NOT NULL default ''"
-    ],
-    'encorePublicPath'                 => [
-        'label'     => &$GLOBALS['TL_LANG']['tl_layout']['encorePublicPath'],
-        'exclude'   => true,
-        'search'    => true,
-        'inputType' => 'text',
-        'eval'      => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
-        'sql'       => "varchar(255) NOT NULL default 'build'"
     ],
     'addEncoreBabelPolyfill'           => [
         'label'     => &$GLOBALS['TL_LANG']['tl_layout']['addEncoreBabelPolyfill'],

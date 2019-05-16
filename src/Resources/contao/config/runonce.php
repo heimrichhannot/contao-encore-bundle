@@ -52,7 +52,7 @@ class EncoreBundleMigration
 
         Controller::loadDataContainer('tl_layout');
 
-        $encoreFields = ['addEncore', 'encorePublicPath','addEncoreBabelPolyfill','encoreBabelPolyfillEntryName','encoreStylesheetsImportsTemplate','encoreScriptsImportsTemplate'];
+        $encoreFields = ['addEncore','addEncoreBabelPolyfill','encoreBabelPolyfillEntryName','encoreStylesheetsImportsTemplate','encoreScriptsImportsTemplate'];
 
         foreach ($encoreFields as $field)
         {
