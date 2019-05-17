@@ -112,7 +112,7 @@ class EntrypointsJsonLookup
             throw new \InvalidArgumentException(sprintf('There is no "entrypoints" key in "%s"', $entrypointsJson));
         }
 
-        if ($cached !== null && !$cached->isHit()) {
+        if ($this->useCache && $cached !== null && !$cached->isHit()) {
             $this->cache->save($cached->set($entriesData));
         }
 

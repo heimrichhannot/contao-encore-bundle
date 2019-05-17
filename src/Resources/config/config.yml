@@ -8,3 +8,4 @@ huh_encore:
 
 webpack_encore:
   output_path: '%kernel.project_dir%/web/build'
+  cache: '%kernel.debug%'

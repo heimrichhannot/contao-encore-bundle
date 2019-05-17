@@ -30,7 +30,12 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
     {
         // Load current configuration of the webpack encore bundle
         $configs = $container->getExtensionConfig('webpack_encore');
-
+        foreach ($configs as $key => $config)
+        {
+            if (isset($config['cache']) && $config['cache'] === '%kernel.debug%') {
+                $configs[$key]['cache'] = !$container->getParameter('kernel.debug');
+            }
+        }
         $processedConfigs = $this->processConfiguration(new \Symfony\WebpackEncoreBundle\DependencyInjection\Configuration(), $configs);
 
         $this->encoreCacheEnabled = $processedConfigs['cache'];
