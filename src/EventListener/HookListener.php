@@ -13,6 +13,7 @@ use Contao\LayoutModel;
 use Contao\Model;
 use Contao\PageModel;
 use Contao\PageRegular;
+use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
@@ -27,6 +28,12 @@ class HookListener
      * @var Environment
      */
     private $twig;
+
+    /**
+     * @var EntrypointsJsonLookup
+     */
+    private $entrypointsJsonLookup;
+
     /**
      * @var ContainerInterface
      */
@@ -35,12 +42,15 @@ class HookListener
     /**
      * Constructor.
      *
-     * @param ContaoFrameworkInterface $framework
+     * @param ContainerInterface $container
+     * @param Environment $twig
+     * @param EntrypointsJsonLookup $entrypointsJsonLookup
      */
-    public function __construct(ContainerInterface $container, Environment $twig)
+    public function __construct(ContainerInterface $container, Environment $twig, EntrypointsJsonLookup $entrypointsJsonLookup)
     {
         $this->framework  = $container->get('contao.framework');
         $this->twig       = $twig;
+        $this->entrypointsJsonLookup = $entrypointsJsonLookup;
         $this->container = $container;
     }
 
@@ -71,8 +81,24 @@ class HookListener
         $templateData                     = $layout->row();
 
         // active entries
-        $jsEntries  = [];
-        $cssEntries = [];
+        $jsEntries     = [];
+        $cssEntries    = [];
+        $jsHeadEntries = [];
+
+        // add entries from the entrypoints.json
+        if (isset($config['encore']['entrypointsJsons']) && is_array($config['encore']['entrypointsJsons']) && !empty($config['encore']['entrypointsJsons'])) {
+            if (!isset($config['encore']['entries'])) {
+                $config['encore']['entries'] = [];
+            } else if (!is_array($config['encore']['entries'])) {
+                return;
+            }
+
+            $config['encore']['entries'] = $this->entrypointsJsonLookup->mergeEntries(
+                $config['encore']['entrypointsJsons'],
+                $config['encore']['entries'],
+                $layout->encoreBabelPolyfillEntryName
+            );
+        }
 
         if (!isset($config['encore']['entries']) || !is_array($config['encore']['entries']) || empty($config['encore']['entries'])) {
             return;
