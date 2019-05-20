@@ -13,7 +13,10 @@ use Contao\LayoutModel;
 use Contao\Model;
 use Contao\PageModel;
 use Contao\PageRegular;
+use Contao\StringUtil;
 use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
@@ -80,11 +83,6 @@ class HookListener
         $config                           = $this->container->getParameter('huh.encore');
         $templateData                     = $layout->row();
 
-        // active entries
-        $jsEntries     = [];
-        $cssEntries    = [];
-        $jsHeadEntries = [];
-
         // add entries from the entrypoints.json
         if (isset($config['encore']['entrypointsJsons']) && is_array($config['encore']['entrypointsJsons']) && !empty($config['encore']['entrypointsJsons'])) {
             if (!isset($config['encore']['entries'])) {
@@ -104,25 +102,12 @@ class HookListener
             return;
         }
 
-        foreach ($config['encore']['entries'] as $entry) {
-            if (!isset($entry['name'])) {
-                continue;
-            }
-            if ($this->isEntryActive($entry['name'], $layout, $page, $encoreField)) {
-                if (isset($entry['head']) && $entry['head'])
-                {
-                    $jsHeadEntries[] = $entry['name'];
-                }
-                else
-                {
-                    $jsEntries[] = $entry['name'];
-                }
-
-                if (isset($entry['requiresCss']) && $entry['requiresCss']) {
-                    $cssEntries[] = $entry['name'];
-                }
-            }
+        list($jsEntries, $cssEntries, $jsHeadEntries) = $this->generatePageEntries($page, $layout, $config, $encoreField);
+        if (empty($jsEntries) && empty($cssEntries) && empty($jsHeadEntries))
+        {
+            return;
         }
+
 
         $templateData['jsEntries']     = $jsEntries;
         $templateData['jsHeadEntries'] = $jsHeadEntries;
@@ -199,7 +184,7 @@ class HookListener
      */
     public function isEntryActiveForPage(string $entry, Model $page, string $encoreField = 'encoreEntries')
     {
-        $entries = \Contao\StringUtil::deserialize($page->{$encoreField}, true);
+        $entries = StringUtil::deserialize($page->{$encoreField}, true);
 
         foreach ($entries as $row) {
             if ($row['entry'] === $entry) {
@@ -291,5 +276,60 @@ class HookListener
         }
 
         return null;
+    }
+
+    /**
+     * @param PageModel $page
+     * @param LayoutModel $layout
+     * @param array $config
+     * @param string|null $encoreField
+     * @return array
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    private function generatePageEntries(PageModel $page, LayoutModel $layout, array $config, ?string $encoreField): array
+    {
+        $cache = new TagAwareAdapter(
+            new FilesystemAdapter('huh_encore.entries', 0, $this->container->getParameter('kernel.cache_dir'))
+        );
+
+        $cacheItem = $cache->getItem('page_'.$page->id);
+
+
+        if ($cacheItem->isHit())
+        {
+            return $cacheItem->get();
+        }
+
+        $jsEntries     = [];
+        $cssEntries    = [];
+        $jsHeadEntries = [];
+
+        foreach ($config['encore']['entries'] as $entry)
+        {
+            if (!isset($entry['name']))
+            {
+                continue;
+            }
+            if ($this->isEntryActive($entry['name'], $layout, $page, $encoreField))
+            {
+                if (isset($entry['head']) && $entry['head'])
+                {
+                    $jsHeadEntries[] = $entry['name'];
+                } else
+                {
+                    $jsEntries[] = $entry['name'];
+                }
+
+                if (isset($entry['requiresCss']) && $entry['requiresCss'])
+                {
+                    $cssEntries[] = $entry['name'];
+                }
+            }
+        }
+        $config = [$jsEntries, $cssEntries, $jsHeadEntries];
+        $cacheItem->set($config);
+        $cacheItem->tag(['layout_'.$layout->id]);
+        $cache->save($cacheItem);
+        return $config;
     }
 }

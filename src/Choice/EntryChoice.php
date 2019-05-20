@@ -8,11 +8,10 @@
 
 namespace HeimrichHannot\EncoreBundle\Choice;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Contao\DataContainer;
-use Contao\System;
 use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
 use HeimrichHannot\UtilsBundle\Choice\AbstractChoice;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EntryChoice extends AbstractChoice
 {
@@ -20,11 +19,16 @@ class EntryChoice extends AbstractChoice
      * @var EntrypointsJsonLookup
      */
     private $entrypointsJsonLookup;
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
 
-    public function __construct(ContaoFrameworkInterface $framework, EntrypointsJsonLookup $entrypointsJsonLookup)
+    public function __construct(ContainerInterface $container, EntrypointsJsonLookup $entrypointsJsonLookup)
     {
-        parent::__construct($framework);
+        parent::__construct($container->get('contao.framework'));
         $this->entrypointsJsonLookup = $entrypointsJsonLookup;
+        $this->container = $container;
     }
 
     /**
@@ -34,7 +38,7 @@ class EntryChoice extends AbstractChoice
     {
         $choices = [];
 
-        $config = System::getContainer()->getParameter('huh.encore');
+        $config = $this->container->getParameter('huh.encore');
 
         // add entries from the entrypoints.json
         if (isset($config['encore']['entrypointsJsons']) && is_array($config['encore']['entrypointsJsons']) && !empty($config['encore']['entrypointsJsons'])) {
