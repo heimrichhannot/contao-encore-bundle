@@ -1,10 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2019-05-20
+
+### Fixed
+- wrong tree builder root node
+
 ## [1.1.0] - 2019-05-17
 
 ### Added
-* support for entrypoints in the entrypoints.json (#6, #8)
+- support for entrypoints in the entrypoints.json (#6, #8)
 
 ## [1.0.3] - 2019-05-16
 
