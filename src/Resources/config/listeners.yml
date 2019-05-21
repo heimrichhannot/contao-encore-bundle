@@ -5,3 +5,6 @@ services:
 
   huh.encore.listener.hooks:
     class: HeimrichHannot\EncoreBundle\EventListener\HookListener
+    autowire: false
+    arguments:
+      ['@service_container', '@twig', '@HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup', '@huh.encore.cache']

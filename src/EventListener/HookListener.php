@@ -15,7 +15,8 @@ use Contao\PageModel;
 use Contao\PageRegular;
 use Contao\StringUtil;
 use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Psr\Cache\CacheException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
@@ -41,6 +42,10 @@ class HookListener
      * @var ContainerInterface
      */
     private $container;
+    /**
+     * @var TagAwareAdapter
+     */
+    private $cache;
 
     /**
      * Constructor.
@@ -49,12 +54,13 @@ class HookListener
      * @param Environment $twig
      * @param EntrypointsJsonLookup $entrypointsJsonLookup
      */
-    public function __construct(ContainerInterface $container, Environment $twig, EntrypointsJsonLookup $entrypointsJsonLookup)
+    public function __construct(ContainerInterface $container, Environment $twig, EntrypointsJsonLookup $entrypointsJsonLookup, TagAwareAdapter $cache)
     {
         $this->framework  = $container->get('contao.framework');
         $this->twig       = $twig;
         $this->entrypointsJsonLookup = $entrypointsJsonLookup;
         $this->container = $container;
+        $this->cache = $cache;
     }
 
     /**
@@ -103,6 +109,7 @@ class HookListener
         }
 
         list($jsEntries, $cssEntries, $jsHeadEntries) = $this->generatePageEntries($page, $layout, $config, $encoreField);
+        
         if (empty($jsEntries) && empty($cssEntries) && empty($jsHeadEntries))
         {
             return;
@@ -284,16 +291,12 @@ class HookListener
      * @param array $config
      * @param string|null $encoreField
      * @return array
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws CacheException
+     * @throws InvalidArgumentException
      */
     private function generatePageEntries(PageModel $page, LayoutModel $layout, array $config, ?string $encoreField): array
     {
-        $cache = new TagAwareAdapter(
-            new FilesystemAdapter('huh_encore.entries', 0, $this->container->getParameter('kernel.cache_dir'))
-        );
-
-        $cacheItem = $cache->getItem('page_'.$page->id);
-
+        $cacheItem = $this->cache->getItem('page_'.$page->id);
 
         if ($cacheItem->isHit())
         {
@@ -329,7 +332,7 @@ class HookListener
         $config = [$jsEntries, $cssEntries, $jsHeadEntries];
         $cacheItem->set($config);
         $cacheItem->tag(['layout_'.$layout->id]);
-        $cache->save($cacheItem);
+        $this->cache->save($cacheItem);
         return $config;
     }
 }

@@ -15,3 +15,15 @@ services:
     public: true
     arguments:
       - "@contao.framework"
+
+  huh.encore.cache:
+    class: Symfony\Component\Cache\Adapter\TagAwareAdapter
+    arguments:
+      - '@huh.encore.cache.item'
+
+  huh.encore.cache.item:
+    class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+    arguments:
+      - 'huh_encore.entries'
+      - 0
+      - '%kernel.cache_dir%'
