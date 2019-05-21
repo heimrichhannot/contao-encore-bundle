@@ -3,6 +3,7 @@
 namespace HeimrichHannot\EncoreBundle\Command;
 
 use Contao\CoreBundle\Command\AbstractLockedCommand;
+use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -18,15 +19,27 @@ class PrepareCommand extends AbstractLockedCommand
      * @var string
      */
     private $rootDir;
+    /**
+     * @var PhpArrayAdapter
+     */
+    private $encoreCache;
+
+    public function __construct(PhpArrayAdapter $encoreCache)
+    {
+
+        $this->encoreCache = $encoreCache;
+
+        parent::__construct();
+    }
+
 
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('encore:prepare')->setDescription(
-            'Does the necessary preparation for contao encore bundle. Needs to be called only after adding new webpack entries in your yml files.'
-        );
+        $this->setName('encore:prepare')
+            ->setDescription('Does the necessary preparation for contao encore bundle. Needs to be called only after adding new webpack entries in your yml files.');
     }
 
     /**
@@ -42,6 +55,7 @@ class PrepareCommand extends AbstractLockedCommand
         echo PHP_EOL;
 
         @unlink($resultFile);
+        $this->encoreCache->clear();
 
         $config = $this->getContainer()->getParameter('huh.encore');
 

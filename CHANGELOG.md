@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2019-05-21
+
+### Changed
+- reset Webpack Encore Bundle cache on prepare command (fixes asset versioning issues)
+
 ## [1.1.1] - 2019-05-20
 
 ### Fixed
