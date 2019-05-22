@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 Heimrich & Hannot GmbH
+ * Copyright (c) 2019 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -37,15 +37,15 @@ class EntryChoice extends AbstractChoice
         $config = System::getContainer()->getParameter('huh.encore');
 
         // add entries from the entrypoints.json
-        if (isset($config['encore']['entrypointsJsons']) && is_array($config['encore']['entrypointsJsons']) && !empty($config['encore']['entrypointsJsons'])) {
+        if (isset($config['encore']['entrypointsJsons']) && \is_array($config['encore']['entrypointsJsons']) && !empty($config['encore']['entrypointsJsons'])) {
             if (!isset($config['encore']['entries'])) {
                 $config['encore']['entries'] = [];
-            } else if (!is_array($config['encore']['entries'])) {
+            } elseif (!\is_array($config['encore']['entries'])) {
                 return $choices;
             }
 
             $dc = $this->getContext();
-            $isBabelPolyfillAdded = ($dc instanceof DataContainer && $dc->activeRecord != null && $dc->activeRecord->addEncoreBabelPolyfill);
+            $isBabelPolyfillAdded = ($dc instanceof DataContainer && null != $dc->activeRecord && $dc->activeRecord->addEncoreBabelPolyfill);
 
             $config['encore']['entries'] = $this->entrypointsJsonLookup->mergeEntries(
                 $config['encore']['entrypointsJsons'],
@@ -58,7 +58,7 @@ class EntryChoice extends AbstractChoice
         }
 
         foreach ($config['encore']['entries'] as $entry) {
-            $choices[$entry['name']] = $entry['name'] . (isset($entry['file']) ? ' [' . $entry['file'] . ']' : '');
+            $choices[$entry['name']] = $entry['name'].(isset($entry['file']) ? ' ['.$entry['file'].']' : '');
         }
 
         asort($choices);

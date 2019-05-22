@@ -27,9 +27,7 @@ The following provided example setup uses [Symfony Webpack Encore](https://githu
 
 Encore
 // Add modernizr as shared entry: 
-.createSharedEntry('vendor', [
-    'modernizr'
-])
+.addEntry('vendor', 'modernizr')
 // Add modernizr loader
 .addLoader({
     loader: "webpack-modernizr-loader",
@@ -45,13 +43,11 @@ Encore
 ```javascript
 // .modernizrrc.js
 module.exports = {
-    // Your modernizr config, like: 
+    // Your modernizr config, like:
     "options": [
-        "domPrefixes",
-        "prefixes"
+        "setClasses",
     ],
     "feature-detects": [
-        "test/applicationcache",
         "test/touchevents"
     ]
 }
