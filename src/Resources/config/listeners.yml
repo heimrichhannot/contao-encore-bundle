@@ -8,3 +8,9 @@ services:
     autowire: false
     arguments:
       ['@service_container', '@twig', '@HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup', '@huh.encore.cache']
+
+  huh.encore.listener.callbacks.page:
+    class: HeimrichHannot\EncoreBundle\EventListener\PageCallbackListener
+
+  huh.encore.listener.callbacks.layout:
+    class: HeimrichHannot\EncoreBundle\EventListener\LayoutCallbackListener

@@ -10,6 +10,8 @@
 
 $dca = &$GLOBALS['TL_DCA']['tl_layout'];
 
+$dca['config']['onsubmit_callback'][] = ['huh.encore.listener.callbacks.layout','onSubmitCallback'];
+
 /**
  * Palettes
  */

@@ -109,7 +109,7 @@ class HookListener
         }
 
         list($jsEntries, $cssEntries, $jsHeadEntries) = $this->generatePageEntries($page, $layout, $config, $encoreField);
-        
+
         if (empty($jsEntries) && empty($cssEntries) && empty($jsHeadEntries))
         {
             return;
@@ -158,17 +158,15 @@ class HookListener
     /**
      * @param string $entry
      *
+     * @param LayoutModel $layout
+     * @param PageModel[]|array $parents A list of page models who are parents of the current page.
+     * @param PageModel $currentPage
+     * @param string $encoreField
      * @return bool
      */
-    public function isEntryActive(string $entry, LayoutModel $layout, PageModel $currentPage, string $encoreField = 'encoreEntries'): bool
+    public function isEntryActive(string $entry, LayoutModel $layout, array $parents, PageModel $currentPage, string $encoreField = 'encoreEntries'): bool
     {
-        $parents = [$layout];
-
-        $parentPages = $this->container->get('huh.utils.model')->findParentsRecursively('pid', 'tl_page', $currentPage);
-        if (is_array($parentPages))
-        {
-            $parents = array_merge($parents, $parentPages);
-        }
+        $parents = array_merge([$layout], $parents);
 
         $result = false;
 
@@ -307,13 +305,15 @@ class HookListener
         $cssEntries    = [];
         $jsHeadEntries = [];
 
+        $parents = $this->container->get('huh.utils.model')->findParentsRecursively('pid', 'tl_page', $page);
+
         foreach ($config['encore']['entries'] as $entry)
         {
             if (!isset($entry['name']))
             {
                 continue;
             }
-            if ($this->isEntryActive($entry['name'], $layout, $page, $encoreField))
+            if ($this->isEntryActive($entry['name'], $layout, $parents, $page, $encoreField))
             {
                 if (isset($entry['head']) && $entry['head'])
                 {
@@ -331,7 +331,10 @@ class HookListener
         }
         $config = [$jsEntries, $cssEntries, $jsHeadEntries];
         $cacheItem->set($config);
-        $cacheItem->tag(['layout_'.$layout->id]);
+        $cacheItem->tag('layout_'.$layout->id);
+        foreach ($parents as $parent) {
+            $cacheItem->tag('page_'.$parent->id);
+        }
         $this->cache->save($cacheItem);
         return $config;
     }
