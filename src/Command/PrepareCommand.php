@@ -5,6 +5,8 @@ namespace HeimrichHannot\EncoreBundle\Command;
 use Contao\CoreBundle\Command\AbstractLockedCommand;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -24,13 +26,18 @@ class PrepareCommand extends AbstractLockedCommand
      * @var PhpArrayAdapter
      */
     private $encoreCache;
+    /**
+     * @var TagAwareAdapterInterface
+     */
+    private $cache;
 
-    public function __construct(CacheItemPoolInterface $encoreCache)
+    public function __construct(CacheItemPoolInterface $encoreCache, TagAwareAdapterInterface $cache)
     {
 
         $this->encoreCache = $encoreCache;
 
         parent::__construct();
+        $this->cache = $cache;
     }
 
 
@@ -58,6 +65,7 @@ class PrepareCommand extends AbstractLockedCommand
         @unlink($resultFile);
 
         $this->encoreCache->clear();
+        $this->cache->clear();
 
         $config = $this->getContainer()->getParameter('huh.encore');
 
