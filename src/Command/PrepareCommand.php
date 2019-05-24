@@ -3,6 +3,8 @@
 namespace HeimrichHannot\EncoreBundle\Command;
 
 use Contao\CoreBundle\Command\AbstractLockedCommand;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -18,15 +20,27 @@ class PrepareCommand extends AbstractLockedCommand
      * @var string
      */
     private $rootDir;
+    /**
+     * @var PhpArrayAdapter
+     */
+    private $encoreCache;
+
+    public function __construct(CacheItemPoolInterface $encoreCache)
+    {
+
+        $this->encoreCache = $encoreCache;
+
+        parent::__construct();
+    }
+
 
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('encore:prepare')->setDescription(
-            'Does the necessary preparation for contao encore bundle. Needs to be called only after adding new webpack entries in your yml files.'
-        );
+        $this->setName('encore:prepare')
+            ->setDescription('Does the necessary preparation for contao encore bundle. Needs to be called only after adding new webpack entries in your yml files.');
     }
 
     /**
@@ -39,9 +53,11 @@ class PrepareCommand extends AbstractLockedCommand
         $twig          = $this->getContainer()->get('twig');
         $resultFile    = $this->rootDir . DIRECTORY_SEPARATOR . 'encore.bundles.js';
 
-        echo PHP_EOL;
+        $this->io->text("Using <fg=green>".$this->getContainer()->getParameter('kernel.environment').'</> environment. (Use --env=[ENV] to change environment. See --help for mor information!)');
 
         @unlink($resultFile);
+
+        $this->encoreCache->clear();
 
         $config = $this->getContainer()->getParameter('huh.encore');
 
@@ -69,7 +85,6 @@ class PrepareCommand extends AbstractLockedCommand
             $this->io->success('Created encore.bundles.js in your project root. You can now require it in your webpack.config.js!');
         } else {
             $this->io->warning('No entries found in yml config huh.encore.entries -> No encore.bundles.js is created.');
-//            echo 'Warning: No encore.bundles.js is created.' . PHP_EOL . PHP_EOL;
         }
 
         return 0;

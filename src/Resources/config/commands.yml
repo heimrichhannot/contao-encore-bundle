@@ -1,7 +1,9 @@
 services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
 
-    HeimrichHannot\EncoreBundle\Command\PrepareCommand: ~
+  HeimrichHannot\EncoreBundle\Command\PrepareCommand:
+    arguments:
+      - '@webpack_encore.cache'

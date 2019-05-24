@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.1.3] - 2019-05-21
+
+### Changed
+- added notice about current environment to prepare command
+- don't set webpack cache as set inactive in dev environment not worked. Must be set to true in project config.
+
+### Fixed
+- command cache parameter type
+
+## [1.1.2] - 2019-05-21
+
+### Changed
+- reset Webpack Encore Bundle cache on prepare command (fixes asset versioning issues)
+
 ## [1.1.1] - 2019-05-20
 
 ### Fixed
