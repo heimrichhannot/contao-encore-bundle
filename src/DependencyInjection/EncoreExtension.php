@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 Heimrich & Hannot GmbH
+ * Copyright (c) 2019 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -33,8 +33,8 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
         $processedConfigs = $this->processConfiguration(new \Symfony\WebpackEncoreBundle\DependencyInjection\Configuration(), $configs);
 
         $this->encoreCacheEnabled = $processedConfigs['cache'];
-        if ($processedConfigs['output_path'] !== false) {
-            $this->entrypointsJsons[] = $processedConfigs['output_path'] . '/entrypoints.json';
+        if (false !== $processedConfigs['output_path']) {
+            $this->entrypointsJsons[] = $processedConfigs['output_path'].'/entrypoints.json';
         } else {
             // TODO: multiple builds are not supported yet
             throw new \Exception('Multiple encore builds are currently not supported by the Contao Encore Bundle');

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 Heimrich & Hannot GmbH
+ * Copyright (c) 2019 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -42,14 +42,14 @@ class HookListener
     /**
      * Constructor.
      *
-     * @param ContainerInterface $container
-     * @param Environment $twig
+     * @param ContainerInterface    $container
+     * @param Environment           $twig
      * @param EntrypointsJsonLookup $entrypointsJsonLookup
      */
     public function __construct(ContainerInterface $container, Environment $twig, EntrypointsJsonLookup $entrypointsJsonLookup)
     {
-        $this->framework  = $container->get('contao.framework');
-        $this->twig       = $twig;
+        $this->framework = $container->get('contao.framework');
+        $this->twig = $twig;
         $this->entrypointsJsonLookup = $entrypointsJsonLookup;
         $this->container = $container;
     }
@@ -57,7 +57,7 @@ class HookListener
     /**
      * Modify the page object.
      *
-     * @param PageModel $page
+     * @param PageModel   $page
      * @param LayoutModel $layout
      * @param PageRegular $pageRegular
      */
@@ -72,35 +72,35 @@ class HookListener
             return;
         }
 
-        if (!$this->container->hasParameter('huh.encore'))
-        {
+        if (!$this->container->hasParameter('huh.encore')) {
             return;
         }
 
-        $config                           = $this->container->getParameter('huh.encore');
-        $templateData                     = $layout->row();
+        $config = $this->container->getParameter('huh.encore');
+        $templateData = $layout->row();
 
         // active entries
-        $jsEntries     = [];
-        $cssEntries    = [];
+        $jsEntries = [];
+        $cssEntries = [];
         $jsHeadEntries = [];
 
         // add entries from the entrypoints.json
-        if (isset($config['encore']['entrypointsJsons']) && is_array($config['encore']['entrypointsJsons']) && !empty($config['encore']['entrypointsJsons'])) {
+        if (isset($config['encore']['entrypointsJsons']) && \is_array($config['encore']['entrypointsJsons']) && !empty($config['encore']['entrypointsJsons'])) {
             if (!isset($config['encore']['entries'])) {
                 $config['encore']['entries'] = [];
-            } else if (!is_array($config['encore']['entries'])) {
+            } elseif (!\is_array($config['encore']['entries'])) {
                 return;
             }
 
             $config['encore']['entries'] = $this->entrypointsJsonLookup->mergeEntries(
                 $config['encore']['entrypointsJsons'],
                 $config['encore']['entries'],
-                $layout->encoreBabelPolyfillEntryName
+                $layout->encoreBabelPolyfillEntryName,
+                $layout
             );
         }
 
-        if (!isset($config['encore']['entries']) || !is_array($config['encore']['entries']) || empty($config['encore']['entries'])) {
+        if (!isset($config['encore']['entries']) || !\is_array($config['encore']['entries']) || empty($config['encore']['entries'])) {
             return;
         }
 
@@ -109,12 +109,9 @@ class HookListener
                 continue;
             }
             if ($this->isEntryActive($entry['name'], $layout, $page, $encoreField)) {
-                if (isset($entry['head']) && $entry['head'])
-                {
+                if (isset($entry['head']) && $entry['head']) {
                     $jsHeadEntries[] = $entry['name'];
-                }
-                else
-                {
+                } else {
                     $jsEntries[] = $entry['name'];
                 }
 
@@ -124,17 +121,16 @@ class HookListener
             }
         }
 
-        $templateData['jsEntries']     = $jsEntries;
+        $templateData['jsEntries'] = $jsEntries;
         $templateData['jsHeadEntries'] = $jsHeadEntries;
-        $templateData['cssEntries']    = $cssEntries;
+        $templateData['cssEntries'] = $cssEntries;
 
         // render css alone (should be used in <head>)
         $pageRegular->Template->encoreStylesheets = $this->twig->render(
             $this->getItemTemplateByName($layout->encoreStylesheetsImportsTemplate ?: 'default_css'), $templateData
         );
 
-        if ($includeInline)
-        {
+        if ($includeInline) {
             $pageRegular->Template->encoreStylesheetsInline = $this->getInlineStylesheets($pageRegular->Template->encoreStylesheets);
         }
 
@@ -148,13 +144,13 @@ class HookListener
         );
     }
 
-    public function getInlineStylesheets(string $styleTags) {
+    public function getInlineStylesheets(string $styleTags)
+    {
         preg_match_all('@<link rel="stylesheet" href="([^"]+)">@i', $styleTags, $matches);
 
-        if (isset($matches[1]) && !empty($matches[1]))
-        {
-            $inlineCss = implode("\n", array_map(function($path) {
-                return file_get_contents($this->container->getParameter('contao.web_dir') . preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
+        if (isset($matches[1]) && !empty($matches[1])) {
+            $inlineCss = implode("\n", array_map(function ($path) {
+                return file_get_contents($this->container->getParameter('contao.web_dir').preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
             }, $matches[1]));
 
             return $inlineCss;
@@ -173,8 +169,7 @@ class HookListener
         $parents = [$layout];
 
         $parentPages = $this->container->get('huh.utils.model')->findParentsRecursively('pid', 'tl_page', $currentPage);
-        if (is_array($parentPages))
-        {
+        if (\is_array($parentPages)) {
             $parents = array_merge($parents, $parentPages);
         }
 
@@ -183,7 +178,7 @@ class HookListener
         foreach (array_merge($parents, [$currentPage]) as $i => $page) {
             $isActive = $this->isEntryActiveForPage($entry, $page, $encoreField);
 
-            if (0 == $i || $isActive !== null) {
+            if (0 == $i || null !== $isActive) {
                 $result = $isActive;
             }
         }
@@ -193,9 +188,9 @@ class HookListener
 
     /**
      * @param string $entry
-     * @param Model $page
+     * @param Model  $page
      *
-     * @return null|bool Returns null, if no information about the entry is specified in the page; else bool
+     * @return bool|null Returns null, if no information about the entry is specified in the page; else bool
      */
     public function isEntryActiveForPage(string $entry, Model $page, string $encoreField = 'encoreEntries')
     {
@@ -203,25 +198,24 @@ class HookListener
 
         foreach ($entries as $row) {
             if ($row['entry'] === $entry) {
-                if ($page instanceof LayoutModel)
-                {
+                if ($page instanceof LayoutModel) {
                     return true;
                 }
+
                 return $row['active'] ? true : false;
             }
-
         }
+
         return null;
     }
 
     public function cleanGlobalArrays()
     {
-        if (!$this->container->get('huh.utils.container')->isFrontend())
-        {
+        if (!$this->container->get('huh.utils.container')->isFrontend()) {
             return;
         }
 
-        /** @var PageModel $objPage */
+        /* @var PageModel $objPage */
         global $objPage;
 
         /** @var LayoutModel $layout */
@@ -234,10 +228,10 @@ class HookListener
         $config = $this->container->getParameter('huh.encore');
 
         // js
-        if (isset($config['encore']['legacy']['js']) && is_array($config['encore']['legacy']['js'])) {
+        if (isset($config['encore']['legacy']['js']) && \is_array($config['encore']['legacy']['js'])) {
             $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
 
-            if (is_array($jsFiles)) {
+            if (\is_array($jsFiles)) {
                 foreach ($config['encore']['legacy']['js'] as $jsFile) {
                     if (isset($jsFiles[$jsFile])) {
                         unset($jsFiles[$jsFile]);
@@ -246,10 +240,10 @@ class HookListener
             }
         }
         // jquery
-        if (isset($config['encore']['legacy']['jquery']) && is_array($config['encore']['legacy']['jquery'])) {
+        if (isset($config['encore']['legacy']['jquery']) && \is_array($config['encore']['legacy']['jquery'])) {
             $jqueryFiles = &$GLOBALS['TL_JQUERY'];
 
-            if (is_array($jqueryFiles)) {
+            if (\is_array($jqueryFiles)) {
                 foreach ($config['encore']['legacy']['jquery'] as $legacyFile) {
                     if (isset($jqueryFiles[$legacyFile])) {
                         unset($jqueryFiles[$legacyFile]);
@@ -259,11 +253,11 @@ class HookListener
         }
 
         // css
-        if (isset($config['encore']['legacy']['css']) && is_array($config['encore']['legacy']['css'])) {
+        if (isset($config['encore']['legacy']['css']) && \is_array($config['encore']['legacy']['css'])) {
             foreach (['TL_USER_CSS', 'TL_CSS'] as $arrayKey) {
                 $cssFiles = &$GLOBALS[$arrayKey];
 
-                if (is_array($cssFiles)) {
+                if (\is_array($cssFiles)) {
                     foreach ($config['encore']['legacy']['css'] as $cssFile) {
                         if (isset($cssFiles[$cssFile])) {
                             unset($cssFiles[$cssFile]);

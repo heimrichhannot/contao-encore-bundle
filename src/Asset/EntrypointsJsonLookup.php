@@ -1,14 +1,14 @@
 <?php
 
 /*
- * Copyright (c) 2018 Heimrich & Hannot GmbH
+ * Copyright (c) 2019 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
 
 namespace HeimrichHannot\EncoreBundle\Asset;
 
-
+use Contao\LayoutModel;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -26,15 +26,15 @@ class EntrypointsJsonLookup
 
     /**
      * EntrypointsJsonLookup constructor.
-     * @param ContainerInterface $container
+     *
+     * @param ContainerInterface          $container
      * @param CacheItemPoolInterface|null $cache
      */
     public function __construct(ContainerInterface $container, CacheItemPoolInterface $cache = null)
     {
         $this->cache = $cache;
 
-        if ($container->hasParameter('huh.encore'))
-        {
+        if ($container->hasParameter('huh.encore')) {
             $config = $container->getParameter('huh.encore');
             if (isset($config['encore']['encoreCacheEnabled'])) {
                 $this->useCache = $config['encore']['encoreCacheEnabled'];
@@ -43,12 +43,13 @@ class EntrypointsJsonLookup
     }
 
     /**
-     * @param array $entrypointsJsons
-     * @param array $entries
+     * @param array       $entrypointsJsons
+     * @param array       $entries
      * @param string|null $babelPolyfillEntryName
+     *
      * @return array
      */
-    public function mergeEntries(array $entrypointsJsons, array $entries, string $babelPolyfillEntryName = null) : array
+    public function mergeEntries(array $entrypointsJsons, array $entries, string $babelPolyfillEntryName = null, LayoutModel $layout = null): array
     {
         foreach ($entrypointsJsons as $entrypointsJson) {
             $entrypoints = $this->parseEntrypoints($entrypointsJson);
@@ -62,9 +63,14 @@ class EntrypointsJsonLookup
                 $entriesMap[$entry['name']] = true;
             }
 
-            foreach ($entrypoints as $name=>$entrypoint) {
-                // Ignore the babel-polyfill entry
-                if ($babelPolyfillEntryName !== null && $name == $babelPolyfillEntryName) continue;
+            foreach ($entrypoints as $name => $entrypoint) {
+                if (null !== $babelPolyfillEntryName && $name == $babelPolyfillEntryName) {
+                    if (!$layout->addEncoreBabelPolyfill) {
+                        $entries = array_merge([['name' => 'babel-polyfill', 'head' => false]], $entries);
+                    }
+
+                    continue;
+                }
 
                 // Only add entries that not already exist in the symfony config
                 if (!isset($entriesMap[$name])) {
@@ -85,7 +91,7 @@ class EntrypointsJsonLookup
         return $entries;
     }
 
-    public function parseEntrypoints(string $entrypointsJson) : array
+    public function parseEntrypoints(string $entrypointsJson): array
     {
         $cached = null;
         if ($this->cache && $this->useCache) {
@@ -94,6 +100,7 @@ class EntrypointsJsonLookup
 
             if ($cached->isHit()) {
                 $entriesData = $cached->get();
+
                 return $entriesData['entrypoints'];
             }
         }
@@ -112,11 +119,10 @@ class EntrypointsJsonLookup
             throw new \InvalidArgumentException(sprintf('There is no "entrypoints" key in "%s"', $entrypointsJson));
         }
 
-        if ($this->useCache && $cached !== null && !$cached->isHit()) {
+        if ($this->useCache && null !== $cached && !$cached->isHit()) {
             $this->cache->save($cached->set($entriesData));
         }
 
         return $entriesData['entrypoints'];
     }
-
 }

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2018 Heimrich & Hannot GmbH
+ * Copyright (c) 2019 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -30,15 +30,14 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
         ];
     }
 
-	/**
-	 * Allows a plugin to load container configuration.
-	 */
-	public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
-	{
+    /**
+     * Allows a plugin to load container configuration.
+     */
+    public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
+    {
         $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/config.yml');
         $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/commands.yml');
         $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/listeners.yml');
         $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/services.yml');
-	}
+    }
 }
-

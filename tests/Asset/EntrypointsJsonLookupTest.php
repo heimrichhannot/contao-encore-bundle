@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * Copyright (c) 2019 Heimrich & Hannot GmbH
+ *
+ * @license LGPL-3.0-or-later
+ */
+
 namespace HeimrichHannot\EncoreBundle\Test\Asset;
 
 use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
@@ -27,46 +33,28 @@ class EntrypointsJsonLookupTest extends TestCase
         $this->lookup = new EntrypointsJsonLookup($this->container, null);
     }
 
-    protected function setUpForCaching()
-    {
-        $this->container->expects(self::once())
-            ->method('hasParameter')
-            ->with('huh.encore')
-            ->willReturn(true);
-
-        $this->container->expects(self::once())
-            ->method('getParameter')
-            ->with('huh.encore')
-            ->willReturn([
-                'encore' => [
-                    'encoreCacheEnabled' => true
-                ]
-            ]);
-    }
-
     public function testMergeEntries()
     {
         $entries = $this->lookup->mergeEntries([], [
             [
-                'name' => 'contao-project-bundle'
-            ]
+                'name' => 'contao-project-bundle',
+            ],
         ]);
 
         $this->assertCount(1, $entries);
 
-
         $entries = $this->lookup->mergeEntries([
-                __DIR__ . '/../entrypoints.json',
+                __DIR__.'/../entrypoints.json',
             ], [
                 [
-                    'name' => 'contao-project-bundle'
-                ]
+                    'name' => 'contao-project-bundle',
+                ],
             ]);
 
         $this->assertCount(3, $entries);
-        $this->assertEquals([
+        $this->assertSame([
             [
-                'name' => 'contao-project-bundle'
+                'name' => 'contao-project-bundle',
             ],
             [
                 'name' => 'main',
@@ -76,34 +64,34 @@ class EntrypointsJsonLookupTest extends TestCase
             [
                 'name' => 'babel-polyfill',
                 'head' => false,
-            ]
+            ],
         ], $entries);
 
         $entries = $this->lookup->mergeEntries([
-                __DIR__ . '/../entrypoints.json',
+                __DIR__.'/../entrypoints.json',
             ], [
                 [
-                    'name' => 'contao-project-bundle'
-                ]
+                    'name' => 'contao-project-bundle',
+                ],
             ],
             'babel-polyfill');
 
         $this->assertCount(2, $entries);
-        $this->assertEquals([
+        $this->assertSame([
             [
-                'name' => 'contao-project-bundle'
+                'name' => 'contao-project-bundle',
             ],
             [
                 'name' => 'main',
                 'head' => false,
                 'requiresCss' => true,
-            ]
+            ],
         ], $entries);
     }
 
     public function testParseEntrypoints()
     {
-        $entrypoints = $this->lookup->parseEntrypoints(__DIR__ . '/../entrypoints.json');
+        $entrypoints = $this->lookup->parseEntrypoints(__DIR__.'/../entrypoints.json');
 
         $this->assertCount(3, $entrypoints);
         $this->assertArrayHasKey('main', $entrypoints);
@@ -115,7 +103,7 @@ class EntrypointsJsonLookupTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $this->lookup->parseEntrypoints(__DIR__ . '/../notexisting.json');
+        $this->lookup->parseEntrypoints(__DIR__.'/../notexisting.json');
     }
 
     public function testParseEntrypointsCachedNoHit()
@@ -143,7 +131,7 @@ class EntrypointsJsonLookupTest extends TestCase
 
         $lookup = new EntrypointsJsonLookup($this->container, $cache);
 
-        $entrypoints = $lookup->parseEntrypoints(__DIR__ . '/../entrypoints.json');
+        $entrypoints = $lookup->parseEntrypoints(__DIR__.'/../entrypoints.json');
 
         $this->assertCount(3, $entrypoints);
         $this->assertArrayHasKey('main', $entrypoints);
@@ -171,9 +159,9 @@ class EntrypointsJsonLookupTest extends TestCase
             ->willReturn([
                 'entrypoints' => [
                     'main' => [
-                        'name' => 'main'
+                        'name' => 'main',
                     ],
-                ]
+                ],
             ]);
 
         $item->expects(self::never())
@@ -183,9 +171,26 @@ class EntrypointsJsonLookupTest extends TestCase
 
         $lookup = new EntrypointsJsonLookup($this->container, $cache);
 
-        $entrypoints = $lookup->parseEntrypoints(__DIR__ . '/../entrypoints.json');
+        $entrypoints = $lookup->parseEntrypoints(__DIR__.'/../entrypoints.json');
 
         $this->assertCount(1, $entrypoints);
         $this->assertArrayHasKey('main', $entrypoints);
+    }
+
+    protected function setUpForCaching()
+    {
+        $this->container->expects(self::once())
+            ->method('hasParameter')
+            ->with('huh.encore')
+            ->willReturn(true);
+
+        $this->container->expects(self::once())
+            ->method('getParameter')
+            ->with('huh.encore')
+            ->willReturn([
+                'encore' => [
+                    'encoreCacheEnabled' => true,
+                ],
+            ]);
     }
 }

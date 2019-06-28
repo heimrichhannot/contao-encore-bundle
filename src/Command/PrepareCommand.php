@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * Copyright (c) 2019 Heimrich & Hannot GmbH
+ *
+ * @license LGPL-3.0-or-later
+ */
+
 namespace HeimrichHannot\EncoreBundle\Command;
 
 use Contao\CoreBundle\Command\AbstractLockedCommand;
@@ -27,12 +33,10 @@ class PrepareCommand extends AbstractLockedCommand
 
     public function __construct(CacheItemPoolInterface $encoreCache)
     {
-
         $this->encoreCache = $encoreCache;
 
         parent::__construct();
     }
-
 
     /**
      * {@inheritdoc}
@@ -48,12 +52,12 @@ class PrepareCommand extends AbstractLockedCommand
      */
     protected function executeLocked(InputInterface $input, OutputInterface $output)
     {
-        $this->io      = new SymfonyStyle($input, $output);
+        $this->io = new SymfonyStyle($input, $output);
         $this->rootDir = $this->getContainer()->getParameter('kernel.project_dir');
-        $twig          = $this->getContainer()->get('twig');
-        $resultFile    = $this->rootDir . DIRECTORY_SEPARATOR . 'encore.bundles.js';
+        $twig = $this->getContainer()->get('twig');
+        $resultFile = $this->rootDir.\DIRECTORY_SEPARATOR.'encore.bundles.js';
 
-        $this->io->text("Using <fg=green>".$this->getContainer()->getParameter('kernel.environment').'</> environment. (Use --env=[ENV] to change environment. See --help for mor information!)');
+        $this->io->text('Using <fg=green>'.$this->getContainer()->getParameter('kernel.environment').'</> environment. (Use --env=[ENV] to change environment. See --help for mor information!)');
 
         @unlink($resultFile);
 
@@ -62,22 +66,22 @@ class PrepareCommand extends AbstractLockedCommand
         $config = $this->getContainer()->getParameter('huh.encore');
 
         // js
-        if (isset($config['encore']['entries']) && is_array($config['encore']['entries'])) {
+        if (isset($config['encore']['entries']) && \is_array($config['encore']['entries'])) {
             // entries
             $entries = [];
 
             foreach ($config['encore']['entries'] as $entry) {
                 $preparedEntry = [
-                    'name' => $entry['name']
+                    'name' => $entry['name'],
                 ];
 
-                $preparedEntry['file'] = './' . preg_replace('@^\.?\/@i', '', $entry['file']);
+                $preparedEntry['file'] = './'.preg_replace('@^\.?\/@i', '', $entry['file']);
 
                 $entries[] = $preparedEntry;
             }
 
             $content = $twig->render('@HeimrichHannotContaoEncore/encore_bundles.js.twig', [
-                'entries'       => $entries
+                'entries' => $entries,
             ]);
 
             file_put_contents($resultFile, $content);
