@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.1.4] - 2019-06-28
+
+### Fixed
+- modernizr issue
+- babel-polyfill issue
+
 ## [1.1.3] - 2019-05-21
 
 ### Changed

@@ -95,7 +95,8 @@ class HookListener
             $config['encore']['entries'] = $this->entrypointsJsonLookup->mergeEntries(
                 $config['encore']['entrypointsJsons'],
                 $config['encore']['entries'],
-                $layout->encoreBabelPolyfillEntryName
+                $layout->encoreBabelPolyfillEntryName,
+                $layout
             );
         }
 

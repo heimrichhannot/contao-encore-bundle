@@ -8,6 +8,7 @@
 
 namespace HeimrichHannot\EncoreBundle\Asset;
 
+use Contao\LayoutModel;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -48,7 +49,7 @@ class EntrypointsJsonLookup
      *
      * @return array
      */
-    public function mergeEntries(array $entrypointsJsons, array $entries, string $babelPolyfillEntryName = null): array
+    public function mergeEntries(array $entrypointsJsons, array $entries, string $babelPolyfillEntryName = null, LayoutModel $layout = null): array
     {
         foreach ($entrypointsJsons as $entrypointsJson) {
             $entrypoints = $this->parseEntrypoints($entrypointsJson);
@@ -63,8 +64,11 @@ class EntrypointsJsonLookup
             }
 
             foreach ($entrypoints as $name => $entrypoint) {
-                // Ignore the babel-polyfill entry
                 if (null !== $babelPolyfillEntryName && $name == $babelPolyfillEntryName) {
+                    if (!$layout->addEncoreBabelPolyfill) {
+                        $entries = array_merge([['name' => 'babel-polyfill', 'head' => false]], $entries);
+                    }
+
                     continue;
                 }
 
