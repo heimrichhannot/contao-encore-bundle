@@ -64,12 +64,10 @@ class EntrypointsJsonLookup
             }
 
             foreach ($entrypoints as $name => $entrypoint) {
-                if (null !== $babelPolyfillEntryName && $name == $babelPolyfillEntryName) {
-                    if (!$layout->addEncoreBabelPolyfill) {
-                        $entries = array_merge([['name' => 'babel-polyfill', 'head' => false]], $entries);
-                    }
-
-                    continue;
+                // Be backward compatible
+                if ($layout->addEncoreBabelPolyfill && $name == $babelPolyfillEntryName)
+                {
+                    $entries = array_merge([['name' => $babelPolyfillEntryName, 'head' => false]], $entries);
                 }
 
                 // Only add entries that not already exist in the symfony config

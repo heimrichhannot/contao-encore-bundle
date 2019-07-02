@@ -1,14 +1,3 @@
-{% if addEncoreBabelPolyfill|default() %}
-    <script type="text/javascript">
-        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
-        {
-            {% for entry in encore_entry_js_files(encoreBabelPolyfillEntryName) %}
-                document.write('<script src="{{ entry }}"><\/script>');
-            {% endfor %}
-        }
-    </script>
-{% endif %}
-
 {% for entry in jsEntries %}
     {{ encore_entry_script_tags(entry) }}
 {% endfor %}

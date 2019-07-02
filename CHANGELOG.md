@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2019-07-02
+
+### Changed
+- removed the ie babel polyfill filter due errors
+- marked addEncoreBabelPolyfill as deprecated
+
+### Fixed
+- babel-polyfill issue in some configurations
+- translations
+
 ## [1.1.4] - 2019-06-28
 
 ### Fixed
