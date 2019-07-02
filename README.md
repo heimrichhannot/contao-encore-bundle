@@ -1,15 +1,16 @@
 # Contao Encore Bundle
-[![Latest Stable Version](https://poser.pugx.org/heimrichhannot/contao-encore-bundle/v/stable)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
-[![Total Downloads](https://poser.pugx.org/heimrichhannot/contao-encore-bundle/downloads)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
+[![Latest Stable Version](https://img.shields.io/packagist/v/heimrichhannot/contao-encore-bundle.svg)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
+[![Total Downloads](https://img.shields.io/packagist/dt/heimrichhannot/contao-encore-bundle.svg)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
 [![Build Status](https://travis-ci.org/heimrichhannot/contao-encore-bundle.svg?branch=master)](https://travis-ci.org/heimrichhannot/contao-encore-bundle)
 [![Coverage Status](https://coveralls.io/repos/github/heimrichhannot/contao-encore-bundle/badge.svg?branch=master)](https://coveralls.io/github/heimrichhannot/contao-encore-bundle?branch=master)
 
-This bundle brings integration between symfony encore and contao. You can prepare your packages for encore workflow by defining your own webpack entries. You also have the option to strip legacy assets from the contao global array. In the contao backend you can configure to load packages on a **per page** level for having a great performance.
+This bundle brings integration between symfony encore and contao. You can prepare your bundles for encore workflow by defining your own webpack entries. You also have the option to strip legacy assets from the contao global array. In the contao backend you can configure to load packages on a **per page** level for having a great performance.
 
 ## Features
 
 - use symfony encore ([symfony/webpack-encore](https://github.com/symfony/webpack-encore) and [symfony/webpack-encore-bundle](https://github.com/symfony/webpack-encore-bundle)) to enhance your contao assets workflow
 - conditionally load your assets only if necessary on a particular page (including page inheritance)
+- prepare your bundles to add encore entries when install them and strip legacy assets from the contao global asset arrays
 - asynchronously load dependency entries *on demand and cached* using webpack import() operator (see chapter "Dynamically importing common dependencies asynchronously")
 
 ## Setup 
@@ -42,57 +43,47 @@ This bundle brings integration between symfony encore and contao. You can prepar
     
     1. Call `encoreBundles.addEntries()`
 
-    Example:  
-    
-    ```javascript
-    let Encore = require('@symfony/webpack-encore'),
-        encoreBundles = require('./encore.bundles');
-    
-    Encore
-        .setOutputPath('web/build/')
-        .setPublicPath('/build')
-        .cleanupOutputBeforeBuild()
-        .enableBuildNotifications(true, (options) => {
-            options.alwaysNotify = true;
-        })
-        .enableVersioning()
-    
-        // css
-        .enableSassLoader()
-        .enablePostCssLoader()
-    
-        // js
-        .configureBabel(function(babelConfig) {
-            // Add plugins here
-        })
-        .enableSourceMaps(!Encore.isProduction())
+        Example:  
         
-        .splitEntryChunks()
-        .enableSingleRuntimeChunk()
-    
-        // babel polyfill e.g. for IE <= 11 Promise support (with Contao Encore Bundle this entry is added only if necessary, i.e. for IE <= 11)
-        .addEntry('babel-polyfill', [
-            '@babel/polyfill'
-        ])
+        ```javascript
+        let Encore = require('@symfony/webpack-encore'),
+            encoreBundles = require('./encore.bundles');
         
-    ;
-    
-    // this function adds entries for all contao encore compatible bundles automatically
-    // -> the source of that is the file "encore.bundles.js" in your project root which is
-    // generated automatically using the contao command "vendor/bin/contao-console encore:prepare"
-    // -> you can pass an array to the function if you want to skip certain entries
-    encoreBundles.addEntries();
-    
-    // support dynamic chunks
-    let config = Encore.getWebpackConfig();
-    
-    config.output.chunkFilename = '[name].bundle.js';
-    
-    // support symlinks
-    config.resolve.symlinks = false;
-    
-    module.exports = config;
-    ```
+        Encore
+            .setOutputPath('web/build/')
+            .setPublicPath('/build')
+            .cleanupOutputBeforeBuild()
+            .enableVersioning()
+        
+            // css
+            .enableSassLoader()
+            .enablePostCssLoader()
+        
+            // js
+            .enableSourceMaps(!Encore.isProduction())
+            
+            .splitEntryChunks()
+            .enableSingleRuntimeChunk()
+        ;
+        
+        // this function adds entries for all contao encore compatible bundles automatically
+        // -> the source of that is the file "encore.bundles.js" in your project root which is
+        // generated automatically using the contao command "vendor/bin/contao-console encore:prepare"
+        // -> you can pass an array to the function if you want to skip certain entries
+        encoreBundles.addEntries();
+        
+        // support dynamic chunks
+        let config = Encore.getWebpackConfig();
+        
+        config.output.chunkFilename = '[name].bundle.js';
+        
+        // support symlinks
+        config.resolve.symlinks = false;
+        
+        module.exports = config;
+        ```
+        
+        We recommend adding corejs polyfill (former babel polyfill) into your setup, see [Usage section](#usage) for more informations.
 
 1. In your `fe_page.html5` add the following in `<head>` region:
 
@@ -259,3 +250,44 @@ huh_encore:
       - { name: default_css, template: "@HeimrichHannotContaoEncore/encore_css_imports.html.twig" }
       - { name: default_js, template: "@HeimrichHannotContaoEncore/encore_js_imports.html.twig" }
 ```
+
+### Setup babel/corejs polyfill
+
+To get your project working in older browser, you maybe want to use the babel polyfill. As of babel 7.4 `@babel/polyfill` [was deprecated in favor of corejs](https://babeljs.io/blog/2019/03/19/7.4.0) in favor of corejs. Here is our setup/migration guide.
+
+1. Add corejs 3 and regenerator runtime to package.json. `npm i --save core-js regenerator-runtime` or: 
+
+    ```json
+    {
+      "dependencies": {
+        "core-js": "^3.1.4",
+        "regenerator-runtime": "^0.13.2"
+      }
+    }
+    ```
+
+2. Update your webpack config: remove babel-poly entry and set corejs version in your babel config:
+
+    ```js
+    Encore
+    // To be removed from webpack.config.js:
+    .addEntry('babel-polyfill', [
+            '@babel/polyfill'
+        ])
+     // Update babel config
+    .configureBabel({},{
+        useBuiltIns: 'entry',
+        corejs: 3,
+    })
+    ```
+
+3. Create an polyfill entry(for example `corejs-polyfill.js`) and just add these two imports:
+
+    ```js
+    import "core-js/stable";
+    import "regenerator-runtime/runtime";
+    ```
+    
+    Register the entry in your project bundle or in your webpack config. 
+    
+4. Update your yarn dependencies (`yarn install` or `composer update` (if you use foxy)) and compile. Set `corejs-polyfill` as active entry in your layout.
