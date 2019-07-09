@@ -1,10 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.2.1] - 2019-07-09
+## [1.2.2] - 2019-07-09
 
 ### Fixed
 - script error in head
+
+## [1.2.1] - 2019-07-02
+
+### Changed
+- updated readme and package.json
 
 ## [1.2.0] - 2019-07-02
 
