@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2019-07-09
+
+### Fixed
+- script error in head
+
 ## [1.2.0] - 2019-07-02
 
 ### Changed
