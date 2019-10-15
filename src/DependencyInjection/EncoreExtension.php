@@ -53,5 +53,6 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
         $processedConfig['encore']['encoreCacheEnabled'] = $this->encoreCacheEnabled;
 
         $container->setParameter('huh.encore', $processedConfig);
+        $container->setParameter('huh_encore', $processedConfig);
     }
 }

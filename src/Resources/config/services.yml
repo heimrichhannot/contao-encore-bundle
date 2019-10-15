@@ -1,4 +1,16 @@
 services:
+  _defaults:
+    bind:
+      $bundleConfig: '%huh_encore%'
+
+  HeimrichHannot\EncoreBundle\Asset\PageEntrypoints:
+    autowire: true
+
+  HeimrichHannot\EncoreBundle\Asset\FrontendAsset:
+    autowire: true
+    public: true
+  huh.encore.asset.frontend: '@HeimrichHannot\EncoreBundle\Asset\FrontendAsset'
+
   HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup:
     arguments:
       - "@service_container"
