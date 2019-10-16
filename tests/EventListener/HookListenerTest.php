@@ -9,12 +9,16 @@
 namespace HeimrichHannot\EncoreBundle\Test\EventListener;
 
 use Contao\LayoutModel;
+use Contao\Model;
 use Contao\PageModel;
 use Contao\PageRegular;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
+use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
+use HeimrichHannot\EncoreBundle\Asset\PageEntrypoints;
 use HeimrichHannot\EncoreBundle\EventListener\HookListener;
 use HeimrichHannot\EncoreBundle\Test\ModelMockTrait;
+use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -26,185 +30,52 @@ class HookListenerTest extends ContaoTestCase
     use ModelMockTrait;
 
     /**
-     * @return HookListener|MockObject
+     * @param array $parameters
+     * @param null $hookListenerMock
+     * @return HookListener
      */
-    public function getHookListener(ContainerBuilder $container = null, MockBuilder $mock = null, Environment $twig = null, EntrypointsJsonLookup $entrypointsJsonLookup = null)
+    public function createHookListener(array $parameters = [], $hookListenerMock = null)
     {
-        if (!$container) {
-            $container = $this->mockContainer();
+        if (!isset($parameters['container'])) {
+            $parameters['container'] = $this->mockContainer();
         }
-
-        $framework = $this->mockContaoFramework();
-        $container->set('contao.framework', $framework);
-
-        if (!$twig) {
+        if (!isset($parameters['framework'])) {
+            $parameters['container']->set('contao.framework', $this->mockContaoFramework());
+        }
+        if (!isset($parameters['twig'])) {
             $twig = $this->createMock(Environment::class);
+            $twig->method('render')->willReturnArgument(1);
+            $parameters['twig'] = $twig;
+        }
+        if (!isset($parameters['pageEntrypoints'])) {
+            $pageEntrypoints = $this->createMock(PageEntrypoints::class);
+            $pageEntrypoints->method('generatePageEntrypoints')->willReturn(true);
+            $parameters['pageEntrypoints'] = $pageEntrypoints;
         }
 
-        if (!$entrypointsJsonLookup) {
-            $entrypointsJsonLookup = new EntrypointsJsonLookup($container, null);
+        if (isset($parameters['bundleConfig'])) {
+            $parameters['container']->setParameter('huh_encore', $parameters['bundleConfig']);
         }
 
-        if (!$mock) {
-            $hookListener = new HookListener($container, $twig, $entrypointsJsonLookup);
+        if (!$hookListenerMock) {
+            $hookListener = new HookListener($parameters['container'], $parameters['twig'], $parameters['pageEntrypoints']);
         } else {
-            $hookListener = $mock->setConstructorArgs([$container, $twig, $entrypointsJsonLookup])->getMock();
+            $hookListener = $hookListenerMock->setConstructorArgs([$parameters['container'], $parameters['twig'], $parameters['pageEntrypoints']])->getMock();
         }
 
         return $hookListener;
     }
 
-    public function testAddEncore()
+    public function testOnGeneratePage()
     {
-        $hookListener = $this->getHookListener(null, $this->getMockBuilder(HookListener::class)->setMethods(['doAddEncore']));
-        $hookListener->expects($this->once())->method('doAddEncore')->willReturn(true);
+        $hookListener = $this->createHookListener([], $this->getMockBuilder(HookListener::class)->setMethods(['addEncore', 'cleanGlobalArrays']));
+        $hookListener->expects($this->once())->method('addEncore')->willReturn(true);
+        $hookListener->expects($this->once())->method('cleanGlobalArrays')->willReturn(true);
 
         $pageModel = $this->mockClassWithProperties(PageModel::class, []);
         $layoutModel = $this->mockClassWithProperties(LayoutModel::class, []);
         $pageRegular = $this->createMock(PageRegular::class);
-        $hookListener->addEncore($pageModel, $layoutModel, $pageRegular);
-    }
-
-    public function testDoAddEncore()
-    {
-        $hookListener = $this->getHookListener();
-
-        $pageModel = $this->mockClassWithProperties(PageModel::class, []);
-        $layoutModel = $this->mockClassWithProperties(LayoutModel::class, []);
-        $layoutModel->expects($this->once())->method('__get');
-        $pageRegular = $this->createMock(PageRegular::class);
-        $hookListener->doAddEncore($pageModel, $layoutModel, $pageRegular);
-
-        $layoutModel = $this->mockModelObject(LayoutModel::class, []);
-        $layoutModel->expects($this->once())->method('__get');
-        $layoutModel->addEncore = '1';
-        $hookListener->doAddEncore($pageModel, $layoutModel, $pageRegular);
-
-        $layoutModel = $this->mockModelObject(LayoutModel::class, []);
-        $layoutModel->expects($this->once())->method('row');
-        $layoutModel->addEncore = '1';
-        $container = $this->mockContainer();
-        $container->setParameter('huh.encore', '');
-        $hookListener = $this->getHookListener($container, $this->getMockBuilder(HookListener::class)->setMethods(['isEntryActive']));
-        $hookListener->expects($this->never())->method('isEntryActive');
-        $hookListener->doAddEncore($pageModel, $layoutModel, $pageRegular);
-
-        $layoutModel = $this->mockModelObject(LayoutModel::class, []);
-        $layoutModel->expects($this->once())->method('row');
-        $layoutModel->addEncore = '1';
-        $container = $this->mockContainer();
-        $container->setParameter('huh.encore', ['encore' => ['entries' => '']]);
-        $hookListener = $this->getHookListener($container, $this->getMockBuilder(HookListener::class)->setMethods(['isEntryActive']));
-        $hookListener->expects($this->never())->method('isEntryActive');
-        $hookListener->doAddEncore($pageModel, $layoutModel, $pageRegular);
-
-        $layoutModel = $this->mockModelObject(LayoutModel::class, []);
-        $layoutModel->addEncore = '1';
-        $container = $this->mockContainer();
-        $container->setParameter('huh.encore', ['encore' => ['entries' => []]]);
-        $hookListener = $this->getHookListener($container, $this->getMockBuilder(HookListener::class)->setMethods(['isEntryActive']));
-        $hookListener->expects($this->never())->method('isEntryActive');
-        $hookListener->doAddEncore($pageModel, $layoutModel, $pageRegular);
-
-        $pageRegular = $this->mockModelObject(PageRegular::class, ['Template' => new \stdClass()]);
-        $container = $this->mockContainer();
-        $container->setParameter('huh.encore', ['encore' => ['entries' => [
-            ['head' => true],
-            ['name' => 'contao-utils-bundle'],
-            ['name' => 'contao-project-bundle', 'head' => false, 'requiresCss' => true],
-            ['name' => 'contao-head-bundle', 'head' => true, 'requiresCss' => false],
-        ]]]);
-        $twig = $this->createMock(Environment::class);
-        $twig->method('render')->willReturnCallback(function ($template, $templateData) {
-            switch ($template) {
-                case 'default_css':
-                    return $templateData['cssEntries'];
-                case 'default_js':
-                    return $templateData['jsEntries'];
-                case 'default_head_js':
-                    return $templateData['jsHeadEntries'];
-            }
-        });
-        $hookListener = $this->getHookListener($container, $this->getMockBuilder(HookListener::class)->setMethods(['isEntryActive', 'getItemTemplateByName']), $twig);
-        $hookListener->expects($this->exactly(3))->method('isEntryActive')->willReturn(true);
-        $hookListener->expects($this->exactly(3))->method('getItemTemplateByName')->willReturnArgument(0);
-        $hookListener->doAddEncore($pageModel, $layoutModel, $pageRegular);
-        $this->assertCount(1, $pageRegular->Template->encoreStylesheets);
-        $this->assertCount(2, $pageRegular->Template->encoreScripts);
-        $this->assertCount(1, $pageRegular->Template->encoreHeadScripts);
-
-        $pageRegular = $this->mockModelObject(PageRegular::class, ['Template' => new \stdClass()]);
-        $container = $this->mockContainer();
-        $container->setParameter('huh.encore', ['encore' => ['entries' => [
-            ['name' => 'contao-utils-bundle'],
-            ['name' => 'contao-project-bundle', 'head' => false, 'requiresCss' => true],
-            ['name' => 'contao-head-bundle', 'head' => true, 'requiresCss' => false],
-        ]]]);
-        $twig = $this->createMock(Environment::class);
-        $twig->method('render')->willReturnCallback(function ($template, $templateData) {
-            switch ($template) {
-                case 'default_css':
-                    return implode(', ', $templateData['cssEntries']);
-                case 'default_js':
-                    return $templateData['jsEntries'];
-                case 'default_head_js':
-                    return $templateData['jsHeadEntries'];
-            }
-        });
-        $hookListener = $this->getHookListener($container, $this->getMockBuilder(HookListener::class)->setMethods(['isEntryActive', 'getItemTemplateByName', 'getInlineStylesheets']), $twig);
-        $hookListener->expects($this->exactly(3))->method('isEntryActive')->willReturn(true);
-        $hookListener->expects($this->exactly(3))->method('getItemTemplateByName')->willReturnArgument(0);
-        $hookListener->expects($this->exactly(1))->method('getInlineStylesheets')->willReturnArgument(0);
-        $hookListener->doAddEncore($pageModel, $layoutModel, $pageRegular, 'encoreEntries', true);
-        $this->assertSame('contao-project-bundle', $pageRegular->Template->encoreStylesheets);
-        $this->assertSame('contao-project-bundle', $pageRegular->Template->encoreStylesheetsInline);
-        $this->assertCount(2, $pageRegular->Template->encoreScripts);
-        $this->assertCount(1, $pageRegular->Template->encoreHeadScripts);
-    }
-
-    public function testDoAddEncoreFromEntrypointsJson()
-    {
-        $pageModel = $this->mockClassWithProperties(PageModel::class, []);
-
-        $layoutModel = $this->mockModelObject(LayoutModel::class, []);
-        $layoutModel->addEncore = '1';
-        $layoutModel->encoreBabelPolyfillEntryName = 'babel-polyfill';
-
-        $pageRegular = $this->mockModelObject(PageRegular::class, ['Template' => new \stdClass()]);
-        $container = $this->mockContainer();
-        $container->setParameter('huh.encore', [
-            'encore' => [
-                'entrypointsJsons' => [
-                    __DIR__.'/../entrypoints.json',
-                ],
-                'entries' => [
-                    ['head' => true],
-                    ['name' => 'contao-utils-bundle'],
-                    ['name' => 'contao-project-bundle', 'head' => false, 'requiresCss' => true],
-                    ['name' => 'contao-head-bundle', 'head' => true, 'requiresCss' => false],
-                ],
-            ], ]);
-        $twig = $this->createMock(Environment::class);
-        $twig->method('render')->willReturnCallback(function ($template, $templateData) {
-            switch ($template) {
-                case 'default_css':
-                    return $templateData['cssEntries'];
-                case 'default_js':
-                    return $templateData['jsEntries'];
-                case 'default_head_js':
-                    return $templateData['jsHeadEntries'];
-            }
-        });
-
-        $hookListener = $this->getHookListener($container, $this->getMockBuilder(HookListener::class)->setMethods(['isEntryActive', 'getItemTemplateByName']), $twig);
-        $hookListener->expects($this->exactly(4))->method('isEntryActive')->willReturn(true);
-        $hookListener->expects($this->exactly(3))->method('getItemTemplateByName')->willReturnArgument(0);
-
-        $hookListener->doAddEncore($pageModel, $layoutModel, $pageRegular);
-
-        $this->assertCount(2, $pageRegular->Template->encoreStylesheets);
-        $this->assertCount(3, $pageRegular->Template->encoreScripts);
-        $this->assertCount(1, $pageRegular->Template->encoreHeadScripts);
+        $hookListener->onGeneratePage($pageModel, $layoutModel, $pageRegular);
     }
 
     public function testGetInlineStylesheets()
@@ -212,12 +83,23 @@ class HookListenerTest extends ContaoTestCase
         $webDir = $this->getTempDir().'/web';
         $container = $this->mockContainer($this->getTempDir());
         $container->setParameter('contao.web_dir', $webDir);
-        $hookListener = $this->getHookListener($container);
+        $hookListener = $this->createHookListener(['container' => $container]);
 
         $this->assertFalse($hookListener->getInlineStylesheets(''));
 
         $filesystem = new Filesystem();
         $filesystem->dumpFile($webDir.'/styles.css', '.style{}');
         $this->assertSame('.style{}', $hookListener->getInlineStylesheets('<link rel="stylesheet" href="/styles.css">'));
+    }
+    
+    public function testGetItemTemplateByName()
+    {
+
+        $hookListener = $this->createHookListener(['bundleConfig' => ['templates' => []]]);
+        $this->assertNull($hookListener->getItemTemplateByName('default_css'));
+
+        $hookListener = $this->createHookListener(['bundleConfig' => ['templates' => ['imports' => [['name' => 'default_css', 'template' => 'encore_css_imports.html.twig']]]]]);
+        $this->assertSame('encore_css_imports.html.twig', $hookListener->getItemTemplateByName('default_css'));
+        $this->assertNull($hookListener->getItemTemplateByName('another_css'));
     }
 }

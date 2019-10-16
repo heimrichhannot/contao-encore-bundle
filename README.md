@@ -4,12 +4,12 @@
 [![Build Status](https://travis-ci.org/heimrichhannot/contao-encore-bundle.svg?branch=master)](https://travis-ci.org/heimrichhannot/contao-encore-bundle)
 [![Coverage Status](https://coveralls.io/repos/github/heimrichhannot/contao-encore-bundle/badge.svg?branch=master)](https://coveralls.io/github/heimrichhannot/contao-encore-bundle?branch=master)
 
-This bundle brings integration between symfony encore and contao. You can prepare your bundles for encore workflow by defining your own webpack entries. You also have the option to strip legacy assets from the contao global array. In the contao backend you can configure to load packages on a **per page** level for having a great performance.
+This bundle brings deep integration for symfony encore into contao. You can prepare your bundles for encore workflow by defining your own webpack entries. You also have the option to strip legacy assets from the contao global array. Entries can be added from code or set on a **per page** level for having a great performance.
 
 ## Features
 
 - use symfony encore ([symfony/webpack-encore](https://github.com/symfony/webpack-encore) and [symfony/webpack-encore-bundle](https://github.com/symfony/webpack-encore-bundle)) to enhance your contao assets workflow
-- conditionally load your assets only if necessary on a particular page (including page inheritance)
+- conditionally load your assets only if necessary (from code or on a particular page (including page inheritance))
 - prepare your bundles to add encore entries when install them and strip legacy assets from the contao global asset arrays
 - asynchronously load dependency entries *on demand and cached* using webpack import() operator (see chapter "Dynamically importing common dependencies asynchronously")
 
@@ -85,21 +85,19 @@ This bundle brings integration between symfony encore and contao. You can prepar
         
         We recommend adding corejs polyfill (former babel polyfill) into your setup, see [Usage section](#usage) for more informations.
 
-1. In your `fe_page.html5` add the following in `<head>` region:
+1. Update your `fe_page` template or use the bundled `fe_page_encore_bundle` template. Following changes to your template are necessary: 
+    1. Add the following in `<head>` region:
 
-    ```php
-    <?= $this->encoreStylesheets; ?>
-    <?= $this->encoreHeadScripts; ?>
-    ```
+        ```php
+        <?= $this->encoreStylesheets; ?>
+        <?= $this->encoreHeadScripts; ?>
+        ```
     
-    and add the following into the footer region:
+    1. Add the following into the footer region:
     
-    ```php
-    <?= $this->encoreScripts; ?>
-    ```
-       
-    This will add the necessary link and script tags automatically.
-
+        ```php
+        <?= $this->encoreScripts; ?>
+        ```
 
 ### Bundle setup
 
@@ -234,6 +232,17 @@ If you create an reusable bundle and want to support setups that don't use encor
       }
     ``` 
 
+### Add entries from your code (frontend module, content element,...)
+
+Since version 1.3 it is possible to add encore entries from your code, so for example the slider assets are automatically included, if the slider module is added to the page. To do this, you can use the `huh.encore.asset.frontend` service.
+
+Following example shows a backward compatible implementation: 
+
+```php
+if ($this->container->has('huh.encore.asset.frontend')) {
+    $this->container->get('huh.encore.asset.frontend')->addActiveEntrypoint('contao-slick-bundle');
+}
+```
 
 ### Custom import templates
 

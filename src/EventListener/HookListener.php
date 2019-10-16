@@ -85,11 +85,6 @@ class HookListener
             return;
         }
 
-        if (!$this->container->hasParameter('huh.encore')) {
-            return;
-        }
-
-        $config = $this->container->getParameter('huh.encore');
         $templateData = $layout->row();
 
         if (!$this->pageEntrypoints->generatePageEntrypoints($page, $layout, $encoreField))
@@ -100,7 +95,7 @@ class HookListener
         $templateData['jsEntries'] = $this->pageEntrypoints->getJsEntries();
         $templateData['jsHeadEntries'] = $this->pageEntrypoints->getJsHeadEntries();
         $templateData['cssEntries'] = $this->pageEntrypoints->getCssEntries();
-
+        
         // render css alone (should be used in <head>)
         $pageRegular->Template->encoreStylesheets = $this->twig->render(
             $this->getItemTemplateByName($layout->encoreStylesheetsImportsTemplate ?: 'default_css'), $templateData
@@ -154,11 +149,11 @@ class HookListener
         $config = $this->container->getParameter('huh_encore');
 
         // js
-        if (isset($config['encore']['legacy']['js']) && \is_array($config['encore']['legacy']['js'])) {
+        if (isset($config['legacy']['js']) && \is_array($config['legacy']['js'])) {
             $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
 
             if (\is_array($jsFiles)) {
-                foreach ($config['encore']['legacy']['js'] as $jsFile) {
+                foreach ($config['legacy']['js'] as $jsFile) {
                     if (isset($jsFiles[$jsFile])) {
                         unset($jsFiles[$jsFile]);
                     }
@@ -166,11 +161,11 @@ class HookListener
             }
         }
         // jquery
-        if (isset($config['encore']['legacy']['jquery']) && \is_array($config['encore']['legacy']['jquery'])) {
+        if (isset($config['legacy']['jquery']) && \is_array($config['legacy']['jquery'])) {
             $jqueryFiles = &$GLOBALS['TL_JQUERY'];
 
             if (\is_array($jqueryFiles)) {
-                foreach ($config['encore']['legacy']['jquery'] as $legacyFile) {
+                foreach ($config['legacy']['jquery'] as $legacyFile) {
                     if (isset($jqueryFiles[$legacyFile])) {
                         unset($jqueryFiles[$legacyFile]);
                     }
@@ -179,12 +174,12 @@ class HookListener
         }
 
         // css
-        if (isset($config['encore']['legacy']['css']) && \is_array($config['encore']['legacy']['css'])) {
+        if (isset($config['legacy']['css']) && \is_array($config['legacy']['css'])) {
             foreach (['TL_USER_CSS', 'TL_CSS'] as $arrayKey) {
                 $cssFiles = &$GLOBALS[$arrayKey];
 
                 if (\is_array($cssFiles)) {
-                    foreach ($config['encore']['legacy']['css'] as $cssFile) {
+                    foreach ($config['legacy']['css'] as $cssFile) {
                         if (isset($cssFiles[$cssFile])) {
                             unset($cssFiles[$cssFile]);
                         }
@@ -196,13 +191,13 @@ class HookListener
 
     public function getItemTemplateByName(string $name)
     {
-        $config = $this->container->getParameter('huh.encore');
+        $config = $this->container->getParameter('huh_encore');
 
-        if (!isset($config['encore']['templates']['imports'])) {
+        if (!isset($config['templates']['imports'])) {
             return null;
         }
 
-        $templates = $config['encore']['templates']['imports'];
+        $templates = $config['templates']['imports'];
 
         foreach ($templates as $template) {
             if ($template['name'] == $name) {

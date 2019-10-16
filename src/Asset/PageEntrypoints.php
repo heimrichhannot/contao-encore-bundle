@@ -28,6 +28,7 @@ class PageEntrypoints
     protected $jsEntries = [];
     protected $cssEntries = [];
     protected $jsHeadEntries = [];
+    protected $activeEntries = [];
     /**
      * @var EntrypointsJsonLookup
      */
@@ -35,7 +36,6 @@ class PageEntrypoints
 
     protected $initialized = false;
 
-    protected $activeEntrypoints = [];
     /**
      * @var ContainerInterface
      */
@@ -52,16 +52,10 @@ class PageEntrypoints
      */
     public function __construct(array $bundleConfig, EntrypointsJsonLookup $entrypointsJsonLookup, ContainerInterface $container, FrontendAsset $frontendAsset)
     {
-        $this->bundleConfig = $bundleConfig['encore'];
+        $this->bundleConfig = $bundleConfig;
         $this->entrypointsJsonLookup = $entrypointsJsonLookup;
         $this->container = $container;
         $this->frontendAsset = $frontendAsset;
-    }
-
-
-    public function addActiveEntrypoint(string $entrypoint)
-    {
-        $this->activeEntrypoints[] = $entrypoint;
     }
 
     /**
@@ -70,7 +64,7 @@ class PageEntrypoints
      * @param string|null $encoreField
      * @return bool
      */
-    public function generatePageEntrypoints(PageModel $page, LayoutModel $layout, ?string $encoreField): bool
+    public function generatePageEntrypoints(PageModel $page, LayoutModel $layout, ?string $encoreField = null): bool
     {
         // add entries from the entrypoints.json
         if (isset($this->bundleConfig['entrypointsJsons'])
@@ -88,7 +82,6 @@ class PageEntrypoints
             $this->bundleConfig['entries'] = $this->entrypointsJsonLookup->mergeEntries(
                 $this->bundleConfig['entrypointsJsons'],
                 $this->bundleConfig['entries'],
-                $layout->encoreBabelPolyfillEntryName,
                 $layout
             );
         }
@@ -106,6 +99,7 @@ class PageEntrypoints
             }
             if ($this->isEntryActive($entry['name'], $layout, $page, $encoreField))
             {
+                $this->activeEntries[] = $entry['name'];
                 if (isset($entry['head']) && $entry['head'])
                 {
                     $this->jsHeadEntries[] = $entry['name'];
@@ -132,10 +126,16 @@ class PageEntrypoints
      * @param string $encoreField
      * @return bool
      */
-    public function isEntryActive(string $entry, LayoutModel $layout, PageModel $currentPage, string $encoreField = 'encoreEntries'): bool
+    public function isEntryActive(string $entry, LayoutModel $layout, PageModel $currentPage, ?string $encoreField = null): bool
     {
         if ($this->frontendAsset->isActiveEntrypoint($entry)) {
             return true;
+        }
+        if ($layout->addEncoreBabelPolyfill && $entry === $layout->encoreBabelPolyfillEntryName) {
+            return true;
+        }
+        if (null === $encoreField) {
+            $encoreField = 'encoreEntries';
         }
         $parents = [$layout];
 
@@ -167,6 +167,9 @@ class PageEntrypoints
     public function isEntryActiveForPage(string $entry, Model $page, string $encoreField = 'encoreEntries')
     {
         $entries = StringUtil::deserialize($page->{$encoreField}, true);
+        if (empty($entries)) {
+            return null;
+        }
 
         foreach ($entries as $row) {
             if ($row['entry'] === $entry) {
@@ -221,5 +224,19 @@ class PageEntrypoints
             throw new \Exception("Page entrypoints are not initialized!");
         }
     }
+
+    /**
+     * Return all active entrypoints.
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getActiveEntries(): array
+    {
+        $this->isInitalized();
+        return $this->activeEntries;
+    }
+
+
 
 }

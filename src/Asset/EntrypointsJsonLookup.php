@@ -43,33 +43,26 @@ class EntrypointsJsonLookup
     }
 
     /**
-     * @param array       $entrypointsJsons
-     * @param array       $entries
-     * @param string|null $babelPolyfillEntryName
+     * @param array       $entrypointJsonFiles entrypoint json files
+     * @param array       $bundleConfigEntries Entries defined by encore bundle config
+     * @param string|null $babelPolyfillEntryName entry name of babel polyfill
      *
      * @return array
      */
-    public function mergeEntries(array $entrypointsJsons, array $entries, string $babelPolyfillEntryName = null, LayoutModel $layout = null): array
+    public function mergeEntries(array $entrypointJsonFiles, array $bundleConfigEntries, LayoutModel $layout = null): array
     {
-        foreach ($entrypointsJsons as $entrypointsJson) {
+        foreach ($entrypointJsonFiles as $entrypointsJson) {
             $entrypoints = $this->parseEntrypoints($entrypointsJson);
 
             $entriesMap = [];
-            foreach ($entries as $entry) {
+            foreach ($bundleConfigEntries as $entry) {
                 if (!isset($entry['name'])) {
                     continue;
                 }
-
                 $entriesMap[$entry['name']] = true;
             }
 
             foreach ($entrypoints as $name => $entrypoint) {
-                // Be backward compatible
-                if ($layout->addEncoreBabelPolyfill && $name == $babelPolyfillEntryName)
-                {
-                    $entries = array_merge([['name' => $babelPolyfillEntryName, 'head' => false]], $entries);
-                }
-
                 // Only add entries that not already exist in the symfony config
                 if (!isset($entriesMap[$name])) {
                     $newEntry = [
@@ -81,12 +74,12 @@ class EntrypointsJsonLookup
                         $newEntry['requiresCss'] = true;
                     }
 
-                    $entries[] = $newEntry;
+                    $bundleConfigEntries[] = $newEntry;
                 }
             }
         }
 
-        return $entries;
+        return $bundleConfigEntries;
     }
 
     public function parseEntrypoints(string $entrypointsJson): array

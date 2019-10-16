@@ -73,10 +73,9 @@ class EntrypointsJsonLookupTest extends TestCase
                 [
                     'name' => 'contao-project-bundle',
                 ],
-            ],
-            'babel-polyfill');
+            ]);
 
-        $this->assertCount(2, $entries);
+        $this->assertCount(3, $entries);
         $this->assertSame([
             [
                 'name' => 'contao-project-bundle',
@@ -85,6 +84,10 @@ class EntrypointsJsonLookupTest extends TestCase
                 'name' => 'main',
                 'head' => false,
                 'requiresCss' => true,
+            ],
+            [
+                'name' => 'babel-polyfill',
+                'head' => false,
             ],
         ], $entries);
     }
