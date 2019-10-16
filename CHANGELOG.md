@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2019-10-15
+
+### Added
+- service for adding encore entrypoints from code
+- fe_page_encore_bundle template for out of the box usage or demonstration
+
+### Changed
+- global array now also cleaned in generatePage hook
+
+### Fixed
+- babel polyfill not loaded when used with addBabelPolyfill checkbox
+
 ## [1.2.2] - 2019-07-09
 
 ### Fixed

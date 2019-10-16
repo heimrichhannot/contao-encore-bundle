@@ -1,0 +1,12 @@
+<?php $this->extend('fe_page'); ?>
+
+<?php $this->block('head'); ?>
+    <?php $this->parent(); ?>
+    <?= $this->encoreStylesheets; ?>
+    <?= $this->encoreHeadScripts; ?>
+<?php $this->endblock(); ?>
+
+<?php $this->block('body'); ?>
+    <?php $this->parent(); ?>
+    <?= $this->encoreScripts; ?>
+<?php $this->endblock(); ?>
