@@ -15,15 +15,16 @@ matrix:
     - php: 7.3
       env: CONTAO_VERSION='4.4.*'
     - php: 7.1
-      env: CONTAO_VERSION='4.7.*'
+      env: CONTAO_VERSION='4.8.*'
     - php: 7.3
-      env: CONTAO_VERSION='4.7.*'
+      env: CONTAO_VERSION='4.8.*'
     - php: 7.3
-      env: COVERAGE=1 CONTAO_VERSION='4.7.*'
+      env: COVERAGE=1 CONTAO_VERSION='4.8.*'
   allow_failures:
     - env: COVERAGE=1 DEFAULT=0
   fast_finish: true
 before_install:
+- echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 - if [[ "$COVERAGE" != "1" ]]; then phpenv config-rm xdebug.ini || true; fi
 install:
   - composer require contao/core-bundle:${CONTAO_VERSION}
