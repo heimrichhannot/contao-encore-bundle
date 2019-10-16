@@ -1,7 +1,7 @@
 {
   "name": "heimrichhannot/contao-encore-bundle",
   "type": "contao-bundle",
-  "description": "This bundle brings deep integration for symfony encore into contao. You can prepare your bundles for encore workflow by defining your own webpack entries and strip legacy assets from the contao global array. Entries can be added from code or set on a per page level for having a great performance.",
+  "description": "This bundle brings deep integration for symfony encore into contao. On the one hand, your can prepare your bundles to define own webpack entries, which added with just one command to your webpack entries. On the other hand, this bundle allows you to add encore entries only on the pages  you need them for optimizing your website performance.",
   "license": "LGPL-3.0-or-later",
   "require": {
     "php": "^7.1",

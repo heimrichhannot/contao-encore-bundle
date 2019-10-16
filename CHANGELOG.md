@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.3.0] - 2019-10-15
+## [1.3.0] - 2019-10-16
 
 ### Added
 - service for adding encore entrypoints from code
