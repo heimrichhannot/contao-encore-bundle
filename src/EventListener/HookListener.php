@@ -70,6 +70,25 @@ class HookListener
     }
 
     /**
+     * A alias for the addEncore method. Just for backward compatibility. Will be removed in next major version.
+     *
+     * @deprecated Use addEncore method instead. Will be removed in next major release.
+     *
+     * @param PageModel $page
+     * @param LayoutModel $layout
+     * @param PageRegular $pageRegular
+     * @param string|null $encoreField
+     * @param bool $includeInline
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    public function doAddEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular, ?string $encoreField = 'encoreEntries', bool $includeInline = false)
+    {
+        $this->addEncore($page, $layout, $pageRegular, $encoreField, $includeInline);
+    }
+
+    /**
      * @param PageModel $page
      * @param LayoutModel $layout
      * @param PageRegular $pageRegular

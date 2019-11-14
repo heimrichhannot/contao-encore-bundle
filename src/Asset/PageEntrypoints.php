@@ -128,9 +128,6 @@ class PageEntrypoints
      */
     public function isEntryActive(string $entry, LayoutModel $layout, PageModel $currentPage, ?string $encoreField = null): bool
     {
-        if ($this->frontendAsset->isActiveEntrypoint($entry)) {
-            return true;
-        }
         if ($layout->addEncoreBabelPolyfill && $entry === $layout->encoreBabelPolyfillEntryName) {
             return true;
         }
@@ -152,6 +149,10 @@ class PageEntrypoints
             if (0 == $i || null !== $isActive) {
                 $result = $isActive;
             }
+        }
+
+        if ($this->frontendAsset->isActiveEntrypoint($entry) && false !== $isActive) {
+            return true;
         }
 
         return $result ? true : false;

@@ -5,3 +5,4 @@ services:
 
   huh.encore.listener.hooks:
     class: HeimrichHannot\EncoreBundle\EventListener\HookListener
+  HeimrichHannot\EncoreBundle\EventListener\HookListener: '@huh.encore.listener.hooks'

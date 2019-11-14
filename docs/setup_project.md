@@ -12,7 +12,7 @@ Setup your project for encore bundle.
 
 1. Create your webpack/encore config file (`webpack.config.js`) in your project root.
 
-    1. Require the generated `encore.bundles.js` (this file will be generated in the [Run Encore](#run-encore) step)
+    1. Require the generated `encore.bundles.js` (this file is generated with the encore:prepare command, see [Run Encore](../README.md#run-encore))
     
         ```js
         let encoreBundles = require('./encore.bundles');
@@ -60,7 +60,7 @@ Setup your project for encore bundle.
         module.exports = config;
         ```
         
-        We recommend adding corejs polyfill (former babel polyfill) into your setup, see [Usage section](#usage) for more informations.
+        We recommend adding corejs polyfill (former babel polyfill) into your setup, see [Javascript setup section](setup_javascript.md) for more informations.
 
 1. Update your `fe_page` template or use the bundled `fe_page_encore_bundle` template. Following changes to your template are necessary: 
     1. Add the following in `<head>` region:

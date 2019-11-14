@@ -49,7 +49,7 @@ With encore bundle you can prepare your bundles to automatically create encore e
 
 1. Add encore bundle to your composer.json file (See Project setup step 1).
 
-    > If you want encore bundle to be an optional dependency, please consider the readme within "Usage -> Make encore bundle an optional dependency"
+    > If you want encore bundle to be an optional dependency, please consider the [developers documentation](developers.md).
 
 1. You probably want to have your bundle's node dependencies added automatically to the project's node_modules directory when installed. You can simply use [Foxy](https://github.com/fxpio/foxy) for this task. To keep it simple: besides having foxy installed in your project, you need to set `"foxy": true` in the `extra` section of your bundle's `composer.json` and add an ordinary `package.json` as usual for node modules. See [heimrichhannot/contao-list-bundle](https://github.com/heimrichhannot/contao-list-bundle) for an example.
 

@@ -1,17 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2019-11-14
+- fixed dynamic added entries could no be deactivated by setting inactive on a page
+- fixed backward incompatible method rename in version 1.3.0
+- fixed possible autowiring issue for symfony 4
+
 ## [1.3.0] - 2019-10-16
-
-### Added
-- service for adding encore entrypoints from code
-- fe_page_encore_bundle template for out of the box usage or demonstration
-
-### Changed
+- added service for adding encore entrypoints from code
+- added fe_page_encore_bundle template for out of the box usage or demonstration
 - global array now also cleaned in generatePage hook
-
-### Fixed
-- babel polyfill not loaded when used with addBabelPolyfill checkbox
+- fixed babel polyfill not loaded when used with addBabelPolyfill checkbox
 
 ## [1.2.2] - 2019-07-09
 
