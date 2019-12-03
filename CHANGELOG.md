@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2019-12-03
+- fixed typo in prepare command
+
 ## [1.3.1] - 2019-11-14
 - fixed dynamic added entries could no be deactivated by setting inactive on a page
 - fixed backward incompatible method rename in version 1.3.0

@@ -57,7 +57,7 @@ class PrepareCommand extends AbstractLockedCommand
         $twig = $this->getContainer()->get('twig');
         $resultFile = $this->rootDir.\DIRECTORY_SEPARATOR.'encore.bundles.js';
 
-        $this->io->text('Using <fg=green>'.$this->getContainer()->getParameter('kernel.environment').'</> environment. (Use --env=[ENV] to change environment. See --help for mor information!)');
+        $this->io->text('Using <fg=green>'.$this->getContainer()->getParameter('kernel.environment').'</> environment. (Use --env=[ENV] to change environment. See --help for more information!)');
 
         @unlink($resultFile);
 
