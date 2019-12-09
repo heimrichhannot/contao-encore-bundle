@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2019-12-09
+- refactored template variable generation into own class
+
 ## [1.3.2] - 2019-12-03
 - fixed typo in prepare command
 

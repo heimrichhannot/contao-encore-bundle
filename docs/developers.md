@@ -42,14 +42,42 @@ If you create an reusable bundle and want to support setups that don't use encor
       }
     ``` 
 
+## Add encore entries to custom template
+
+If your template generation don't rely on the onGeneratePage hook, it is possible to encore entries to your own implementation. Use the `TemplateAsset` service to create an instance of it and add the assets you need to your template. Following example is an short version of how the onGeneratePage hook is implemented.
+
+```php
+<?php
+class CustomTemplateGenerator 
+{
+    /**
+     * @var \HeimrichHannot\EncoreBundle\Asset\TemplateAsset
+     */
+    private $templateAsset;
+
+    public function addEncoreToTemplate(FrontendTemplate $template, \Contao\PageModel $page, \Contao\LayoutModel $layout)
+    {
+        $templateAssets = $this->templateAsset->createInstance($page, $layout);
+        $template->encoreStylesheets = $templateAssets->linkTags();
+        $template->encoreScripts = $templateAssets->scriptTags();
+        $template->encoreHeadScripts = $templateAssets->headScriptTags();
+    }
+}
+```
+
 ## Inline stylesheets
 
-If you need to add your stylesheets inline, you need to unset the generatePage hook of encore bundle and call `HookListener->addEncore` with `$includeInline = true` and, if needed, `HookListener->cleanGlobalArrays`. Afterwards the inline css code will be available within `$pageRegular->Template->encoreStylesheetsInline`.
+If you need to add your stylesheets inline, use the `inlineCssLinkTag` method of `TemplateAsset` (see 'Add encore entries to custom template'). If your template rely on the onGeneratePage hook, you need to unset the hook entries of encore bundle.
 
 ```php
 <?php 
 class HookListener 
 {
+    /**
+     * @var \HeimrichHannot\EncoreBundle\Asset\TemplateAsset
+     */
+    private $templateAsset;
+
     public function onGetPageLayout(PageModel $page, LayoutModel &$layout, PageRegular $pageRegular)
     {
         if (isset($GLOBALS['TL_HOOKS']['generatePage']['huh.encore-bundle'])) {
@@ -58,8 +86,8 @@ class HookListener
     }
     public function onGeneratePage(PageModel $page, LayoutModel $layout, PageRegular $pageRegular) 
     {
-        $layout->encoreEntriesAmp = $layout->encoreEntries;
-        $this->container->get('huh.encore.listener.hooks')->addEncore($page, $layout, $pageRegular, null, true);
+        $templateAssets = $this->templateAsset->createInstance($page, $layout, $encoreField);
+        $pageRegular->Template->encoreEntriesAmp = $templateAssets->inlineCssLinkTag();
         $this->container->get('huh.encore.listener.hooks')->cleanGlobalArrays();
     }
 }

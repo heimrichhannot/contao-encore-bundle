@@ -66,6 +66,9 @@ class PageEntrypoints
      */
     public function generatePageEntrypoints(PageModel $page, LayoutModel $layout, ?string $encoreField = null): bool
     {
+        if ($this->initialized) {
+            trigger_error("PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided. ", E_USER_WARNING);
+        }
         // add entries from the entrypoints.json
         if (isset($this->bundleConfig['entrypointsJsons'])
             && \is_array($this->bundleConfig['entrypointsJsons'])
@@ -237,6 +240,18 @@ class PageEntrypoints
         $this->isInitalized();
         return $this->activeEntries;
     }
+
+    /**
+     * Return a fresh instance of PageEntryPoint
+     *
+     * @return $this
+     */
+    public function createInstance()
+    {
+        return new static($this->bundleConfig, $this->entrypointsJsonLookup, $this->container, $this->frontendAsset);
+    }
+
+
 
 
 

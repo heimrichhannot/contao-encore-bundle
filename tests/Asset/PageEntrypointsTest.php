@@ -21,6 +21,7 @@ use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\PageEntrypoints;
 use HeimrichHannot\EncoreBundle\Test\ModelMockTrait;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
+use PHPUnit\Framework\Error\Warning;
 
 class PageEntrypointsTest extends ContaoTestCase
 {
@@ -271,4 +272,38 @@ class PageEntrypointsTest extends ContaoTestCase
         $this->assertCount(3, $pageEntrypoints->getJsEntries());
 
     }
+
+    public function testCreateInstance()
+    {
+        $instance = $this->mockPageEntrypointsObject();
+        $newInstance = $instance->createInstance();
+        $this->assertInstanceOf(PageEntrypoints::class, $newInstance);
+        $this->assertNotSame($instance, $newInstance);
+    }
+
+    public function testAlreadyInitializedWarning()
+    {
+        $page = $this->mockModelObject(PageModel::class, []);
+        $layout = $this->mockClassWithProperties(LayoutModel::class, []);
+
+        $instance = $this->mockPageEntrypointsObject(['entries' => [['name' => 'contao-encore-bundle'],['name' => 'b']]]);
+        $instance->generatePageEntrypoints($page, $layout);
+
+        $this->expectException(Warning::class);
+        $instance->generatePageEntrypoints($page, $layout);
+    }
+
+    public function testLegacyAddBabelEntry()
+    {
+        $instance = $this->mockPageEntrypointsObject();
+        $page = $this->mockModelObject(PageModel::class, []);
+        $layout = $this->mockClassWithProperties(LayoutModel::class, [
+            'addEncoreBabelPolyfill' => '1',
+            'encoreBabelPolyfillEntryName' => 'babel-polyfill',
+        ]);
+
+        $this->assertTrue($instance->isEntryActive('babel-polyfill', $layout, $page));
+    }
+
+
 }

@@ -2,6 +2,7 @@ services:
   _defaults:
     bind:
       $bundleConfig: '%huh_encore%'
+      $webDir: '%contao.web_dir%'
 
   HeimrichHannot\EncoreBundle\Asset\PageEntrypoints:
     autowire: true
@@ -15,6 +16,9 @@ services:
     arguments:
       - "@service_container"
       - "@webpack_encore.cache"
+
+  HeimrichHannot\EncoreBundle\Asset\TemplateAsset:
+    autowire: true
 
   huh.encore.choice.entry:
     class: HeimrichHannot\EncoreBundle\Choice\EntryChoice

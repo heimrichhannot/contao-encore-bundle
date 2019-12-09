@@ -13,7 +13,7 @@ use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\PageRegular;
 use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
-use HeimrichHannot\EncoreBundle\Asset\PageEntrypoints;
+use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
@@ -34,9 +34,9 @@ class HookListener
      */
     private $container;
     /**
-     * @var PageEntrypoints
+     * @var TemplateAsset
      */
-    private $pageEntrypoints;
+    private $templateAsset;
 
     /**
      * Constructor.
@@ -45,12 +45,12 @@ class HookListener
      * @param Environment           $twig
      * @param EntrypointsJsonLookup $entrypointsJsonLookup
      */
-    public function __construct(ContainerInterface $container, Environment $twig, PageEntrypoints $pageEntrypoints)
+    public function __construct(ContainerInterface $container, Environment $twig, TemplateAsset $templateAsset)
     {
         $this->framework = $container->get('contao.framework');
         $this->twig = $twig;
         $this->container = $container;
-        $this->pageEntrypoints = $pageEntrypoints;
+        $this->templateAsset = $templateAsset;
     }
 
     /**
@@ -97,6 +97,7 @@ class HookListener
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
+     * @throws \Exception
      */
     public function addEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular, ?string $encoreField = 'encoreEntries', bool $includeInline = false): void
     {
@@ -104,49 +105,20 @@ class HookListener
             return;
         }
 
-        $templateData = $layout->row();
+        $templateAssets = $this->templateAsset->createInstance($page, $layout, $encoreField);
 
-        if (!$this->pageEntrypoints->generatePageEntrypoints($page, $layout, $encoreField))
-        {
-            return;
-        }
-
-        $templateData['jsEntries'] = $this->pageEntrypoints->getJsEntries();
-        $templateData['jsHeadEntries'] = $this->pageEntrypoints->getJsHeadEntries();
-        $templateData['cssEntries'] = $this->pageEntrypoints->getCssEntries();
-        
         // render css alone (should be used in <head>)
-        $pageRegular->Template->encoreStylesheets = $this->twig->render(
-            $this->getItemTemplateByName($layout->encoreStylesheetsImportsTemplate ?: 'default_css'), $templateData
-        );
+        $pageRegular->Template->encoreStylesheets = $templateAssets->linkTags();
+
 
         if ($includeInline) {
-            $pageRegular->Template->encoreStylesheetsInline = $this->getInlineStylesheets($pageRegular->Template->encoreStylesheets);
+            $pageRegular->Template->encoreStylesheetsInline = $templateAssets->inlineCssLinkTag();
         }
 
         // render js alone (should be used in footer region)
-        $pageRegular->Template->encoreScripts = $this->twig->render(
-            $this->getItemTemplateByName($layout->encoreScriptsImportsTemplate ?: 'default_js'), $templateData
-        );
+        $pageRegular->Template->encoreScripts = $templateAssets->scriptTags();
 
-        $pageRegular->Template->encoreHeadScripts = $this->twig->render(
-            $this->getItemTemplateByName($layout->encoreScriptsImportsTemplate ?: 'default_head_js'), $templateData
-        );
-    }
-
-    public function getInlineStylesheets(string $styleTags)
-    {
-        preg_match_all('@<link rel="stylesheet" href="([^"]+)">@i', $styleTags, $matches);
-
-        if (isset($matches[1]) && !empty($matches[1])) {
-            $inlineCss = implode("\n", array_map(function ($path) {
-                return file_get_contents($this->container->getParameter('contao.web_dir').preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
-            }, $matches[1]));
-
-            return $inlineCss;
-        }
-
-        return false;
+        $pageRegular->Template->encoreHeadScripts = $templateAssets->headScriptTags();
     }
 
     public function cleanGlobalArrays()
@@ -206,24 +178,5 @@ class HookListener
                 }
             }
         }
-    }
-
-    public function getItemTemplateByName(string $name)
-    {
-        $config = $this->container->getParameter('huh_encore');
-
-        if (!isset($config['templates']['imports'])) {
-            return null;
-        }
-
-        $templates = $config['templates']['imports'];
-
-        foreach ($templates as $template) {
-            if ($template['name'] == $name) {
-                return $template['template'];
-            }
-        }
-
-        return null;
     }
 }
