@@ -47,7 +47,6 @@ If you create an reusable bundle and want to support setups that don't use encor
 If your template generation don't rely on the onGeneratePage hook, it is possible to encore entries to your own implementation. Use the `TemplateAsset` service to create an instance of it and add the assets you need to your template. Following example is an short version of how the onGeneratePage hook is implemented.
 
 ```php
-<?php
 class CustomTemplateGenerator 
 {
     /**
@@ -65,12 +64,35 @@ class CustomTemplateGenerator
 }
 ```
 
+It is also possible to make this optional using TemplateAsset public service alias (`huh.encore.asset.template`):
+
+```php
+// Example from heimrichhannot/contao-amp-bundle
+
+class GeneratePageListener
+{
+    /**
+     * @var Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    private $container;
+
+    public function onGeneratePage(PageModel $pageModel, LayoutModel $layout, PageRegular $pageRegular): void
+    {
+        // [...]
+        
+        if ($this->container->has('huh.encore.asset.template')) {
+            $templateAssets = $this->container->get('huh.encore.asset.template')->createInstance($pageModel, $layout);
+            $pageRegular->Template->encoreStylesheetsInline = preg_replace('/@charset ".*?";/m', '', $templateAssets->inlineCssLinkTag());
+        }
+    }
+}
+```
+
 ## Inline stylesheets
 
 If you need to add your stylesheets inline, use the `inlineCssLinkTag` method of `TemplateAsset` (see 'Add encore entries to custom template'). If your template rely on the onGeneratePage hook, you need to unset the hook entries of encore bundle.
 
 ```php
-<?php 
 class HookListener 
 {
     /**
@@ -91,7 +113,6 @@ class HookListener
         $this->container->get('huh.encore.listener.hooks')->cleanGlobalArrays();
     }
 }
-
 ```
 
 ## Custom import templates

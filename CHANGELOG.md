@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2019-12-12
+- add missing public service alias for TemplateAsset
+
 ## [1.4.0] - 2019-12-09
 - refactored template variable generation into own class
 

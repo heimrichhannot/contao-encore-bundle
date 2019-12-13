@@ -19,6 +19,9 @@ services:
 
   HeimrichHannot\EncoreBundle\Asset\TemplateAsset:
     autowire: true
+  huh.encore.asset.template:
+    alias: HeimrichHannot\EncoreBundle\Asset\TemplateAsset
+    public: true
 
   huh.encore.choice.entry:
     class: HeimrichHannot\EncoreBundle\Choice\EntryChoice
