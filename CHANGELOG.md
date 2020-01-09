@@ -2,12 +2,20 @@
 All notable changes to this project will be documented in this file.
 
 ## [1.5.0-DEV] - 2020-01-09
+This release brings an overhaul to the bundle configuration (don't worry, we keep the bundle backward compatible). The biggest change is the deprecation of the encore config parameter (`huh_encore.encore`) as all children of that node are moving one level higher (`huh.js_entries` instead of `huh.encore.entries`). We also used that possibility to rename a few options to make them more clear or open possiblities for future development. But we left the `huh_encore.encore` (and marked it deprecated) key so no current config will be broken.
+
+Following keys were renamed:
+- `huh_encore.encore.entries` is now `huh_encore.js_entries`
+- `huh_encore.encore.entries - requiresCss` is now `huh_encore.js_entries - requires_css`
+- `huh_encore.encore.legacy` is now `huh_encore.unset_global_keys`
+- all other config keys just lost the `.encore` part
+
+Complete Changelog:
+
 - configs can now be applied without encore config key (configs within encore key still work for bc reasons, but set deprecated now)
 - added huh_encore.unset_jquery config to removed jquery from global assets array even if jquery is activated in layout section
-- renamed requiredCss to requires_css (only for config without encore config key, old configs still work for bc)
-- renamed two other internal config keys to snake_case, retained old keys for bc
+- renamed some config keys and parameters
 - refactored config parameter calls and autowiring of some classes
-
 
 ## [1.4.1] - 2019-12-12
 - add missing public service alias for TemplateAsset
