@@ -178,7 +178,7 @@ class HookListener
                 }
             }
         }
-        if (true || isset($config['legacy']['unset_jquery'])) {
+        if (isset($config['legacy']['unset_jquery']) && true === $config['legacy']['unset_jquery']) {
             $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
             if (($key = array_search('assets/jquery/js/jquery.min.js|static', $jsFiles)) !== false) {
                 unset($jsFiles[$key]);
