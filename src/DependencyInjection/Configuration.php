@@ -75,6 +75,7 @@ class Configuration implements ConfigurationInterface
             // TODO: Remove in version 2.0
                 ->arrayNode('encore')
                     ->addDefaultsIfNotSet()
+                    ->setDeprecated("Configs within encore key are deprecated and will be removed in next major version.")
                     ->children()
                         ->arrayNode('entries')
                             ->arrayPrototype()

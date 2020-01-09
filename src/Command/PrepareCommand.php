@@ -14,7 +14,6 @@ use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpKernel\Config\FileLocator;
 
 class PrepareCommand extends AbstractLockedCommand
 {
@@ -31,12 +30,17 @@ class PrepareCommand extends AbstractLockedCommand
      * @var PhpArrayAdapter
      */
     private $encoreCache;
+    /**
+     * @var array
+     */
+    private $bundleConfig;
 
-    public function __construct(CacheItemPoolInterface $encoreCache)
+    public function __construct(array $bundleConfig, CacheItemPoolInterface $encoreCache)
     {
         $this->encoreCache = $encoreCache;
 
         parent::__construct();
+        $this->bundleConfig = $bundleConfig;
     }
 
     /**
@@ -64,14 +68,12 @@ class PrepareCommand extends AbstractLockedCommand
 
         $this->encoreCache->clear();
 
-        $config = $this->getContainer()->getParameter('huh.encore');
-
         // js
-        if (isset($config['encore']['entries']) && \is_array($config['encore']['entries'])) {
+        if (isset($this->bundleConfig['entries']) && \is_array($this->bundleConfig['entries'])) {
             // entries
             $entries = [];
 
-            foreach ($config['encore']['entries'] as $entry) {
+            foreach ($this->bundleConfig['entries'] as $entry) {
                 $preparedEntry = [
                     'name' => $entry['name'],
                 ];

@@ -30,15 +30,11 @@ class EntrypointsJsonLookup
      * @param ContainerInterface          $container
      * @param CacheItemPoolInterface|null $cache
      */
-    public function __construct(ContainerInterface $container, CacheItemPoolInterface $cache = null)
+    public function __construct(array $bundleConfig, CacheItemPoolInterface $cache = null)
     {
         $this->cache = $cache;
-
-        if ($container->hasParameter('huh.encore')) {
-            $config = $container->getParameter('huh.encore');
-            if (isset($config['encore']['encoreCacheEnabled'])) {
-                $this->useCache = $config['encore']['encoreCacheEnabled'];
-            }
+        if (isset($bundleConfig['encore_cache_enabled'])) {
+            $this->useCache = $bundleConfig['encore_cache_enabled'];
         }
     }
 

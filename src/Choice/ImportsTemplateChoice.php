@@ -8,11 +8,23 @@
 
 namespace HeimrichHannot\EncoreBundle\Choice;
 
-use Contao\System;
+use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use HeimrichHannot\UtilsBundle\Choice\AbstractChoice;
 
 class ImportsTemplateChoice extends AbstractChoice
 {
+    /**
+     * @var array
+     */
+    private $bundleConfig;
+
+    public function __construct(array $bundleConfig, ContaoFrameworkInterface $framework)
+    {
+        parent::__construct($framework);
+        $this->bundleConfig = $bundleConfig;
+    }
+
+
     /**
      * @return array
      */
@@ -20,13 +32,11 @@ class ImportsTemplateChoice extends AbstractChoice
     {
         $choices = [];
 
-        $config = System::getContainer()->getParameter('huh.encore');
-
-        if (!isset($config['encore']['templates']['imports'])) {
+        if (!isset($this->bundleConfig['templates']['imports'])) {
             return $choices;
         }
 
-        foreach ($config['encore']['templates']['imports'] as $template) {
+        foreach ($this->bundleConfig['templates']['imports'] as $template) {
             $choices[$template['name']] = $template['template'];
         }
 

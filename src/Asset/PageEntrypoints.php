@@ -70,9 +70,9 @@ class PageEntrypoints
             trigger_error("PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided. ", E_USER_WARNING);
         }
         // add entries from the entrypoints.json
-        if (isset($this->bundleConfig['entrypointsJsons'])
-            && \is_array($this->bundleConfig['entrypointsJsons'])
-            && !empty($this->bundleConfig['entrypointsJsons'])
+        if (isset($this->bundleConfig['entrypoints_jsons'])
+            && \is_array($this->bundleConfig['entrypoints_jsons'])
+            && !empty($this->bundleConfig['entrypoints_jsons'])
         ) {
             if (!isset($this->bundleConfig['entries']))
             {
@@ -83,7 +83,7 @@ class PageEntrypoints
             }
 
             $this->bundleConfig['entries'] = $this->entrypointsJsonLookup->mergeEntries(
-                $this->bundleConfig['entrypointsJsons'],
+                $this->bundleConfig['entrypoints_jsons'],
                 $this->bundleConfig['entries'],
                 $layout
             );

@@ -9,7 +9,6 @@
 namespace HeimrichHannot\EncoreBundle\Choice;
 
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
-use Contao\DataContainer;
 use Contao\System;
 use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
 use HeimrichHannot\UtilsBundle\Choice\AbstractChoice;
@@ -20,11 +19,16 @@ class EntryChoice extends AbstractChoice
      * @var EntrypointsJsonLookup
      */
     private $entrypointsJsonLookup;
+    /**
+     * @var array
+     */
+    private $bundleConfig;
 
-    public function __construct(ContaoFrameworkInterface $framework, EntrypointsJsonLookup $entrypointsJsonLookup)
+    public function __construct(array $bundleConfig, ContaoFrameworkInterface $framework, EntrypointsJsonLookup $entrypointsJsonLookup)
     {
         parent::__construct($framework);
         $this->entrypointsJsonLookup = $entrypointsJsonLookup;
+        $this->bundleConfig = $bundleConfig;
     }
 
     /**
@@ -34,28 +38,26 @@ class EntryChoice extends AbstractChoice
     {
         $choices = [];
 
-        $config = System::getContainer()->getParameter('huh.encore');
-
         // add entries from the entrypoints.json
-        if (isset($config['encore']['entrypointsJsons']) && \is_array($config['encore']['entrypointsJsons']) && !empty($config['encore']['entrypointsJsons'])) {
-            if (!isset($config['encore']['entries'])) {
-                $config['encore']['entries'] = [];
-            } elseif (!\is_array($config['encore']['entries'])) {
+        if (isset($this->bundleConfig['entrypoints_jsons']) && \is_array($this->bundleConfig['entrypoints_jsons']) && !empty($this->bundleConfig['entrypoints_jsons'])) {
+            if (!isset($this->bundleConfig['entries'])) {
+                $this->bundleConfig['entries'] = [];
+            } elseif (!\is_array($this->bundleConfig['entries'])) {
                 return $choices;
             }
 
             $dc = $this->getContext();
-            $config['encore']['entries'] = $this->entrypointsJsonLookup->mergeEntries(
-                $config['encore']['entrypointsJsons'],
-                $config['encore']['entries']
+            $this->bundleConfig['entries'] = $this->entrypointsJsonLookup->mergeEntries(
+                $this->bundleConfig['entrypoints_jsons'],
+                $this->bundleConfig['entries']
             );
         }
 
-        if (!isset($config['encore']['entries'])) {
+        if (!isset($this->bundleConfig['entries'])) {
             return $choices;
         }
 
-        foreach ($config['encore']['entries'] as $entry) {
+        foreach ($this->bundleConfig['entries'] as $entry) {
             $choices[$entry['name']] = $entry['name'].(isset($entry['file']) ? ' ['.$entry['file'].']' : '');
         }
 

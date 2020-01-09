@@ -13,9 +13,9 @@ services:
   huh.encore.asset.frontend: '@HeimrichHannot\EncoreBundle\Asset\FrontendAsset'
 
   HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup:
-    arguments:
-      - "@service_container"
-      - "@webpack_encore.cache"
+    autowire: true
+    bind:
+      Psr\Cache\CacheItemPoolInterface: "@webpack_encore.cache"
 
   HeimrichHannot\EncoreBundle\Asset\TemplateAsset:
     autowire: true
@@ -26,11 +26,9 @@ services:
   huh.encore.choice.entry:
     class: HeimrichHannot\EncoreBundle\Choice\EntryChoice
     public: true
-    arguments:
-      - "@contao.framework"
-      - "@HeimrichHannot\\EncoreBundle\\Asset\\EntrypointsJsonLookup"
+    autowire: true
+
   huh.encore.choice.template.imports:
     class: HeimrichHannot\EncoreBundle\Choice\ImportsTemplateChoice
     public: true
-    arguments:
-      - "@contao.framework"
+    autowire: true

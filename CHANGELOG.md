@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.5.0-DEV] - 2020-01-09
+- configs can now be applied without encore config key (configs within encore key still work for bc reasons, but set deprecated now)
+- renamed requiredCss to requires_css (only for config without encore config key, old configs still work for bc)
+- renamed two other internal config keys to snake_case, retained old keys for bc
+- refactored config parameter calls and autowiring of some classes
+
+
 ## [1.4.1] - 2019-12-12
 - add missing public service alias for TemplateAsset
 

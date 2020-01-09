@@ -49,10 +49,19 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
         $configuration = new Configuration();
         $processedConfig = $this->processConfiguration($configuration, $configs);
 
-        $processedConfig['encore']['entrypointsJsons'] = $this->entrypointsJsons;
-        $processedConfig['encore']['encoreCacheEnabled'] = $this->encoreCacheEnabled;
+        $legacyConfig = $processedConfig['encore'];
+        unset($processedConfig['encore']);
+        $processedConfig = array_merge($legacyConfig, $processedConfig);
 
-        $container->setParameter('huh.encore', $processedConfig);
-        $container->setParameter('huh_encore', $processedConfig['encore']);
+        $processedConfig['entrypoints_jsons'] = $this->entrypointsJsons;
+        $processedConfig['encore_cache_enabled'] = $this->encoreCacheEnabled;
+
+        $container->setParameter('huh_encore', $processedConfig);
+
+        // Deprecated:
+        $container->setParameter('huh.encore', ['encore' => $processedConfig]);
+        $processedConfig['entrypointsJsons'] = $this->entrypointsJsons;
+        $processedConfig['encoreCacheEnabled'] = $this->encoreCacheEnabled;
+
     }
 }
