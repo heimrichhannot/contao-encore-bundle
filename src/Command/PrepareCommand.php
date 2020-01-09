@@ -14,6 +14,7 @@ use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpKernel\Config\FileLocator;
 
 class PrepareCommand extends AbstractLockedCommand
 {
@@ -75,8 +76,11 @@ class PrepareCommand extends AbstractLockedCommand
                     'name' => $entry['name'],
                 ];
 
-                $preparedEntry['file'] = './'.preg_replace('@^\.?\/@i', '', $entry['file']);
-
+                if (!$this->getContainer()->get('huh.utils.string')->startsWith($entry['file'], '@')) {
+                    $preparedEntry['file'] = './'.preg_replace('@^\.?\/@i', '', $entry['file']);
+                } else {
+                    $preparedEntry['file'] = $this->getContainer()->get('file_locator')->locate($entry['file']);
+                }
                 $entries[] = $preparedEntry;
             }
 
