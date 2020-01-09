@@ -40,24 +40,24 @@ class EntryChoice extends AbstractChoice
 
         // add entries from the entrypoints.json
         if (isset($this->bundleConfig['entrypoints_jsons']) && \is_array($this->bundleConfig['entrypoints_jsons']) && !empty($this->bundleConfig['entrypoints_jsons'])) {
-            if (!isset($this->bundleConfig['entries'])) {
-                $this->bundleConfig['entries'] = [];
-            } elseif (!\is_array($this->bundleConfig['entries'])) {
+            if (!isset($this->bundleConfig['js_entries'])) {
+                $this->bundleConfig['js_entries'] = [];
+            } elseif (!\is_array($this->bundleConfig['js_entries'])) {
                 return $choices;
             }
 
             $dc = $this->getContext();
-            $this->bundleConfig['entries'] = $this->entrypointsJsonLookup->mergeEntries(
+            $this->bundleConfig['js_entries'] = $this->entrypointsJsonLookup->mergeEntries(
                 $this->bundleConfig['entrypoints_jsons'],
-                $this->bundleConfig['entries']
+                $this->bundleConfig['js_entries']
             );
         }
 
-        if (!isset($this->bundleConfig['entries'])) {
+        if (!isset($this->bundleConfig['js_entries'])) {
             return $choices;
         }
 
-        foreach ($this->bundleConfig['entries'] as $entry) {
+        foreach ($this->bundleConfig['js_entries'] as $entry) {
             $choices[$entry['name']] = $entry['name'].(isset($entry['file']) ? ' ['.$entry['file'].']' : '');
         }
 

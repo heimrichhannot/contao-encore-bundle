@@ -122,10 +122,9 @@ Create a twig template (see `src/Resources/views` for examples) and register the
 
 Example:
 
-```yml
+```yaml
 huh_encore:
-  encore:
-    templates:
+  templates:
       imports:
       - { name: default_css, template: "@HeimrichHannotContaoEncore/encore_css_imports.html.twig" }
       - { name: default_js, template: "@HeimrichHannotContaoEncore/encore_js_imports.html.twig" }

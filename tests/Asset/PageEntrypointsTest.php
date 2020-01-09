@@ -70,49 +70,49 @@ class PageEntrypointsTest extends ContaoTestCase
                 false,
                 $this->mockModelObject(PageModel::class, []),
                 $this->mockClassWithProperties(LayoutModel::class, []),
-                ['entries' => ''],
+                ['js_entries' => ''],
                 null
             ],
             [
                 false,
                 $this->mockModelObject(PageModel::class, []),
                 $this->mockClassWithProperties(LayoutModel::class, []),
-                ['entries' => 123],
+                ['js_entries' => 123],
                 null
             ],
             [
                 false,
                 $this->mockModelObject(PageModel::class, []),
                 $this->mockClassWithProperties(LayoutModel::class, []),
-                ['entries' => []],
+                ['js_entries' => []],
                 null
             ],
             [
                 true,
                 $this->mockModelObject(PageModel::class, []),
                 $this->mockClassWithProperties(LayoutModel::class, []),
-                ['entries' => [[],[]]],
+                ['js_entries' => [[],[]]],
                 null
             ],
             [
                 true,
                 $this->mockModelObject(PageModel::class, []),
                 $this->mockClassWithProperties(LayoutModel::class, []),
-                ['entries' => [['a'],['b']]],
+                ['js_entries' => [['a'],['b']]],
                 null
             ],
             [
                 true,
                 $this->mockModelObject(PageModel::class, []),
                 $this->mockClassWithProperties(LayoutModel::class, []),
-                ['entries' => [['name' => 'contao-encore-bundle'],['name' => 'b']]],
+                ['js_entries' => [['name' => 'contao-encore-bundle'],['name' => 'b']]],
                 null
             ],
             [
                 true,
                 $this->mockModelObject(PageModel::class, []),
                 $this->mockClassWithProperties(LayoutModel::class, []),
-                ['entries' => [['name' => 'contao-encore-bundle'],['name' => 'contao-slick-bundle']]],
+                ['js_entries' => [['name' => 'contao-encore-bundle'],['name' => 'contao-slick-bundle']]],
                 null,
                 1
             ],
@@ -120,7 +120,7 @@ class PageEntrypointsTest extends ContaoTestCase
                 true,
                 $this->mockModelObject(PageModel::class, []),
                 $this->mockClassWithProperties(LayoutModel::class, ['encoreEntries' => serialize([['entry' => 'contao-encore-bundle']])]),
-                ['entries' => [['name' => 'contao-encore-bundle'],['name' => 'contao-slick-bundle']]],
+                ['js_entries' => [['name' => 'contao-encore-bundle'],['name' => 'contao-slick-bundle']]],
                 null,
                 2
             ],
@@ -131,7 +131,7 @@ class PageEntrypointsTest extends ContaoTestCase
                     ['entry' => 'contao-b-bundle', 'active' => ''],
                 ])]),
                 $this->mockClassWithProperties(LayoutModel::class, ['encoreEntries' => serialize([['entry' => 'contao-encore-bundle']])]),
-                ['entries' => [
+                ['js_entries' => [
                     ['name' => 'contao-encore-bundle', 'head' => '1'],
                     ['name' => 'contao-slick-bundle', 'requires_css' => '1'],
                     ['name' => 'contao-a-bundle'],
@@ -151,7 +151,7 @@ class PageEntrypointsTest extends ContaoTestCase
                     ['entry' => 'bootstrap'],
                 ])]),
                 [
-                    'entries' => [
+                    'js_entries' => [
                         ['name' => 'contao-encore-bundle', 'head' => '1'],
                         ['name' => 'contao-slick-bundle', 'requires_css' => '1'],
                         ['name' => 'contao-a-bundle'],
@@ -199,7 +199,7 @@ class PageEntrypointsTest extends ContaoTestCase
                     ['entry' => 'bootstrap'],
                 ])]),
                 [
-                    'entries' => 5,
+                    'js_entries' => 5,
                     'entrypoints_jsons' => [
                         'bootstrap' => [
                             "js" => ['boostrap.js'],
@@ -250,7 +250,7 @@ class PageEntrypointsTest extends ContaoTestCase
             ['entry' => 'bootstrap'],
         ])]);
         $config = [
-            'entries'          => [
+            'js_entries'          => [
                 ['name' => 'contao-encore-bundle', 'head' => '1'],
                 ['name' => 'contao-slick-bundle', 'requires_css' => '1'],
                 ['name' => 'contao-a-bundle'],
@@ -286,7 +286,7 @@ class PageEntrypointsTest extends ContaoTestCase
         $page = $this->mockModelObject(PageModel::class, []);
         $layout = $this->mockClassWithProperties(LayoutModel::class, []);
 
-        $instance = $this->mockPageEntrypointsObject(['entries' => [['name' => 'contao-encore-bundle'],['name' => 'b']]]);
+        $instance = $this->mockPageEntrypointsObject(['js_entries' => [['name' => 'contao-encore-bundle'],['name' => 'b']]]);
         $instance->generatePageEntrypoints($page, $layout);
 
         $this->expectException(Warning::class);

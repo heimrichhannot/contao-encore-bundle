@@ -18,7 +18,7 @@ let $ = require('jquery');
 // assign jQuery to a global for legacy modules
 window.$ = window.jQuery = $;
 ```
-> If you use jQuery in webpack, you can deactivate it in the contao page layout in order to avoid including it twice.
+> If you use jQuery in webpack, you can disable addJQuery in the contao page layout in order to avoid including it twice. If you need to include jquery templates (which means you can't disable addJQuery), you set the `huh_config.unset_jquery` to true to filter jquery out of the global asset array (see [Configuration](configuration.md) for more information).
 
 
 ## Setup babel/corejs polyfill

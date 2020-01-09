@@ -66,11 +66,11 @@ class PrepareCommand extends AbstractLockedCommand
         $config = $this->getContainer()->getParameter('huh_encore');
 
         // js
-        if (isset($config['entries']) && \is_array($config['entries'])) {
+        if (isset($config['js_entries']) && \is_array($config['js_entries'])) {
             // entries
             $entries = [];
 
-            foreach ($config['entries'] as $entry) {
+            foreach ($config['js_entries'] as $entry) {
                 $preparedEntry = [
                     'name' => $entry['name'],
                 ];
@@ -84,7 +84,7 @@ class PrepareCommand extends AbstractLockedCommand
             }
 
             $content = $twig->render('@HeimrichHannotContaoEncore/encore_bundles.js.twig', [
-                'entries' => $entries,
+                'js_entries' => $entries,
             ]);
 
             file_put_contents($resultFile, $content);

@@ -74,27 +74,27 @@ class PageEntrypoints
             && \is_array($this->bundleConfig['entrypoints_jsons'])
             && !empty($this->bundleConfig['entrypoints_jsons'])
         ) {
-            if (!isset($this->bundleConfig['entries']))
+            if (!isset($this->bundleConfig['js_entries']))
             {
-                $this->bundleConfig['entries'] = [];
-            } elseif (!\is_array($this->bundleConfig['entries']))
+                $this->bundleConfig['js_entries'] = [];
+            } elseif (!\is_array($this->bundleConfig['js_entries']))
             {
                 return false;
             }
 
-            $this->bundleConfig['entries'] = $this->entrypointsJsonLookup->mergeEntries(
+            $this->bundleConfig['js_entries'] = $this->entrypointsJsonLookup->mergeEntries(
                 $this->bundleConfig['entrypoints_jsons'],
-                $this->bundleConfig['entries'],
+                $this->bundleConfig['js_entries'],
                 $layout
             );
         }
 
-        if (!isset($this->bundleConfig['entries']) || !\is_array($this->bundleConfig['entries']) || empty($this->bundleConfig['entries']))
+        if (!isset($this->bundleConfig['js_entries']) || !\is_array($this->bundleConfig['js_entries']) || empty($this->bundleConfig['js_entries']))
         {
             return false;
         }
 
-        foreach ($this->bundleConfig['entries'] as $entry)
+        foreach ($this->bundleConfig['js_entries'] as $entry)
         {
             if (!isset($entry['name']))
             {
