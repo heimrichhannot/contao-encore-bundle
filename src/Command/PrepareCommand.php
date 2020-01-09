@@ -30,17 +30,12 @@ class PrepareCommand extends AbstractLockedCommand
      * @var PhpArrayAdapter
      */
     private $encoreCache;
-    /**
-     * @var array
-     */
-    private $bundleConfig;
 
-    public function __construct(array $bundleConfig, CacheItemPoolInterface $encoreCache)
+    public function __construct(CacheItemPoolInterface $encoreCache)
     {
         $this->encoreCache = $encoreCache;
 
         parent::__construct();
-        $this->bundleConfig = $bundleConfig;
     }
 
     /**
@@ -68,12 +63,14 @@ class PrepareCommand extends AbstractLockedCommand
 
         $this->encoreCache->clear();
 
+        $config = $this->getContainer()->getParameter('huh_encore');
+
         // js
-        if (isset($this->bundleConfig['entries']) && \is_array($this->bundleConfig['entries'])) {
+        if (isset($config['entries']) && \is_array($config['entries'])) {
             // entries
             $entries = [];
 
-            foreach ($this->bundleConfig['entries'] as $entry) {
+            foreach ($config['entries'] as $entry) {
                 $preparedEntry = [
                     'name' => $entry['name'],
                 ];

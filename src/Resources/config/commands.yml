@@ -3,9 +3,7 @@ services:
     autowire: true
     autoconfigure: true
     public: false
-    bind:
-      $bundleConfig: '%huh_encore%'
 
   HeimrichHannot\EncoreBundle\Command\PrepareCommand:
-    bind:
-      Psr\Cache\CacheItemPoolInterface: '@webpack_encore.cache'
+    arguments:
+      - '@webpack_encore.cache'
