@@ -34,7 +34,7 @@ class PageEntrypointsTest extends ContaoTestCase
            foreach ($entrypointsJsons as $name => $entrypoint) {
                $entry = ['name' => $name];
                if (isset($entrypoint['css'])) {
-                   $entry['requiresCss'] = '1';
+                   $entry['requires_css'] = '1';
                }
                $entries[] = $entry;
            }
@@ -133,7 +133,7 @@ class PageEntrypointsTest extends ContaoTestCase
                 $this->mockClassWithProperties(LayoutModel::class, ['encoreEntries' => serialize([['entry' => 'contao-encore-bundle']])]),
                 ['entries' => [
                     ['name' => 'contao-encore-bundle', 'head' => '1'],
-                    ['name' => 'contao-slick-bundle', 'requiresCss' => '1'],
+                    ['name' => 'contao-slick-bundle', 'requires_css' => '1'],
                     ['name' => 'contao-a-bundle'],
                     ['name' => 'contao-b-bundle'],
                 ]],
@@ -153,11 +153,11 @@ class PageEntrypointsTest extends ContaoTestCase
                 [
                     'entries' => [
                         ['name' => 'contao-encore-bundle', 'head' => '1'],
-                        ['name' => 'contao-slick-bundle', 'requiresCss' => '1'],
+                        ['name' => 'contao-slick-bundle', 'requires_css' => '1'],
                         ['name' => 'contao-a-bundle'],
                         ['name' => 'contao-b-bundle'],
                         ],
-                    'entrypointsJsons' => [
+                    'entrypoints_jsons' => [
                         'bootstrap' => [
                             "js" => ['boostrap.js'],
                             "css" => ['style.css'],
@@ -178,7 +178,7 @@ class PageEntrypointsTest extends ContaoTestCase
                     ['entry' => 'bootstrap'],
                 ])]),
                 [
-                    'entrypointsJsons' => [
+                    'entrypoints_jsons' => [
                         'bootstrap' => [
                             "js" => ['boostrap.js'],
                             "css" => ['style.css'],
@@ -200,7 +200,7 @@ class PageEntrypointsTest extends ContaoTestCase
                 ])]),
                 [
                     'entries' => 5,
-                    'entrypointsJsons' => [
+                    'entrypoints_jsons' => [
                         'bootstrap' => [
                             "js" => ['boostrap.js'],
                             "css" => ['style.css'],
@@ -252,11 +252,11 @@ class PageEntrypointsTest extends ContaoTestCase
         $config = [
             'entries'          => [
                 ['name' => 'contao-encore-bundle', 'head' => '1'],
-                ['name' => 'contao-slick-bundle', 'requiresCss' => '1'],
+                ['name' => 'contao-slick-bundle', 'requires_css' => '1'],
                 ['name' => 'contao-a-bundle'],
                 ['name' => 'contao-b-bundle'],
             ],
-            'entrypointsJsons' => [
+            'entrypoints_jsons' => [
                 'bootstrap' => [
                     "js"  => ['boostrap.js'],
                     "css" => ['style.css'],

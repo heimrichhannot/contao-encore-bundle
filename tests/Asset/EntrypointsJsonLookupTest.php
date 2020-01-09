@@ -27,15 +27,23 @@ class EntrypointsJsonLookupTest extends TestCase
      */
     private $lookup;
 
-    protected function setUp()
+    public function createTestInstance(array $parameters = [])
     {
-        $this->container = $this->createMock(ContainerInterface::class);
-        $this->lookup = new EntrypointsJsonLookup($this->container, null);
+        if (!isset($parameters['config'])) {
+            $parameters['config'] = [];
+        }
+        if (!isset($parameters['cache'])) {
+            $parameters['cache'] = null;
+        }
+
+        $lookup = new EntrypointsJsonLookup($parameters['config'], $parameters['cache']);
+        return $lookup;
     }
 
     public function testMergeEntries()
     {
-        $entries = $this->lookup->mergeEntries([], [
+        $lookup = $this->createTestInstance();
+        $entries = $lookup->mergeEntries([], [
             [
                 'name' => 'contao-project-bundle',
             ],
@@ -43,7 +51,7 @@ class EntrypointsJsonLookupTest extends TestCase
 
         $this->assertCount(1, $entries);
 
-        $entries = $this->lookup->mergeEntries([
+        $entries = $lookup->mergeEntries([
                 __DIR__.'/../entrypoints.json',
             ], [
                 [
@@ -59,7 +67,7 @@ class EntrypointsJsonLookupTest extends TestCase
             [
                 'name' => 'main',
                 'head' => false,
-                'requiresCss' => true,
+                'requires_css' => true,
             ],
             [
                 'name' => 'babel-polyfill',
@@ -67,7 +75,7 @@ class EntrypointsJsonLookupTest extends TestCase
             ],
         ], $entries);
 
-        $entries = $this->lookup->mergeEntries([
+        $entries = $lookup->mergeEntries([
                 __DIR__.'/../entrypoints.json',
             ], [
                 [
@@ -83,7 +91,37 @@ class EntrypointsJsonLookupTest extends TestCase
             [
                 'name' => 'main',
                 'head' => false,
-                'requiresCss' => true,
+                'requires_css' => true,
+            ],
+            [
+                'name' => 'babel-polyfill',
+                'head' => false,
+            ],
+        ], $entries);
+
+        $entries = $lookup->mergeEntries([
+                __DIR__.'/../entrypoints.json',
+            ], [
+                [
+                    'name' => 'contao-project-bundle',
+                ],
+                [
+                    'file' => 'contao-some-file.js',
+                ],
+            ]);
+
+        $this->assertCount(4, $entries);
+        $this->assertSame([
+            [
+                'name' => 'contao-project-bundle',
+            ],
+            [
+                'file' => 'contao-some-file.js',
+            ],
+            [
+                'name' => 'main',
+                'head' => false,
+                'requires_css' => true,
             ],
             [
                 'name' => 'babel-polyfill',
@@ -94,7 +132,8 @@ class EntrypointsJsonLookupTest extends TestCase
 
     public function testParseEntrypoints()
     {
-        $entrypoints = $this->lookup->parseEntrypoints(__DIR__.'/../entrypoints.json');
+        $lookup = $this->createTestInstance();
+        $entrypoints = $lookup->parseEntrypoints(__DIR__.'/../entrypoints.json');
 
         $this->assertCount(3, $entrypoints);
         $this->assertArrayHasKey('main', $entrypoints);
@@ -104,15 +143,14 @@ class EntrypointsJsonLookupTest extends TestCase
 
     public function testParseEntrypointsNoFile()
     {
+        $lookup = $this->createTestInstance();
         $this->expectException(\InvalidArgumentException::class);
 
-        $this->lookup->parseEntrypoints(__DIR__.'/../notexisting.json');
+        $lookup->parseEntrypoints(__DIR__.'/../notexisting.json');
     }
 
     public function testParseEntrypointsCachedNoHit()
     {
-        $this->setUpForCaching();
-
         $cache = $this->createMock(CacheItemPoolInterface::class);
         $item = $this->createMock(CacheItemInterface::class);
         $cache->expects(self::once())
@@ -132,7 +170,10 @@ class EntrypointsJsonLookupTest extends TestCase
             ->method('save')
             ->with($item);
 
-        $lookup = new EntrypointsJsonLookup($this->container, $cache);
+        $lookup = $this->createTestInstance([
+            'config' => ['encore_cache_enabled' => true],
+            'cache' => $cache,
+        ]);
 
         $entrypoints = $lookup->parseEntrypoints(__DIR__.'/../entrypoints.json');
 
@@ -144,8 +185,6 @@ class EntrypointsJsonLookupTest extends TestCase
 
     public function testParseEntrypointsCachedWithHit()
     {
-        $this->setUpForCaching();
-
         $cache = $this->createMock(CacheItemPoolInterface::class);
         $item = $this->createMock(CacheItemInterface::class);
         $cache->expects(self::once())
@@ -172,7 +211,10 @@ class EntrypointsJsonLookupTest extends TestCase
         $cache->expects(self::never())
             ->method('save');
 
-        $lookup = new EntrypointsJsonLookup($this->container, $cache);
+        $lookup = $this->createTestInstance([
+            'config' => ['encore_cache_enabled' => true],
+            'cache' => $cache,
+        ]);
 
         $entrypoints = $lookup->parseEntrypoints(__DIR__.'/../entrypoints.json');
 
@@ -180,20 +222,37 @@ class EntrypointsJsonLookupTest extends TestCase
         $this->assertArrayHasKey('main', $entrypoints);
     }
 
-    protected function setUpForCaching()
+    public function exceptionFileProvider()
     {
-        $this->container->expects(self::once())
-            ->method('hasParameter')
-            ->with('huh.encore')
-            ->willReturn(true);
+        return [['empty.json'],['no_entrypoints.json']];
+    }
 
-        $this->container->expects(self::once())
-            ->method('getParameter')
-            ->with('huh.encore')
-            ->willReturn([
-                'encore' => [
-                    'encoreCacheEnabled' => true,
-                ],
-            ]);
+    /**
+     * @dataProvider exceptionFileProvider
+     */
+    public function testParseEntrypointsException($file)
+    {
+        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $item = $this->createMock(CacheItemInterface::class);
+        $cache->method('getItem')
+            ->with('_default')
+            ->willReturn($item);
+
+        $item->method('isHit')
+            ->willReturn(false);
+        $item->method('set')
+            ->with(self::isType('array'))
+            ->willReturn($item);
+
+        $cache->method('save')
+            ->with($item);
+
+        $lookup = $this->createTestInstance([
+            'config' => ['encore_cache_enabled' => true],
+            'cache' => $cache,
+        ]);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $entrypoints = $lookup->parseEntrypoints(__DIR__.'/../Fixtures/'.$file);
     }
 }

@@ -111,7 +111,7 @@ class PageEntrypoints
                     $this->jsEntries[] = $entry['name'];
                 }
 
-                if (isset($entry['requiresCss']) && $entry['requiresCss'])
+                if (isset($entry['requires_css']) && $entry['requires_css'])
                 {
                     $this->cssEntries[] = $entry['name'];
                 }

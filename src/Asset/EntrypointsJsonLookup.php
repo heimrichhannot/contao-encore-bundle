@@ -67,7 +67,7 @@ class EntrypointsJsonLookup
                     ];
 
                     if (isset($entrypoint['css'])) {
-                        $newEntry['requiresCss'] = true;
+                        $newEntry['requires_css'] = true;
                     }
 
                     $bundleConfigEntries[] = $newEntry;
