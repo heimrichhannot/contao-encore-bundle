@@ -8,6 +8,7 @@
 
 namespace HeimrichHannot\EncoreBundle\DependencyInjection;
 
+use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -88,29 +89,14 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
 
         $mergedConfig = $config;
         if (isset($legacyConfig['js_entries'])) {
-            $mergedConfig['js_entries'] = $this->arrayUniqueMultidimensional(array_merge($config['js_entries'], $legacyConfig['js_entries']), 'name');
+            $mergedConfig['js_entries'] = ArrayHelper::arrayUniqueMultidimensional(array_merge($config['js_entries'], $legacyConfig['js_entries']), 'name');
         }
-        $mergedConfig['templates']['imports'] = $this->arrayUniqueMultidimensional(array_merge($config['templates']['imports'], $legacyConfig['templates']['imports']), 'name');
+        $mergedConfig['templates']['imports'] = ArrayHelper::arrayUniqueMultidimensional(array_merge($config['templates']['imports'], $legacyConfig['templates']['imports']), 'name');
 
         $mergedConfig['unset_global_keys']['js'] = array_unique(array_merge($config['unset_global_keys']['js'], $legacyConfig['legacy']['js']));
         $mergedConfig['unset_global_keys']['jquery'] = array_unique(array_merge($config['unset_global_keys']['jquery'], $legacyConfig['legacy']['jquery']));
         $mergedConfig['unset_global_keys']['css'] = array_unique(array_merge($config['unset_global_keys']['js'], $legacyConfig['legacy']['css']));
 
         return $mergedConfig;
-    }
-
-    protected function arrayUniqueMultidimensional($array, $key) {
-        $temp_array = array();
-        $i = 0;
-        $key_array = array();
-
-        foreach($array as $val) {
-            if (!in_array($val[$key], $key_array)) {
-                $key_array[$i] = $val[$key];
-                $temp_array[$i] = $val;
-            }
-            $i++;
-        }
-        return $temp_array;
     }
 }
