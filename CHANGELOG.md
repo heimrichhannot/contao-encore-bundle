@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.5.2-DEV] - 2020-01-10
+- fixed a spelling issue in all entries fields
+
 ## [1.5.1] - 2020-01-10
 - fixed a wrong key in PrepareCommand
 
