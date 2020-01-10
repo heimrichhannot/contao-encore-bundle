@@ -24,11 +24,17 @@ huh_encore:
             # Set to true, if entry should added to the encoreHeadScripts section in your page layout instead to the bottom (CSS will always be added to the head).
             head:                 ~
     templates:
+
+        # Register import templates to customize how assets are imported into your templates.
         imports:
 
             # Prototype
             -
+
+                # Unique template alias. Example: default_css
                 name:                 ~ # Required
+
+                # Full references twig template path. Example: @HeimrichHannotContaoEncore/encore_css_imports.html.twig
                 template:             ~ # Required
 
     # A list of keys that should be stripped from the global contao arrays. Here you can add assets, that you serve with webpack, so they won't be loaded twice or on the wrong page. IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
@@ -45,25 +51,4 @@ huh_encore:
 
     # Remove jQuery from global array, if addJQuery is enabled in layout section.
     unset_jquery:         false
-    encore:               # Deprecated (Configs within encore key are deprecated and will be removed in next major version.)
-        entries:
-
-            # Prototype
-            -
-                name:                 ~ # Required
-                file:                 ~ # Required
-                requiresCss:          ~
-                head:                 ~
-        templates:
-            imports:
-
-                # Prototype
-                -
-                    name:                 ~ # Required
-                    template:             ~ # Required
-        legacy:
-            js:                   []
-            jquery:               []
-            css:                  []
-
 ```
