@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.5.1] - 2020-01-10
+- fixed a wrong key in PrepareCommand
+
 ## [1.5.0] - 2020-01-10
 This release brings an overhaul to the bundle configuration (don't worry, we keep the bundle backward compatible). The biggest change is the deprecation of the encore config parameter (`huh_encore.encore`) as all children of that node are moving one level higher (`huh.js_entries` instead of `huh.encore.entries`). We also used that possibility to rename a few options to make them more clear or open possiblities for future development. But we left the `huh_encore.encore` (and marked it deprecated) key so no current config will be broken.
 

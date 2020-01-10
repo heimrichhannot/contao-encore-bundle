@@ -84,7 +84,7 @@ class PrepareCommand extends AbstractLockedCommand
             }
 
             $content = $twig->render('@HeimrichHannotContaoEncore/encore_bundles.js.twig', [
-                'js_entries' => $entries,
+                'entries' => $entries,
             ]);
 
             file_put_contents($resultFile, $content);
