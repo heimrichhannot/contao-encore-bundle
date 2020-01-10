@@ -51,7 +51,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
 
         $legacyConfig = $processedConfig['encore'];
         unset($processedConfig['encore']);
-        $processedConfig = array_merge($legacyConfig, $processedConfig);
+        $processedConfig = $this->mergeLegacyConfig($processedConfig, $legacyConfig);
 
         $processedConfig['entrypoints_jsons'] = $this->entrypointsJsons;
         $processedConfig['encore_cache_enabled'] = $this->encoreCacheEnabled;
@@ -62,6 +62,55 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
         $container->setParameter('huh.encore', ['encore' => $processedConfig]);
         $processedConfig['entrypointsJsons'] = $this->entrypointsJsons;
         $processedConfig['encoreCacheEnabled'] = $this->encoreCacheEnabled;
+    }
 
+    /**
+     * Merge legacy bundle config into bundle config
+     *
+     * @todo Remove with version 2.0
+     */
+    public function mergeLegacyConfig(array $config, array $legacyConfig)
+    {
+        if (empty($legacyConfig)) {
+            return $config;
+        }
+        if (!empty($legacyConfig['entries'])) {
+            $legacyConfig['js_entries'] = $legacyConfig['entries'];
+            unset($legacyConfig['entries']);
+            foreach ($legacyConfig['js_entries'] as &$entry) {
+                if (!isset($entry['requiresCss'])) {
+                    continue;
+                }
+                $entry['requires_css'] = $entry['requiresCss'];
+                unset($entry['requiresCss']);
+            }
+        }
+
+        $mergedConfig = $config;
+        if (isset($legacyConfig['js_entries'])) {
+            $mergedConfig['js_entries'] = $this->arrayUniqueMultidimensional(array_merge($config['js_entries'], $legacyConfig['js_entries']), 'name');
+        }
+        $mergedConfig['templates']['imports'] = $this->arrayUniqueMultidimensional(array_merge($config['templates']['imports'], $legacyConfig['templates']['imports']), 'name');
+
+        $mergedConfig['unset_global_keys']['js'] = array_unique(array_merge($config['unset_global_keys']['js'], $legacyConfig['legacy']['js']));
+        $mergedConfig['unset_global_keys']['jquery'] = array_unique(array_merge($config['unset_global_keys']['jquery'], $legacyConfig['legacy']['jquery']));
+        $mergedConfig['unset_global_keys']['css'] = array_unique(array_merge($config['unset_global_keys']['js'], $legacyConfig['legacy']['css']));
+
+        return $mergedConfig;
+    }
+
+    protected function arrayUniqueMultidimensional($array, $key) {
+        $temp_array = array();
+        $i = 0;
+        $key_array = array();
+
+        foreach($array as $val) {
+            if (!in_array($val[$key], $key_array)) {
+                $key_array[$i] = $val[$key];
+                $temp_array[$i] = $val;
+            }
+            $i++;
+        }
+        return $temp_array;
     }
 }

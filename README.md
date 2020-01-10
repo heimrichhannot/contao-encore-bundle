@@ -62,8 +62,10 @@ This file contains entries for all contao encore compatible bundles that are add
     * Pay attention that you check entries as active (if you want them to be loaded)!
     * If you want an already added entry to be not loaded on an specific page, select it as entry and don't check "active".
 
-## Develops 
+## Documentation
 
 [Setup Javascript](docs/setup_javascript.md) - Help about setting up your encore entires. 
 
 [Developer Documentation](docs/developers.md)
+
+[Configuration Reference](docs/configuration.md)
