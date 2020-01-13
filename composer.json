@@ -3,6 +3,18 @@
   "type": "contao-bundle",
   "description": "This bundle brings deep integration for symfony encore into contao. On the one hand, your can prepare your bundles to define own webpack entries, which added with just one command to your webpack entries. On the other hand, this bundle allows you to add encore entries only on the pages  you need them for optimizing your website performance.",
   "license": "LGPL-3.0-or-later",
+  "homepage": "https://github.com/heimrichhannot/contao-encore-bundle",
+  "authors": [
+    {
+      "name": "Heimrich & Hannot GmbH",
+      "email": "digitales@heimrich-hannot.de",
+      "homepage": "https://heimrich-hannot.de",
+      "role": "developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/heimrichhannot/contao-encore-bundle/issues"
+  },
   "require": {
     "php": "^7.1",
     "ext-json": "*",
