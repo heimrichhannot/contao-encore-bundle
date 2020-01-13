@@ -122,8 +122,19 @@ class PageEntrypoints
         return true;
     }
 
+    /**
+     * Collect all entries for the current page
+     *
+     * @param LayoutModel $layout
+     * @param PageModel $currentPage
+     * @param string|null $encoreField
+     * @return array
+     */
     public function collectPageEntries(LayoutModel $layout, PageModel $currentPage, ?string $encoreField = null)
     {
+        if (null === $encoreField) {
+            $encoreField = 'encoreEntries';
+        }
         $parents = [$layout];
         $parentPages = $this->container->get('huh.utils.model')->findParentsRecursively('pid', 'tl_page', $currentPage);
         if (\is_array($parentPages)) {
@@ -144,7 +155,7 @@ class PageEntrypoints
         $pageEntrypointsList[] = $activeEntrypoints;
 
         if ($layout->addEncoreBabelPolyfill && !empty($layout->encoreBabelPolyfillEntryName)) {
-            $pageEntrypointsList[] = ['$layout->encoreBabelPolyfillEntryName'];
+            $pageEntrypointsList[] = [['entry' => $layout->encoreBabelPolyfillEntryName]];
         }
 
         $pageEntrypointsList = array_reverse($pageEntrypointsList);
@@ -157,53 +168,6 @@ class PageEntrypoints
 
     }
 
-    public function isPageEntryActive(array $entry, LayoutModel $layout): bool
-    {
-        if (isset($entry['active']) && '1' !== $entry['active']) {
-            return false;
-        }
-    }
-
-    /**
-     * @param string $entry
-     *
-     * @param LayoutModel $layout
-     * @param PageModel $currentPage
-     * @param string $encoreField
-     * @return bool
-     */
-    public function isEntryActive(string $entry, LayoutModel $layout, PageModel $currentPage, ?string $encoreField = null): bool
-    {
-        if ($layout->addEncoreBabelPolyfill && $entry === $layout->encoreBabelPolyfillEntryName) {
-            return true;
-        }
-        if (null === $encoreField) {
-            $encoreField = 'encoreEntries';
-        }
-        $parents = [$layout];
-
-        $parentPages = $this->container->get('huh.utils.model')->findParentsRecursively('pid', 'tl_page', $currentPage);
-        if (\is_array($parentPages)) {
-            $parents = array_merge($parents, $parentPages);
-        }
-
-        $result = false;
-
-        foreach (array_merge($parents, [$currentPage]) as $i => $page) {
-            $isActive = $this->isEntryActiveForPage($entry, $page, $encoreField);
-
-            if (0 == $i || null !== $isActive) {
-                $result = $isActive;
-            }
-        }
-
-        if ($this->frontendAsset->isActiveEntrypoint($entry) && false !== $isActive) {
-            return true;
-        }
-
-        return $result ? true : false;
-    }
-
     /**
      * @return array
      * @throws \Exception
@@ -212,31 +176,6 @@ class PageEntrypoints
     {
         $this->isInitalized();
         return $this->jsEntries;
-    }
-
-    /**
-     * @param string $entry
-     * @param Model $page
-     *
-     * @param string $encoreField
-     * @return bool|null Returns null, if no information about the entry is specified in the page; else bool
-     */
-    public function isEntryActiveForPage(string $entry, Model $page, string $encoreField = 'encoreEntries')
-    {
-        $entries = StringUtil::deserialize($page->{$encoreField}, true);
-        if (empty($entries)) {
-            return null;
-        }
-
-        foreach ($entries as $row) {
-            if ($row['entry'] === $entry) {
-                if ($page instanceof LayoutModel) {
-                    return true;
-                }
-                return $row['active'] ? true : false;
-            }
-        }
-        return null;
     }
 
     /**

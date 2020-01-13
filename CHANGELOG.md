@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.0-DEV] - 2020-01-10
+- the order set in contao backend when adding encore entries is now respected when including the assets to the page
+
 ## [1.5.2] - 2020-01-10
 - fixed a spelling issue in all entries fields
 
