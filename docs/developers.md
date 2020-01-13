@@ -110,7 +110,7 @@ class HookListener
     {
         $templateAssets = $this->templateAsset->createInstance($page, $layout, $encoreField);
         $pageRegular->Template->encoreEntriesAmp = $templateAssets->inlineCssLinkTag();
-        $this->container->get('huh.encore.listener.hooks')->cleanGlobalArrays();
+        $this->container->get(\HeimrichHannot\EncoreBundle\EventListener\GeneratePageListener::class)->cleanGlobalArrays();
     }
 }
 ```

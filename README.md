@@ -64,7 +64,11 @@ This file contains entries for all contao encore compatible bundles that are add
 
 ## Documentation
 
-[Setup Javascript](docs/setup_javascript.md) - Help about setting up your encore entires. 
+[Project setup](docs/setup_project.md) - Prepare your contao project for use with encore and encore bundle
+
+[Bundle setup](docs/setup_bundle.md) - Add encore bundle support to your bundle
+
+[Setup Javascript](docs/setup_javascript.md) - Help about setting up your encore entries
 
 [Developer Documentation](docs/developers.md)
 
