@@ -16,6 +16,7 @@ use Contao\LayoutModel;
 use Contao\Model;
 use Contao\PageModel;
 use Contao\StringUtil;
+use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PageEntrypoints
@@ -94,96 +95,77 @@ class PageEntrypoints
             return false;
         }
 
-        foreach ($this->bundleConfig['js_entries'] as $entry)
-        {
-            if (!isset($entry['name']))
-            {
+        $pageEntries = $this->collectPageEntries($layout, $page, $encoreField);
+        foreach ($pageEntries as $pageEntry) {
+            if (isset($pageEntry['active']) && !$pageEntry['active']) {
                 continue;
             }
-            if ($this->isEntryActive($entry['name'], $layout, $page, $encoreField))
+            if (!($entry = $this->container->get('huh.utils.array')->getArrayRowByFieldValue('name', $pageEntry['entry'], $this->bundleConfig['js_entries']))) {
+                continue;
+            }
+            $this->activeEntries[] = $entry['name'];
+            if (isset($entry['head']) && $entry['head'])
             {
-                $this->activeEntries[] = $entry['name'];
-                if (isset($entry['head']) && $entry['head'])
-                {
-                    $this->jsHeadEntries[] = $entry['name'];
-                } else
-                {
-                    $this->jsEntries[] = $entry['name'];
-                }
+                $this->jsHeadEntries[] = $entry['name'];
+            } else
+            {
+                $this->jsEntries[] = $entry['name'];
+            }
 
-                if (isset($entry['requires_css']) && $entry['requires_css'])
-                {
-                    $this->cssEntries[] = $entry['name'];
-                }
+            if (isset($entry['requires_css']) && $entry['requires_css'])
+            {
+                $this->cssEntries[] = $entry['name'];
             }
         }
+
         $this->initialized = true;
         return true;
     }
 
     /**
-     * @param string $entry
+     * Collect all entries for the current page
      *
      * @param LayoutModel $layout
      * @param PageModel $currentPage
-     * @param string $encoreField
-     * @return bool
+     * @param string|null $encoreField
+     * @return array
      */
-    public function isEntryActive(string $entry, LayoutModel $layout, PageModel $currentPage, ?string $encoreField = null): bool
+    public function collectPageEntries(LayoutModel $layout, PageModel $currentPage, ?string $encoreField = null)
     {
-        if ($layout->addEncoreBabelPolyfill && $entry === $layout->encoreBabelPolyfillEntryName) {
-            return true;
-        }
         if (null === $encoreField) {
             $encoreField = 'encoreEntries';
         }
         $parents = [$layout];
-
         $parentPages = $this->container->get('huh.utils.model')->findParentsRecursively('pid', 'tl_page', $currentPage);
         if (\is_array($parentPages)) {
             $parents = array_merge($parents, $parentPages);
         }
+        $parents = array_merge($parents, [$currentPage]);
+        $parents = array_reverse($parents);
 
-        $result = false;
-
-        foreach (array_merge($parents, [$currentPage]) as $i => $page) {
-            $isActive = $this->isEntryActiveForPage($entry, $page, $encoreField);
-
-            if (0 == $i || null !== $isActive) {
-                $result = $isActive;
-            }
+        $pageEntrypointsList = [];
+        foreach ($parents as $i => $page) {
+            $pageEntrypointsList[] = StringUtil::deserialize($page->{$encoreField}, true);
         }
 
-        if ($this->frontendAsset->isActiveEntrypoint($entry) && false !== $isActive) {
-            return true;
+        $activeEntrypoints = $this->frontendAsset->getActiveEntrypoints();
+        array_walk($activeEntrypoints, function (&$value, $key) {
+            $value = ['entry' => $value];
+        });
+        $pageEntrypointsList[] = $activeEntrypoints;
+
+        if ($layout->addEncoreBabelPolyfill && !empty($layout->encoreBabelPolyfillEntryName)) {
+            $pageEntrypointsList[] = [['entry' => $layout->encoreBabelPolyfillEntryName]];
         }
 
-        return $result ? true : false;
-    }
+        $pageEntrypointsList = array_reverse($pageEntrypointsList);
+        $pageEntrypoints = [];
+        array_walk($pageEntrypointsList, function($value, $index) use (&$pageEntrypoints) {
+            $pageEntrypoints = array_merge($pageEntrypoints, $value);
+        });
+        $pageEntrypoints = ArrayHelper::arrayUniqueMultidimensional($pageEntrypoints, 'entry', true);
+        return $pageEntrypoints;
 
-    /**
-     * @param string $entry
-     * @param Model $page
-     *
-     * @param string $encoreField
-     * @return bool|null Returns null, if no information about the entry is specified in the page; else bool
-     */
-    public function isEntryActiveForPage(string $entry, Model $page, string $encoreField = 'encoreEntries')
-    {
-        $entries = StringUtil::deserialize($page->{$encoreField}, true);
-        if (empty($entries)) {
-            return null;
-        }
-
-        foreach ($entries as $row) {
-            if ($row['entry'] === $entry) {
-                if ($page instanceof LayoutModel) {
-                    return true;
-                }
-                return $row['active'] ? true : false;
-            }
-        }
-        return null;
     }
 
     /**

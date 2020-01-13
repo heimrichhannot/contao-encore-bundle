@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2020-01-13
+With this release we fixed a long overseen bug that the asset order set in the contao backend was not respected when adding assets to the page.   
+**This may lead to ordering issues if your code relies on the order of insertion.** 
+
+- the order set in contao backend when adding encore entries is now respected when including the assets to the page
+
 ## [1.5.3] - 2020-01-13
 - fixed global array not cleaned correct
 
