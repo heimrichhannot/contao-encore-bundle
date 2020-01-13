@@ -8,49 +8,33 @@
 
 namespace HeimrichHannot\EncoreBundle\EventListener;
 
-use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\PageRegular;
-use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
-use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Twig\Environment;
 
+/**
+ * Class HookListener
+ * @package HeimrichHannot\EncoreBundle\EventListener
+ *
+ * @todo Remove in version 2.0
+ */
 class HookListener
 {
-    /**
-     * @var ContaoFramework
-     */
-    private $framework;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
     /**
      * @var ContainerInterface
      */
     private $container;
-    /**
-     * @var TemplateAsset
-     */
-    private $templateAsset;
 
     /**
      * Constructor.
      *
      * @param ContainerInterface    $container
-     * @param Environment           $twig
-     * @param EntrypointsJsonLookup $entrypointsJsonLookup
+     * @codeCoverageIgnore
      */
-    public function __construct(ContainerInterface $container, Environment $twig, TemplateAsset $templateAsset)
+    public function __construct(ContainerInterface $container)
     {
-        $this->framework = $container->get('contao.framework');
-        $this->twig = $twig;
         $this->container = $container;
-        $this->templateAsset = $templateAsset;
     }
 
     /**
@@ -62,17 +46,20 @@ class HookListener
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
+     *
+     * @deprecated Will be removed in 2.0. Use GeneratePageListener::onGeneratePage instead
+     * @codeCoverageIgnore
      */
     public function onGeneratePage(PageModel $page, LayoutModel $layout, PageRegular $pageRegular)
     {
-        $this->addEncore($page, $layout, $pageRegular);
-        $this->cleanGlobalArrays();
+        $this->container->get(GeneratePageListener::class)->onGeneratePage($page, $layout, $pageRegular);
     }
 
     /**
      * A alias for the addEncore method. Just for backward compatibility. Will be removed in next major version.
      *
-     * @deprecated Use addEncore method instead. Will be removed in next major release.
+     * @deprecated Use GeneratePageListener::addEncore method instead. Will be removed in next major release.
+     * @codeCoverageIgnore
      *
      * @param PageModel $page
      * @param LayoutModel $layout
@@ -85,7 +72,7 @@ class HookListener
      */
     public function doAddEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular, ?string $encoreField = 'encoreEntries', bool $includeInline = false)
     {
-        $this->addEncore($page, $layout, $pageRegular, $encoreField, $includeInline);
+        $this->container->get(GeneratePageListener::class)->addEncore($page, $layout, $pageRegular, $encoreField, $includeInline);
     }
 
     /**
@@ -98,91 +85,29 @@ class HookListener
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      * @throws \Exception
+     *
+     * @deprecated Use GeneratePageListener::addEncore method instead. Will be removed in next major release.
+     * @codeCoverageIgnore
      */
     public function addEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular, ?string $encoreField = 'encoreEntries', bool $includeInline = false): void
     {
-        if (!$layout->addEncore) {
-            return;
-        }
-
-        $templateAssets = $this->templateAsset->createInstance($page, $layout, $encoreField);
-
-        // render css alone (should be used in <head>)
-        $pageRegular->Template->encoreStylesheets = $templateAssets->linkTags();
-
-
-        if ($includeInline) {
-            $pageRegular->Template->encoreStylesheetsInline = $templateAssets->inlineCssLinkTag();
-        }
-
-        // render js alone (should be used in footer region)
-        $pageRegular->Template->encoreScripts = $templateAssets->scriptTags();
-
-        $pageRegular->Template->encoreHeadScripts = $templateAssets->headScriptTags();
+        $this->container->get(GeneratePageListener::class)->addEncore($page, $layout, $pageRegular, $encoreField, $includeInline);
     }
 
+    /**
+     * @deprecated Use GeneratePageListener::cleanGlobalArrays method instead. Will be removed in next major release.
+     * @codeCoverageIgnore
+     */
     public function cleanGlobalArrays()
     {
-        if (!$this->container->get('huh.utils.container')->isFrontend()) {
-            return;
-        }
-
         /* @var PageModel $objPage */
         global $objPage;
 
         /** @var LayoutModel $layout */
         $layout = $this->framework->getAdapter(LayoutModel::class);
 
-        if (null === ($layout = $layout->findByPk($objPage->layout)) || !$layout->addEncore) {
+        if (null === ($layout = $this->container->get('huh.utils.model')->findModelInstanceByPk('tl_layout', $objPage->layout)) || !$layout->addEncore) {
             return;
-        }
-
-        $config = $this->container->getParameter('huh_encore');
-
-        // js
-        if (isset($config['unset_global_keys']['js']) && \is_array($config['unset_global_keys']['js'])) {
-            $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
-
-            if (\is_array($jsFiles)) {
-                foreach ($config['unset_global_keys']['js'] as $jsFile) {
-                    if (isset($jsFiles[$jsFile])) {
-                        unset($jsFiles[$jsFile]);
-                    }
-                }
-            }
-        }
-        // jquery
-        if (isset($config['unset_global_keys']['jquery']) && \is_array($config['unset_global_keys']['jquery'])) {
-            $jqueryFiles = &$GLOBALS['TL_JQUERY'];
-
-            if (\is_array($jqueryFiles)) {
-                foreach ($config['unset_global_keys']['jquery'] as $legacyFile) {
-                    if (isset($jqueryFiles[$legacyFile])) {
-                        unset($jqueryFiles[$legacyFile]);
-                    }
-                }
-            }
-        }
-
-        // css
-        if (isset($config['unset_global_keys']['css']) && \is_array($config['unset_global_keys']['css'])) {
-            foreach (['TL_USER_CSS', 'TL_CSS'] as $arrayKey) {
-                $cssFiles = &$GLOBALS[$arrayKey];
-
-                if (\is_array($cssFiles)) {
-                    foreach ($config['unset_global_keys']['css'] as $cssFile) {
-                        if (isset($cssFiles[$cssFile])) {
-                            unset($cssFiles[$cssFile]);
-                        }
-                    }
-                }
-            }
-        }
-        if (isset($config['unset_jquery']) && true === $config['unset_jquery']) {
-            $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
-            if (($key = array_search('assets/jquery/js/jquery.min.js|static', $jsFiles)) !== false) {
-                unset($jsFiles[$key]);
-            }
         }
     }
 }
