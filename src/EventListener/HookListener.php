@@ -140,11 +140,11 @@ class HookListener
         $config = $this->container->getParameter('huh_encore');
 
         // js
-        if (isset($config['legacy']['js']) && \is_array($config['legacy']['js'])) {
+        if (isset($config['unset_global_keys']['js']) && \is_array($config['unset_global_keys']['js'])) {
             $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
 
             if (\is_array($jsFiles)) {
-                foreach ($config['legacy']['js'] as $jsFile) {
+                foreach ($config['unset_global_keys']['js'] as $jsFile) {
                     if (isset($jsFiles[$jsFile])) {
                         unset($jsFiles[$jsFile]);
                     }
@@ -152,11 +152,11 @@ class HookListener
             }
         }
         // jquery
-        if (isset($config['legacy']['jquery']) && \is_array($config['legacy']['jquery'])) {
+        if (isset($config['unset_global_keys']['jquery']) && \is_array($config['unset_global_keys']['jquery'])) {
             $jqueryFiles = &$GLOBALS['TL_JQUERY'];
 
             if (\is_array($jqueryFiles)) {
-                foreach ($config['legacy']['jquery'] as $legacyFile) {
+                foreach ($config['unset_global_keys']['jquery'] as $legacyFile) {
                     if (isset($jqueryFiles[$legacyFile])) {
                         unset($jqueryFiles[$legacyFile]);
                     }
@@ -165,12 +165,12 @@ class HookListener
         }
 
         // css
-        if (isset($config['legacy']['css']) && \is_array($config['legacy']['css'])) {
+        if (isset($config['unset_global_keys']['css']) && \is_array($config['unset_global_keys']['css'])) {
             foreach (['TL_USER_CSS', 'TL_CSS'] as $arrayKey) {
                 $cssFiles = &$GLOBALS[$arrayKey];
 
                 if (\is_array($cssFiles)) {
-                    foreach ($config['legacy']['css'] as $cssFile) {
+                    foreach ($config['unset_global_keys']['css'] as $cssFile) {
                         if (isset($cssFiles[$cssFile])) {
                             unset($cssFiles[$cssFile]);
                         }

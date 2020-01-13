@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.5.3] - 2020-01-13
+- fixed global array not cleaned correct
+
 ## [1.5.2] - 2020-01-10
 - fixed a spelling issue in all entries fields
 
