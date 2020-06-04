@@ -10,7 +10,9 @@ services:
   HeimrichHannot\EncoreBundle\Asset\FrontendAsset:
     autowire: true
     public: true
-  huh.encore.asset.frontend: '@HeimrichHannot\EncoreBundle\Asset\FrontendAsset'
+  huh.encore.asset.frontend:
+    alias: HeimrichHannot\EncoreBundle\Asset\FrontendAsset
+    public: true
 
   HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup:
     autowire: true
