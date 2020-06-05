@@ -1,23 +1,18 @@
 <?php
-/**
- * Contao Open Source CMS
- *
+
+/*
  * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
+ * @license LGPL-3.0-or-later
  */
 
-
 namespace HeimrichHannot\EncoreBundle\Test\DependencyInjection;
-
 
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\DependencyInjection\EncoreExtension;
 
 class EncoreExtensionTest extends ContaoTestCase
 {
-
     public function testMergeLegacyConfig()
     {
         $extension = new EncoreExtension();
@@ -37,7 +32,7 @@ class EncoreExtensionTest extends ContaoTestCase
             'unset_global_keys' => [
                 'js' => ['asset_js_1', 'asset_js_2'],
                 'jquery' => [],
-                'css' => ['asset_css_1','asset_css_2'],
+                'css' => ['asset_css_1', 'asset_css_2'],
             ],
             'unset_jquery' => false,
         ];
@@ -55,7 +50,7 @@ class EncoreExtensionTest extends ContaoTestCase
             'legacy' => [
                 'js' => ['asset_js_3', 'asset_js_2'],
                 'jquery' => ['asset_jquery_1'],
-                'css' => ['asset_css_4','asset_css_5'],
+                'css' => ['asset_css_4', 'asset_css_5'],
             ],
         ];
 
@@ -92,7 +87,5 @@ class EncoreExtensionTest extends ContaoTestCase
             ],
         ]);
         $mergedConfig = $extension->mergeLegacyConfig($config, []);
-
-
     }
 }

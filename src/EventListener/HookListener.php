@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2019 Heimrich & Hannot GmbH
+ * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -14,8 +14,7 @@ use Contao\PageRegular;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class HookListener
- * @package HeimrichHannot\EncoreBundle\EventListener
+ * Class HookListener.
  *
  * @todo Remove in version 2.0
  */
@@ -29,7 +28,6 @@ class HookListener
     /**
      * Constructor.
      *
-     * @param ContainerInterface    $container
      * @codeCoverageIgnore
      */
     public function __construct(ContainerInterface $container)
@@ -38,11 +36,8 @@ class HookListener
     }
 
     /**
-     * generatePage Hook
+     * generatePage Hook.
      *
-     * @param PageModel $page
-     * @param LayoutModel $layout
-     * @param PageRegular $pageRegular
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
@@ -61,11 +56,6 @@ class HookListener
      * @deprecated Use GeneratePageListener::addEncore method instead. Will be removed in next major release.
      * @codeCoverageIgnore
      *
-     * @param PageModel $page
-     * @param LayoutModel $layout
-     * @param PageRegular $pageRegular
-     * @param string|null $encoreField
-     * @param bool $includeInline
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
@@ -76,11 +66,6 @@ class HookListener
     }
 
     /**
-     * @param PageModel $page
-     * @param LayoutModel $layout
-     * @param PageRegular $pageRegular
-     * @param string|null $encoreField
-     * @param bool $includeInline
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError

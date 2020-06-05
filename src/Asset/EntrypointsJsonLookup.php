@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2019 Heimrich & Hannot GmbH
+ * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -27,8 +27,7 @@ class EntrypointsJsonLookup
     /**
      * EntrypointsJsonLookup constructor.
      *
-     * @param ContainerInterface          $container
-     * @param CacheItemPoolInterface|null $cache
+     * @param ContainerInterface $container
      */
     public function __construct(array $bundleConfig, CacheItemPoolInterface $cache = null)
     {
@@ -39,11 +38,9 @@ class EntrypointsJsonLookup
     }
 
     /**
-     * @param array       $entrypointJsonFiles entrypoint json files
-     * @param array       $bundleConfigEntries Entries defined by encore bundle config
+     * @param array       $entrypointJsonFiles    entrypoint json files
+     * @param array       $bundleConfigEntries    Entries defined by encore bundle config
      * @param string|null $babelPolyfillEntryName entry name of babel polyfill
-     *
-     * @return array
      */
     public function mergeEntries(array $entrypointJsonFiles, array $bundleConfigEntries, LayoutModel $layout = null): array
     {

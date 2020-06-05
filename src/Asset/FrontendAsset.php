@@ -1,16 +1,12 @@
 <?php
-/**
- * Contao Open Source CMS
+
+/*
+ * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
- * Copyright (c) 2019 Heimrich & Hannot GmbH
- *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
+ * @license LGPL-3.0-or-later
  */
 
-
 namespace HeimrichHannot\EncoreBundle\Asset;
-
 
 class FrontendAsset
 {
@@ -20,9 +16,7 @@ class FrontendAsset
     private $activeEntrypoints = [];
 
     /**
-     * Add an active entrypoint
-     *
-     * @param string $entrypoint
+     * Add an active entrypoint.
      */
     public function addActiveEntrypoint(string $entrypoint)
     {
@@ -30,7 +24,7 @@ class FrontendAsset
     }
 
     /**
-     * Return a list of all active entrypoints
+     * Return a list of all active entrypoints.
      *
      * @return array
      */
@@ -40,14 +34,12 @@ class FrontendAsset
     }
 
     /**
-     * Check if an entrypoint is set as active entrypoint
+     * Check if an entrypoint is set as active entrypoint.
      *
-     * @param string $entrypoint
      * @return bool
      */
     public function isActiveEntrypoint(string $entrypoint)
     {
-        return in_array($entrypoint, $this->activeEntrypoints);
-
+        return \in_array($entrypoint, $this->activeEntrypoints, true);
     }
 }

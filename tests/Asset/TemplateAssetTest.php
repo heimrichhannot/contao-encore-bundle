@@ -1,16 +1,12 @@
 <?php
-/**
- * Contao Open Source CMS
+
+/*
+ * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
- * Copyright (c) 2019 Heimrich & Hannot GmbH
- *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
+ * @license LGPL-3.0-or-later
  */
 
-
 namespace HeimrichHannot\EncoreBundle\Test\Asset;
-
 
 use Contao\LayoutModel;
 use Contao\PageModel;
@@ -25,20 +21,18 @@ class TemplateAssetTest extends ContaoTestCase
 {
     public function createTestInstance(array $parameters = [], $instanceMock = null)
     {
-        if (!isset($parameters['bundleConfig']))
-        {
+        if (!isset($parameters['bundleConfig'])) {
             $parameters['bundleConfig'] = [
                 'templates' => [
                     'imports' => [
                         ['name' => 'default_css', 'template' => '@HeimrichHannotContaoEncore/encore_css_imports.html.twig'],
                         ['name' => 'default_js', 'template' => '@HeimrichHannotContaoEncore/encore_js_imports.html.twig'],
                         ['name' => 'default_head_js', 'template' => '@HeimrichHannotContaoEncore/encore_head_js_imports.html.twig'],
-                    ]
-                ]
+                    ],
+                ],
             ];
         }
-        if (!isset($parameters['webDir']))
-        {
+        if (!isset($parameters['webDir'])) {
             $parameters['webDir'] = $this->getTempDir().'/web';
         }
         if (!isset($parameters['twig'])) {
@@ -47,6 +41,7 @@ class TemplateAssetTest extends ContaoTestCase
                 if (empty($template)) {
                     throw new LoaderError('No template provided');
                 }
+
                 return serialize(['template' => $template, 'data' => $data]);
             });
             $parameters['twig'] = $twig;
@@ -58,6 +53,7 @@ class TemplateAssetTest extends ContaoTestCase
             $parameters['pageEntrypoints'] = $pageEntrypoints;
         }
         $instance = new TemplateAsset($parameters['bundleConfig'], $parameters['webDir'], $parameters['twig'], $parameters['pageEntrypoints']);
+
         return $instance;
     }
 
@@ -79,7 +75,6 @@ class TemplateAssetTest extends ContaoTestCase
         $instance = $this->createTestInstance(['pageEntrypoints' => $pageEntrypoints])->createInstance($pageModel, $layoutModel);
         $this->expectException(\Exception::class);
         $instance->scriptTags();
-
     }
 
     public function testGenerateTags()
@@ -94,7 +89,6 @@ class TemplateAssetTest extends ContaoTestCase
         $this->expectException(LoaderError::class);
         $instance->linkTags();
     }
-
 
     public function testInlineCssLinkTag()
     {

@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.3] - 2020-06-05
+- fixed modification of dca palettes
+
 ## [1.6.2] - 2020-06-04
 - fixed non public frontendasset service alias
 

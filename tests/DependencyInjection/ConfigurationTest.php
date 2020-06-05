@@ -1,16 +1,12 @@
 <?php
-/**
- * Contao Open Source CMS
- *
+
+/*
  * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
+ * @license LGPL-3.0-or-later
  */
 
-
 namespace HeimrichHannot\EncoreBundle\Test\DependencyInjection;
-
 
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\DependencyInjection\Configuration;
@@ -26,9 +22,7 @@ class ConfigurationTest extends ContaoTestCase
         $this->assertCount(5, $treeBuilder->getRootNode()->getChildNodeDefinitions());
 
         $tree = $treeBuilder->buildTree();
-        $this->assertSame('huh_encore',$tree->getName());
+        $this->assertSame('huh_encore', $tree->getName());
         $this->assertTrue($tree->getChildren()['encore']->isDeprecated());
-
-
     }
 }

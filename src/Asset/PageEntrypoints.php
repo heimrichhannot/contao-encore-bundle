@@ -1,19 +1,14 @@
 <?php
-/**
- * Contao Open Source CMS
- *
- * Copyright (c) 2019 Heimrich & Hannot GmbH
- *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
- */
 
+/*
+ * Copyright (c) 2020 Heimrich & Hannot GmbH
+ *
+ * @license LGPL-3.0-or-later
+ */
 
 namespace HeimrichHannot\EncoreBundle\Asset;
 
-
 use Contao\LayoutModel;
-use Contao\Model;
 use Contao\PageModel;
 use Contao\StringUtil;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
@@ -21,21 +16,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PageEntrypoints
 {
-    /**
-     * @var array
-     */
-    private $bundleConfig;
-
     protected $jsEntries = [];
     protected $cssEntries = [];
     protected $jsHeadEntries = [];
     protected $activeEntries = [];
+
+    protected $initialized = false;
+    /**
+     * @var array
+     */
+    private $bundleConfig;
     /**
      * @var EntrypointsJsonLookup
      */
     private $entrypointsJsonLookup;
-
-    protected $initialized = false;
 
     /**
      * @var ContainerInterface
@@ -48,8 +42,6 @@ class PageEntrypoints
 
     /**
      * PageEntrypoints constructor.
-     * @param array $bundleConfig
-     * @param EntrypointsJsonLookup $entrypointsJsonLookup
      */
     public function __construct(array $bundleConfig, EntrypointsJsonLookup $entrypointsJsonLookup, ContainerInterface $container, FrontendAsset $frontendAsset)
     {
@@ -59,27 +51,19 @@ class PageEntrypoints
         $this->frontendAsset = $frontendAsset;
     }
 
-    /**
-     * @param PageModel $page
-     * @param LayoutModel $layout
-     * @param string|null $encoreField
-     * @return bool
-     */
     public function generatePageEntrypoints(PageModel $page, LayoutModel $layout, ?string $encoreField = null): bool
     {
         if ($this->initialized) {
-            trigger_error("PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided. ", E_USER_WARNING);
+            trigger_error('PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided. ', E_USER_WARNING);
         }
         // add entries from the entrypoints.json
         if (isset($this->bundleConfig['entrypoints_jsons'])
             && \is_array($this->bundleConfig['entrypoints_jsons'])
             && !empty($this->bundleConfig['entrypoints_jsons'])
         ) {
-            if (!isset($this->bundleConfig['js_entries']))
-            {
+            if (!isset($this->bundleConfig['js_entries'])) {
                 $this->bundleConfig['js_entries'] = [];
-            } elseif (!\is_array($this->bundleConfig['js_entries']))
-            {
+            } elseif (!\is_array($this->bundleConfig['js_entries'])) {
                 return false;
             }
 
@@ -90,8 +74,7 @@ class PageEntrypoints
             );
         }
 
-        if (!isset($this->bundleConfig['js_entries']) || !\is_array($this->bundleConfig['js_entries']) || empty($this->bundleConfig['js_entries']))
-        {
+        if (!isset($this->bundleConfig['js_entries']) || !\is_array($this->bundleConfig['js_entries']) || empty($this->bundleConfig['js_entries'])) {
             return false;
         }
 
@@ -104,30 +87,25 @@ class PageEntrypoints
                 continue;
             }
             $this->activeEntries[] = $entry['name'];
-            if (isset($entry['head']) && $entry['head'])
-            {
+            if (isset($entry['head']) && $entry['head']) {
                 $this->jsHeadEntries[] = $entry['name'];
-            } else
-            {
+            } else {
                 $this->jsEntries[] = $entry['name'];
             }
 
-            if (isset($entry['requires_css']) && $entry['requires_css'])
-            {
+            if (isset($entry['requires_css']) && $entry['requires_css']) {
                 $this->cssEntries[] = $entry['name'];
             }
         }
 
         $this->initialized = true;
+
         return true;
     }
 
     /**
-     * Collect all entries for the current page
+     * Collect all entries for the current page.
      *
-     * @param LayoutModel $layout
-     * @param PageModel $currentPage
-     * @param string|null $encoreField
      * @return array
      */
     public function collectPageEntries(LayoutModel $layout, PageModel $currentPage, ?string $encoreField = null)
@@ -160,42 +138,64 @@ class PageEntrypoints
 
         $pageEntrypointsList = array_reverse($pageEntrypointsList);
         $pageEntrypoints = [];
-        array_walk($pageEntrypointsList, function($value, $index) use (&$pageEntrypoints) {
+        array_walk($pageEntrypointsList, function ($value, $index) use (&$pageEntrypoints) {
             $pageEntrypoints = array_merge($pageEntrypoints, $value);
         });
         $pageEntrypoints = ArrayHelper::arrayUniqueMultidimensional($pageEntrypoints, 'entry', true);
-        return $pageEntrypoints;
 
+        return $pageEntrypoints;
     }
 
     /**
-     * @return array
      * @throws \Exception
      */
     public function getJsEntries(): array
     {
         $this->isInitalized();
+
         return $this->jsEntries;
     }
 
     /**
-     * @return array
      * @throws \Exception
      */
     public function getCssEntries(): array
     {
         $this->isInitalized();
+
         return $this->cssEntries;
     }
 
     /**
-     * @return array
      * @throws \Exception
      */
     public function getJsHeadEntries(): array
     {
         $this->isInitalized();
+
         return $this->jsHeadEntries;
+    }
+
+    /**
+     * Return all active entrypoints.
+     *
+     * @throws \Exception
+     */
+    public function getActiveEntries(): array
+    {
+        $this->isInitalized();
+
+        return $this->activeEntries;
+    }
+
+    /**
+     * Return a fresh instance of PageEntryPoint.
+     *
+     * @return $this
+     */
+    public function createInstance()
+    {
+        return new static($this->bundleConfig, $this->entrypointsJsonLookup, $this->container, $this->frontendAsset);
     }
 
     /**
@@ -205,36 +205,8 @@ class PageEntrypoints
      */
     protected function isInitalized(): void
     {
-        if (!$this->initialized)
-        {
-            throw new \Exception("Page entrypoints are not initialized!");
+        if (!$this->initialized) {
+            throw new \Exception('Page entrypoints are not initialized!');
         }
     }
-
-    /**
-     * Return all active entrypoints.
-     *
-     * @return array
-     * @throws \Exception
-     */
-    public function getActiveEntries(): array
-    {
-        $this->isInitalized();
-        return $this->activeEntries;
-    }
-
-    /**
-     * Return a fresh instance of PageEntryPoint
-     *
-     * @return $this
-     */
-    public function createInstance()
-    {
-        return new static($this->bundleConfig, $this->entrypointsJsonLookup, $this->container, $this->frontendAsset);
-    }
-
-
-
-
-
 }

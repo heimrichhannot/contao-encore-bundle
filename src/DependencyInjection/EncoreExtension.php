@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2019 Heimrich & Hannot GmbH
+ * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -66,7 +66,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
     }
 
     /**
-     * Merge legacy bundle config into bundle config
+     * Merge legacy bundle config into bundle config.
      *
      * @todo Remove with version 2.0
      */
