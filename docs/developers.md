@@ -4,33 +4,58 @@ This document contains additional information for developers working with encore
 
 ## Add entries from your code (frontend module, content element,...)
 
-Since version 1.3 it is possible to add encore entries from your code, so for example the slider assets are automatically included, if the slider module is added to the page. To do this, you can use the `huh.encore.asset.frontend` service.
+Since version 1.3 it is possible to add encore entries from your code. So for example the slider assets are automatically included, if the slider module is added to the page. To do this, you can use the `FrontendAsset` service.
 
-Following example shows a backward compatible implementation: 
+Example with optional dependency injection (recommended): 
+
+```yaml
+# services.yml
+App/FrontendModule/MyModule:
+    calls:
+      - [setEncoreFrontendAsset, ['@?HeimrichHannot\EncoreBundle\Asset\FrontendAsset']]
+```
 
 ```php
-if ($this->container->has('huh.encore.asset.frontend')) {
-    $this->container->get('huh.encore.asset.frontend')->addActiveEntrypoint('contao-slick-bundle');
+class MyModule
+{
+    protected $encoreFrontendAsset;
+
+    public function setEncoreFrontendAsset(\HeimrichHannot\EncoreBundle\Asset\FrontendAsset $encoreFrontendAsset): void {
+        $this->encoreFrontendAsset = $encoreFrontendAsset;
+    }
+
+    public function getResponse() {
+        // ...
+        if ($this->encoreFrontendAsset) {
+            $this->encoreFrontendAsset->addActiveEntrypoint('mymodule-assets');
+        }
+        //...
+    }
+}
+```
+
+Example for legacy code (old frontend modules or content elements): 
+
+```php
+if (\Contao\System::getContainer()->has('huh.encore.asset.frontend')) {
+    \Contao\System::getContainer()->get('huh.encore.asset.frontend')->addActiveEntrypoint('contao-slick-bundle');
 }
 ```
 
 ## Make encore bundle an optional dependency
 
-If you create an reusable bundle and want to support setups that don't use encore, you need adjust the encore bundle confiuration:
+If you create a reusable bundle and want to support setups that don't use encore, you need adjust the encore bundle configuration:
 
 1. Move your `huh_encore` configuration to an own config file, for example `config_encore.yml`.
 
-1. In your `Plugin` class implement the `ExtensionPluginInterface` and merge the configs. Our [Utils Bundle](https://github.com/heimrichhannot/contao-utils-bundle) includes a method to do this for you. 
+1. In your `Plugin` class implement the `ConfigPluginInterface` and load the config, if encore bundle is installed. 
 
     ```php
-    public function getExtensionConfig($extensionName, array $extensionConfigs, ContainerBuilder $container)
+    public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
     {
-        return ContainerUtil::mergeConfigFile(
-            'huh_encore',
-            $extensionName,
-            $extensionConfigs,
-            __DIR__.'/../Resources/config/config_encore.yml'
-        );
+        if (class_exists('HeimrichHannot\EncoreBundle\HeimrichHannotContaoEncoreBundle')) {
+            $loader->load("@HeimrichHannotVideoBundle/Resources/config/config_encore.yml");
+        }
     }
     ```
 

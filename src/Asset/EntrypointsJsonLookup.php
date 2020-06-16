@@ -93,7 +93,7 @@ class EntrypointsJsonLookup
         }
 
         if (!file_exists($entrypointsJson)) {
-            throw new \InvalidArgumentException(sprintf('Could not find the entrypoints.json: the file "%s" does not exist.', $entrypointsJson));
+            throw new \InvalidArgumentException(sprintf('Could not find the entrypoints.json: the file "%s" does not exist. Maybe you forgot to run encore command?', $entrypointsJson));
         }
 
         $entriesData = json_decode(file_get_contents($entrypointsJson), true);

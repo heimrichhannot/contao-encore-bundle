@@ -14,7 +14,9 @@ namespace HeimrichHannot\EncoreBundle\Asset;
 
 use Contao\LayoutModel;
 use Contao\PageModel;
+use Symfony\WebpackEncoreBundle\Exception\EntrypointNotFoundException;
 use Twig\Environment;
+use Twig\Error\RuntimeError;
 
 class TemplateAsset
 {
@@ -96,9 +98,22 @@ class TemplateAsset
             throw new \Exception("TemplateAsset not initialized!");
         }
 
-        return $this->twig->render(
-            $this->getItemTemplateByName($this->layout->{$layoutField} ?: $defaultTemplate), $this->templateData
-        );
+        try {
+            return $this->twig->render(
+                $this->getItemTemplateByName($this->layout->{$layoutField} ?: $defaultTemplate), $this->templateData
+            );
+
+        } catch (RuntimeError $e) {
+            if (($previous = $e->getPrevious())) {
+                if ($previous instanceof EntrypointNotFoundException) {
+                    throw new EntrypointNotFoundException(
+                        $previous->getMessage()." Maybe you forgot to run prepare or encore command?",
+                        $previous->getCode()
+                    );
+                }
+            }
+            throw $e;
+        }
     }
 
     /**
