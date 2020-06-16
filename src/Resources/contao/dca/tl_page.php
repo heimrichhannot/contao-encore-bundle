@@ -50,4 +50,4 @@ $fields = [
     ],
 ];
 
-$dca['fields'] += $fields;
+$dca['fields'] = array_merge(is_array($dca['fields']) ? $dca['fields'] : [], $fields);

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2019 Heimrich & Hannot GmbH
+ * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -22,24 +22,24 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('js_entries')
-                    ->info("Add javascript files which should be registered as encore entries.")
+                    ->info('Add javascript files which should be registered as encore entries.')
                     ->arrayPrototype()
                         ->children()
                             ->scalarNode('name')
-                                ->info("Will be shown in contao backend and will be used as alias/identifier in the database.")
+                                ->info('Will be shown in contao backend and will be used as alias/identifier in the database.')
                                 ->isRequired()
                                 ->cannotBeEmpty()
                             ->end()
                             ->scalarNode('file')
                                 ->isRequired()
                                 ->cannotBeEmpty()
-                                ->info("Path to the Javascript file.")
+                                ->info('Path to the Javascript file.')
                             ->end()
                             ->booleanNode('requires_css')
                                 ->info('Set to true, if entry requires css.')
                             ->end()
                             ->booleanNode('head')
-                                ->info("Set to true, if entry should added to the encoreHeadScripts section in your page layout instead to the bottom (CSS will always be added to the head).")
+                                ->info('Set to true, if entry should added to the encoreHeadScripts section in your page layout instead to the bottom (CSS will always be added to the head).')
                             ->end()
                         ->end()
                     ->end()
@@ -48,16 +48,16 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->arrayNode('imports')
-                            ->info("Register import templates to customize how assets are imported into your templates.")
+                            ->info('Register import templates to customize how assets are imported into your templates.')
                             ->arrayPrototype()
                                 ->children()
                                     ->scalarNode('name')
-                                        ->info("Unique template alias. Example: default_css")
+                                        ->info('Unique template alias. Example: default_css')
                                         ->isRequired()
                                         ->cannotBeEmpty()
                                     ->end()
                                     ->scalarNode('template')
-                                        ->info("Full references twig template path. Example: @HeimrichHannotContaoEncore/encore_css_imports.html.twig")
+                                        ->info('Full references twig template path. Example: @HeimrichHannotContaoEncore/encore_css_imports.html.twig')
                                         ->isRequired()
                                         ->cannotBeEmpty()
                                     ->end()
@@ -85,13 +85,13 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->booleanNode('unset_jquery')
-                    ->info("Remove jQuery from global array, if addJQuery is enabled in layout section.")
+                    ->info('Remove jQuery from global array, if addJQuery is enabled in layout section.')
                     ->defaultFalse()
                 ->end()
             // TODO: Remove in version 2.0
                 ->arrayNode('encore')
                     ->addDefaultsIfNotSet()
-                    ->setDeprecated("Configs within encore key are deprecated and will be removed in next major version.")
+                    ->setDeprecated('Configs within encore key are deprecated and will be removed in next major version.')
                     ->children()
                         ->arrayNode('entries')
                             ->arrayPrototype()

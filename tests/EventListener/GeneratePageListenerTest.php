@@ -1,16 +1,12 @@
 <?php
-/**
- * Contao Open Source CMS
- *
+
+/*
  * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
+ * @license LGPL-3.0-or-later
  */
 
-
 namespace HeimrichHannot\EncoreBundle\Test\EventListener;
-
 
 use Contao\LayoutModel;
 use Contao\PageModel;
@@ -29,8 +25,8 @@ class GeneratePageListenerTest extends ContaoTestCase
     use ModelMockTrait;
 
     /**
-     * @param array $parameters
      * @param MockBuilder $hookListenerMock
+     *
      * @return GeneratePageListener|MockObject
      */
     public function createTestInstance(array $parameters = [], $hookListenerMock = null)
@@ -50,7 +46,7 @@ class GeneratePageListenerTest extends ContaoTestCase
             $twig->method('render')->willReturnArgument(1);
             $parameters['twig'] = $twig;
         }
-        if (!isset($parameters['templateAsset'])){
+        if (!isset($parameters['templateAsset'])) {
             /** @var TemplateAsset|MockObject $templateAsset */
             $templateAsset = $this->createMock(TemplateAsset::class);
             $templateAsset->method('createInstance')->willReturnSelf();
@@ -75,7 +71,7 @@ class GeneratePageListenerTest extends ContaoTestCase
                 $parameters['framework'],
                 $parameters['container'],
                 $parameters['twig'],
-                $parameters['templateAsset']
+                $parameters['templateAsset'],
             ])->getMock();
         }
 
@@ -93,7 +89,6 @@ class GeneratePageListenerTest extends ContaoTestCase
         $pageRegular = $this->createMock(PageRegular::class);
         $hookListener->onGeneratePage($pageModel, $layoutModel, $pageRegular);
         unset($hookListener);
-
 
         $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['addEncore', 'cleanGlobalArrays']));
         $hookListener->expects($this->once())->method('addEncore')->willReturn(true);
@@ -125,10 +120,8 @@ class GeneratePageListenerTest extends ContaoTestCase
 
         $listener->addEncore($pageModel, $layoutModel, $pageRegular, null, true);
         $this->assertSame('<styles>a.custom{color:blue;}</styles>', $pageRegular->Template->encoreStylesheetsInline);
-
-
     }
-    
+
     public function testCleanGlobalArrays()
     {
         // Not frontend
@@ -169,7 +162,7 @@ class GeneratePageListenerTest extends ContaoTestCase
                 'unset_global_keys' => [
                     'js' => ['contao-b-bundle'],
                     'jquery' => ['contao-b-bundle', 'contao-a-bundle', 'contao-jquery-bundle'],
-                    'css' => ['contao-a-bundle','contao-css-bundle'],
+                    'css' => ['contao-a-bundle', 'contao-css-bundle'],
                 ],
                 'unset_jquery' => false,
             ],
@@ -183,13 +176,12 @@ class GeneratePageListenerTest extends ContaoTestCase
         $this->assertCount(2, $GLOBALS['TL_USER_CSS']);
         $this->assertCount(1, $GLOBALS['TL_CSS']);
 
-
         $listener = $this->createTestInstance([
             'bundleConfig' => [
                 'unset_global_keys' => [
                     'js' => ['contao-b-bundle'],
                     'jquery' => ['contao-b-bundle', 'contao-a-bundle', 'contao-jquery-bundle'],
-                    'css' => ['contao-a-bundle','contao-css-bundle'],
+                    'css' => ['contao-a-bundle', 'contao-css-bundle'],
                 ],
                 'unset_jquery' => true,
             ],

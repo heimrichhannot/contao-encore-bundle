@@ -1,16 +1,12 @@
 <?php
-/**
- * Contao Open Source CMS
- *
+
+/*
  * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
+ * @license LGPL-3.0-or-later
  */
 
-
 namespace HeimrichHannot\EncoreBundle\EventListener;
-
 
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Contao\LayoutModel;
@@ -45,12 +41,6 @@ class GeneratePageListener
 
     /**
      * Constructor.
-     *
-     * @param array $bundleConfig
-     * @param ContaoFrameworkInterface $framework
-     * @param ContainerInterface $container
-     * @param Environment $twig
-     * @param TemplateAsset $templateAsset
      */
     public function __construct(array $bundleConfig, ContaoFrameworkInterface $framework, ContainerInterface $container, Environment $twig, TemplateAsset $templateAsset)
     {
@@ -74,11 +64,6 @@ class GeneratePageListener
     }
 
     /**
-     * @param PageModel $page
-     * @param LayoutModel $layout
-     * @param PageRegular $pageRegular
-     * @param string|null $encoreField
-     * @param bool $includeInline
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
@@ -91,7 +76,6 @@ class GeneratePageListener
         // render css alone (should be used in <head>)
         $pageRegular->Template->encoreStylesheets = $templateAssets->linkTags();
 
-
         if ($includeInline) {
             $pageRegular->Template->encoreStylesheetsInline = $templateAssets->inlineCssLinkTag();
         }
@@ -103,7 +87,7 @@ class GeneratePageListener
     }
 
     /**
-     * Clean up contao global asset arrays
+     * Clean up contao global asset arrays.
      */
     public function cleanGlobalArrays(LayoutModel $layout)
     {
@@ -152,7 +136,7 @@ class GeneratePageListener
         }
         if (isset($this->bundleConfig['unset_jquery']) && true === $this->bundleConfig['unset_jquery']) {
             $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
-            if (($key = array_search('assets/jquery/js/jquery.min.js|static', $jsFiles)) !== false) {
+            if (false !== ($key = array_search('assets/jquery/js/jquery.min.js|static', $jsFiles, true))) {
                 unset($jsFiles[$key]);
             }
         }

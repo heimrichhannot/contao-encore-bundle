@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2019 Heimrich & Hannot GmbH
+ * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -36,6 +36,7 @@ class EntrypointsJsonLookupTest extends TestCase
         }
 
         $lookup = new EntrypointsJsonLookup($parameters['config'], $parameters['cache']);
+
         return $lookup;
     }
 
@@ -223,7 +224,7 @@ class EntrypointsJsonLookupTest extends TestCase
 
     public function exceptionFileProvider()
     {
-        return [['empty.json'],['no_entrypoints.json']];
+        return [['empty.json'], ['no_entrypoints.json']];
     }
 
     /**
