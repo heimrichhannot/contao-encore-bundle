@@ -1,16 +1,12 @@
 <?php
-/**
- * Contao Open Source CMS
- *
+
+/*
  * Copyright (c) 2020 Heimrich & Hannot GmbH
  *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
+ * @license LGPL-3.0-or-later
  */
 
-
 namespace HeimrichHannot\EncoreBundle\Asset;
-
 
 use Contao\LayoutModel;
 use Contao\PageModel;
@@ -69,6 +65,7 @@ class TemplateAsset
     {
         $instance = new static($this->bundleConfig, $this->webDir, $this->twig, $this->pageEntrypoints);
         $instance->initialize($pageModel, $layoutModel, $entriesField);
+
         return $instance;
     }
 
@@ -80,8 +77,7 @@ class TemplateAsset
         $this->pageEntrypoints = $this->pageEntrypoints->createInstance();
         $this->templateData = $this->layout->row();
 
-        if (!$this->pageEntrypoints->generatePageEntrypoints($this->page, $this->layout, $this->entriesField))
-        {
+        if (!$this->pageEntrypoints->generatePageEntrypoints($this->page, $this->layout, $this->entriesField)) {
             return;
         }
 
@@ -92,34 +88,9 @@ class TemplateAsset
         $this->initialized = true;
     }
 
-    private function generateTags(string $layoutField, string $defaultTemplate)
-    {
-        if (!$this->initialized) {
-            throw new \Exception("TemplateAsset not initialized!");
-        }
-
-        try {
-            return $this->twig->render(
-                $this->getItemTemplateByName($this->layout->{$layoutField} ?: $defaultTemplate), $this->templateData
-            );
-
-        } catch (RuntimeError $e) {
-            if (($previous = $e->getPrevious())) {
-                if ($previous instanceof EntrypointNotFoundException) {
-                    throw new EntrypointNotFoundException(
-                        $previous->getMessage()." Maybe you forgot to run prepare or encore command?",
-                        $previous->getCode()
-                    );
-                }
-            }
-            throw $e;
-        }
-    }
-
     /**
-     * Return the javascript that should be included in the header region
+     * Return the javascript that should be included in the header region.
      *
-     * @return string
      * @throws \Exception
      */
     public function headScriptTags(): string
@@ -128,9 +99,8 @@ class TemplateAsset
     }
 
     /**
-     * Return the javascript tags that should be included in the footer region
+     * Return the javascript tags that should be included in the footer region.
      *
-     * @return string
      * @throws \Exception
      */
     public function scriptTags(): string
@@ -139,10 +109,11 @@ class TemplateAsset
     }
 
     /**
-     * Return the css link tags that should be included in the header region
+     * Return the css link tags that should be included in the header region.
+     *
+     * @throws \Exception
      *
      * @return string
-     * @throws \Exception
      */
     public function linkTags()
     {
@@ -150,10 +121,11 @@ class TemplateAsset
     }
 
     /**
-     * Return a link tag with inline css
+     * Return a link tag with inline css.
+     *
+     * @throws \Exception
      *
      * @return bool|string
-     * @throws \Exception
      */
     public function inlineCssLinkTag()
     {
@@ -187,5 +159,25 @@ class TemplateAsset
         }
 
         return null;
+    }
+
+    private function generateTags(string $layoutField, string $defaultTemplate)
+    {
+        if (!$this->initialized) {
+            throw new \Exception('TemplateAsset not initialized!');
+        }
+
+        try {
+            return $this->twig->render(
+                $this->getItemTemplateByName($this->layout->{$layoutField} ?: $defaultTemplate), $this->templateData
+            );
+        } catch (RuntimeError $e) {
+            if (($previous = $e->getPrevious())) {
+                if ($previous instanceof EntrypointNotFoundException) {
+                    throw new EntrypointNotFoundException($previous->getMessage().' Maybe you forgot to run prepare or encore command?', $previous->getCode());
+                }
+            }
+            throw $e;
+        }
     }
 }
