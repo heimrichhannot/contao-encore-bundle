@@ -13,6 +13,7 @@ use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\PageRegular;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
+use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
@@ -60,7 +61,6 @@ class GeneratePageListener
             return;
         }
         $this->addEncore($pageModel, $layout, $pageRegular);
-        $this->cleanGlobalArrays($layout);
     }
 
     /**
@@ -88,6 +88,8 @@ class GeneratePageListener
 
     /**
      * Clean up contao global asset arrays.
+     *
+     * @deprecated Use EntryHelper::cleanGlobalArrays() instead
      */
     public function cleanGlobalArrays(LayoutModel $layout)
     {
@@ -95,50 +97,6 @@ class GeneratePageListener
             return;
         }
 
-        // js
-        if (isset($this->bundleConfig['unset_global_keys']['js']) && \is_array($this->bundleConfig['unset_global_keys']['js'])) {
-            $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
-
-            if (\is_array($jsFiles)) {
-                foreach ($this->bundleConfig['unset_global_keys']['js'] as $jsFile) {
-                    if (isset($jsFiles[$jsFile])) {
-                        unset($jsFiles[$jsFile]);
-                    }
-                }
-            }
-        }
-        // jquery
-        if (isset($this->bundleConfig['unset_global_keys']['jquery']) && \is_array($this->bundleConfig['unset_global_keys']['jquery'])) {
-            $jqueryFiles = &$GLOBALS['TL_JQUERY'];
-
-            if (\is_array($jqueryFiles)) {
-                foreach ($this->bundleConfig['unset_global_keys']['jquery'] as $legacyFile) {
-                    if (isset($jqueryFiles[$legacyFile])) {
-                        unset($jqueryFiles[$legacyFile]);
-                    }
-                }
-            }
-        }
-
-        // css
-        if (isset($this->bundleConfig['unset_global_keys']['css']) && \is_array($this->bundleConfig['unset_global_keys']['css'])) {
-            foreach (['TL_USER_CSS', 'TL_CSS'] as $arrayKey) {
-                $cssFiles = &$GLOBALS[$arrayKey];
-
-                if (\is_array($cssFiles)) {
-                    foreach ($this->bundleConfig['unset_global_keys']['css'] as $cssFile) {
-                        if (isset($cssFiles[$cssFile])) {
-                            unset($cssFiles[$cssFile]);
-                        }
-                    }
-                }
-            }
-        }
-        if (isset($this->bundleConfig['unset_jquery']) && true === $this->bundleConfig['unset_jquery']) {
-            $jsFiles = &$GLOBALS['TL_JAVASCRIPT'];
-            if (false !== ($key = array_search('assets/jquery/js/jquery.min.js|static', $jsFiles, true))) {
-                unset($jsFiles[$key]);
-            }
-        }
+        EntryHelper::cleanGlobalArrays($this->bundleConfig);
     }
 }

@@ -10,3 +10,4 @@ services:
   HeimrichHannot\EncoreBundle\EventListener\HookListener: '@huh.encore.listener.hooks'
 
   HeimrichHannot\EncoreBundle\EventListener\GeneratePageListener: ~
+  HeimrichHannot\EncoreBundle\EventListener\ReplaceDynamicScriptTagsListener: ~

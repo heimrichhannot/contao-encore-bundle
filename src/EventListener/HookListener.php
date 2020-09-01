@@ -11,6 +11,7 @@ namespace HeimrichHannot\EncoreBundle\EventListener;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\PageRegular;
+use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -80,19 +81,15 @@ class HookListener
     }
 
     /**
-     * @deprecated Use GeneratePageListener::cleanGlobalArrays method instead. Will be removed in next major release.
+     * @deprecated Will be removed in next major release. Use EntryHelper::cleanGlobalArrays() method instead.
      * @codeCoverageIgnore
      */
     public function cleanGlobalArrays()
     {
-        /* @var PageModel $objPage */
-        global $objPage;
-
-        /** @var LayoutModel $layout */
-        $layout = $this->framework->getAdapter(LayoutModel::class);
-
-        if (null === ($layout = $this->container->get('huh.utils.model')->findModelInstanceByPk('tl_layout', $objPage->layout)) || !$layout->addEncore) {
+        if (!$this->container->get('huh.utils.container')->isFrontend()) {
             return;
         }
+
+        EntryHelper::cleanGlobalArrays($this->container->getParameter('huh_encore'));
     }
 }

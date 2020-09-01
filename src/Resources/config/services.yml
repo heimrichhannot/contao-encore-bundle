@@ -1,26 +1,25 @@
 services:
   _defaults:
+    autowire: true
     bind:
       $bundleConfig: '%huh_encore%'
       $webDir: '%contao.web_dir%'
 
-  HeimrichHannot\EncoreBundle\Asset\PageEntrypoints:
-    autowire: true
+  HeimrichHannot\EncoreBundle\Asset\PageEntrypoints: ~
 
   HeimrichHannot\EncoreBundle\Asset\FrontendAsset:
-    autowire: true
     public: true
+
   huh.encore.asset.frontend:
     alias: HeimrichHannot\EncoreBundle\Asset\FrontendAsset
     public: true
 
   HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup:
-    autowire: true
     bind:
       Psr\Cache\CacheItemPoolInterface: "@webpack_encore.cache"
 
-  HeimrichHannot\EncoreBundle\Asset\TemplateAsset:
-    autowire: true
+  HeimrichHannot\EncoreBundle\Asset\TemplateAsset: ~
+
   huh.encore.asset.template:
     alias: HeimrichHannot\EncoreBundle\Asset\TemplateAsset
     public: true
@@ -28,9 +27,7 @@ services:
   huh.encore.choice.entry:
     class: HeimrichHannot\EncoreBundle\Choice\EntryChoice
     public: true
-    autowire: true
 
   huh.encore.choice.template.imports:
     class: HeimrichHannot\EncoreBundle\Choice\ImportsTemplateChoice
     public: true
-    autowire: true

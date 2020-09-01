@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - 2020-09-01
+- added EntryHelper::cleanGlobalArrays() as public endpoint to clean global assets
+- added ReplaceDynamicScriptTagsListener where global is now cleaned since generatePage hook is triggered to early in some circumstances
+- fixed global contao asset array not always correctly cleaned
+- fixed HookListener::cleanGlobalArrays()
+
 ## [1.7.0] - 2020-06-16
 - added some hints to error messages for easier debugging
 

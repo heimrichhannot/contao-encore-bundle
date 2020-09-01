@@ -133,9 +133,9 @@ class HookListener
     }
     public function onGeneratePage(PageModel $page, LayoutModel $layout, PageRegular $pageRegular) 
     {
+        /** @var string $encoreField The dca field name where encore entries stored */
         $templateAssets = $this->templateAsset->createInstance($page, $layout, $encoreField);
         $pageRegular->Template->encoreEntriesAmp = $templateAssets->inlineCssLinkTag();
-        $this->container->get(\HeimrichHannot\EncoreBundle\EventListener\GeneratePageListener::class)->cleanGlobalArrays();
     }
 }
 ```
