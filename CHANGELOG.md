@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.8.1] - 2020-09-02
+- small code enhancement 
+
 ## [1.8.0] - 2020-09-01
 - added EntryHelper::cleanGlobalArrays() as public endpoint to clean global assets
 - added ReplaceDynamicScriptTagsListener where global is now cleaned since generatePage hook is triggered to early in some circumstances

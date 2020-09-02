@@ -14,6 +14,7 @@ use Contao\PageModel;
 use Contao\PageRegular;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
+use HeimrichHannot\EncoreBundle\Helper\MultilingualHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
@@ -54,6 +55,17 @@ class GeneratePageListener
 
     /**
      * @Hook("generatePage")
+     */
+    public function __invoke(PageModel $pageModel, LayoutModel $layout, PageRegular $pageRegular)
+    {
+        if (!$layout->addEncore) {
+            return;
+        }
+        $this->addEncore($pageModel, $layout, $pageRegular);
+    }
+
+    /**
+     * @deprecated Use __invoke instead.
      */
     public function onGeneratePage(PageModel $pageModel, LayoutModel $layout, PageRegular $pageRegular): void
     {
