@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.8.3] - 2020-09-02
+- fixed entries filtered when encore disabled in layout
+
 ## [1.8.2] - 2020-09-02
 - updated tests
 

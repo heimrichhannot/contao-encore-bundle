@@ -11,6 +11,7 @@
 
 namespace HeimrichHannot\EncoreBundle\EventListener;
 
+use Contao\LayoutModel;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
 use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
 
@@ -40,6 +41,11 @@ class ReplaceDynamicScriptTagsListener
     public function __invoke(string $buffer): string
     {
         if (!$this->containerUtil->isFrontend()) {
+            return $buffer;
+        }
+        global $objPage;
+        $objLayout = LayoutModel::findByPk($objPage->layoutId);
+        if (!$objLayout || !$objLayout->addEncore) {
             return $buffer;
         }
 
