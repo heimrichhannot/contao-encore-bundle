@@ -43,7 +43,15 @@ class ReplaceDynamicScriptTagsListener
             return $buffer;
         }
 
-        EntryHelper::cleanGlobalArrays($this->bundleConfig);
+        $this->cleanGlobalArrays();
         return $buffer;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    protected function cleanGlobalArrays()
+    {
+        EntryHelper::cleanGlobalArrays($this->bundleConfig);
     }
 }

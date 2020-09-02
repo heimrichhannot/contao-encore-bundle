@@ -78,11 +78,29 @@ class GeneratePageListenerTest extends ContaoTestCase
         return $hookListener;
     }
 
-    public function testOnGeneratePage()
+    public function testInvoke()
     {
         $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['addEncore', 'cleanGlobalArrays']));
         $hookListener->expects($this->never())->method('addEncore')->willReturn(true);
-        $hookListener->expects($this->never())->method('cleanGlobalArrays')->willReturn(true);
+
+        $pageModel = $this->mockClassWithProperties(PageModel::class, []);
+        $layoutModel = $this->mockModelObject(LayoutModel::class, ['addEncore' => '']);
+        $pageRegular = $this->createMock(PageRegular::class);
+        $hookListener->__invoke($pageModel, $layoutModel, $pageRegular);
+        unset($hookListener);
+
+        $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['addEncore']));
+        $hookListener->expects($this->once())->method('addEncore')->willReturn(true);
+
+        $pageModel = $this->mockClassWithProperties(PageModel::class, []);
+        $layoutModel = $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '1']);
+        $pageRegular = $this->createMock(PageRegular::class);
+        $hookListener->__invoke($pageModel, $layoutModel, $pageRegular);
+    }
+    public function testOnGeneratePage()
+    {
+        $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['addEncore']));
+        $hookListener->expects($this->never())->method('addEncore')->willReturn(true);
 
         $pageModel = $this->mockClassWithProperties(PageModel::class, []);
         $layoutModel = $this->mockModelObject(LayoutModel::class, ['addEncore' => '']);
@@ -90,9 +108,8 @@ class GeneratePageListenerTest extends ContaoTestCase
         $hookListener->onGeneratePage($pageModel, $layoutModel, $pageRegular);
         unset($hookListener);
 
-        $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['addEncore', 'cleanGlobalArrays']));
+        $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['addEncore']));
         $hookListener->expects($this->once())->method('addEncore')->willReturn(true);
-        $hookListener->expects($this->once())->method('cleanGlobalArrays')->willReturn(true);
 
         $pageModel = $this->mockClassWithProperties(PageModel::class, []);
         $layoutModel = $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '1']);
