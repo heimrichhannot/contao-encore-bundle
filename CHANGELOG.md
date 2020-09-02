@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.8.2] - 2020-09-02
+- updated tests
+
 ## [1.8.1] - 2020-09-02
 - small code enhancement 
 
