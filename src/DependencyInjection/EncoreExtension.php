@@ -95,7 +95,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
 
         $mergedConfig['unset_global_keys']['js'] = array_unique(array_merge($config['unset_global_keys']['js'], $legacyConfig['legacy']['js']));
         $mergedConfig['unset_global_keys']['jquery'] = array_unique(array_merge($config['unset_global_keys']['jquery'], $legacyConfig['legacy']['jquery']));
-        $mergedConfig['unset_global_keys']['css'] = array_unique(array_merge($config['unset_global_keys']['js'], $legacyConfig['legacy']['css']));
+        $mergedConfig['unset_global_keys']['css'] = array_unique(array_merge($config['unset_global_keys']['css'], $legacyConfig['legacy']['css']));
 
         return $mergedConfig;
     }
