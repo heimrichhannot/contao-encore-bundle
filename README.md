@@ -1,7 +1,7 @@
 # Contao Encore Bundle
 [![Latest Stable Version](https://img.shields.io/packagist/v/heimrichhannot/contao-encore-bundle.svg)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
 [![Total Downloads](https://img.shields.io/packagist/dt/heimrichhannot/contao-encore-bundle.svg)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
-[![Build Status](https://travis-ci.org/heimrichhannot/contao-encore-bundle.svg?branch=master)](https://travis-ci.org/heimrichhannot/contao-encore-bundle)
+![CI](https://github.com/heimrichhannot/contao-encore-bundle/workflows/CI/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/heimrichhannot/contao-encore-bundle/badge.svg?branch=master)](https://coveralls.io/github/heimrichhannot/contao-encore-bundle?branch=master)
 
 This bundle brings deep integration for symfony encore into contao. On the one hand, your can prepare your bundles to define own webpack entries, which added with just one command to your webpack entries. On the other hand, this bundle allows you to add encore entries only on the pages  you need them for optimizing your website performance.

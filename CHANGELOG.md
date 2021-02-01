@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.8.5] - 2021-02-01
+- fixed encore assets not correctly added to all contao error pages
+
 ## [1.8.4] - 2020-11-06
 - fixed wrong key used in legacy config merge
 
