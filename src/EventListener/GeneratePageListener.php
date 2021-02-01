@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2020 Heimrich & Hannot GmbH
+ * Copyright (c) 2021 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -14,7 +14,6 @@ use Contao\PageModel;
 use Contao\PageRegular;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
-use HeimrichHannot\EncoreBundle\Helper\MultilingualHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
@@ -65,7 +64,8 @@ class GeneratePageListener
     }
 
     /**
-     * @deprecated Use __invoke instead.
+     * @deprecated use __invoke instead
+     * @codeCoverageIgnore
      */
     public function onGeneratePage(PageModel $pageModel, LayoutModel $layout, PageRegular $pageRegular): void
     {
