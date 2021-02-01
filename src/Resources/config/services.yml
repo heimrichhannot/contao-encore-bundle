@@ -31,3 +31,7 @@ services:
   huh.encore.choice.template.imports:
     class: HeimrichHannot\EncoreBundle\Choice\ImportsTemplateChoice
     public: true
+
+  HeimrichHannot\EncoreBundle\EventListener\Contao\:
+    resource: "../../EventListener/Contao/*"
+    public: true
