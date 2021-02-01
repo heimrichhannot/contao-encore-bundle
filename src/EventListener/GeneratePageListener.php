@@ -102,6 +102,7 @@ class GeneratePageListener
      * Clean up contao global asset arrays.
      *
      * @deprecated Use EntryHelper::cleanGlobalArrays() instead
+     * @codeCoverageIgnore
      */
     public function cleanGlobalArrays(LayoutModel $layout)
     {

@@ -15,7 +15,6 @@ use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\EventListener\GeneratePageListener;
 use HeimrichHannot\EncoreBundle\Test\ModelMockTrait;
-use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use Twig\Environment;
@@ -118,81 +117,5 @@ class GeneratePageListenerTest extends ContaoTestCase
 
         $listener->addEncore($pageModel, $layoutModel, $pageRegular, null, true);
         $this->assertSame('<styles>a.custom{color:blue;}</styles>', $pageRegular->Template->encoreStylesheetsInline);
-    }
-
-    public function testCleanGlobalArrays()
-    {
-        // Not frontend
-        $container = $this->mockContainer();
-        $containerUtilMock = $this->createMock(ContainerUtil::class);
-        $containerUtilMock->expects($this->once())->method('isFrontend')->willReturn(false);
-        $container->set('huh.utils.container', $containerUtilMock);
-        $listener = $this->createTestInstance(['container' => $container]);
-        $layout = $this->mockModelObject(LayoutModel::class);
-        $listener->cleanGlobalArrays($layout);
-
-        // Frontend
-        $container = $this->mockContainer();
-        $containerUtilMock = $this->createMock(ContainerUtil::class);
-        $containerUtilMock->method('isFrontend')->willReturn(true);
-        $container->set('huh.utils.container', $containerUtilMock);
-        $listener = $this->createTestInstance([
-            'bundleConfig' => [
-                'unset_global_keys' => [
-                    'js' => [],
-                    'jquery' => [],
-                    'javascript' => [],
-                ],
-                'unset_jquery' => false,
-            ],
-            'container' => $container,
-            ]);
-        /** @var LayoutModel $layout */
-        $layout = $this->mockModelObject(LayoutModel::class, ['addEncore' => '']);
-        $listener->cleanGlobalArrays($layout);
-
-        $GLOBALS['TL_JAVASCRIPT'] = ['assets/jquery/js/jquery.min.js|static', 'contao-a-bundle' => '', 'contao-b-bundle' => ''];
-        $GLOBALS['TL_JQUERY'] = ['contao-a-bundle' => '', 'contao-c-bundle' => '', 'contao-jquery-bundle' => '', 'contao-d-bundle' => '', 'contao-e-bundle' => ''];
-        $GLOBALS['TL_USER_CSS'] = ['contao-a-bundle' => '', 'contao-b-bundle' => '', 'contao-jquery-bundle' => ''];
-        $GLOBALS['TL_CSS'] = ['contao-a-bundle' => '', 'contao-c-bundle' => '', 'contao-css-bundle' => ''];
-        $listener = $this->createTestInstance([
-            'bundleConfig' => [
-                'unset_global_keys' => [
-                    'js' => ['contao-b-bundle'],
-                    'jquery' => ['contao-b-bundle', 'contao-a-bundle', 'contao-jquery-bundle'],
-                    'css' => ['contao-a-bundle', 'contao-css-bundle'],
-                ],
-                'unset_jquery' => false,
-            ],
-            'container' => $container,
-            ]);
-        /** @var LayoutModel $layout */
-        $layout = $this->mockModelObject(LayoutModel::class, ['addEncore' => '1']);
-        $listener->cleanGlobalArrays($layout);
-        $this->assertCount(2, $GLOBALS['TL_JAVASCRIPT']);
-        $this->assertCount(3, $GLOBALS['TL_JQUERY']);
-        $this->assertCount(2, $GLOBALS['TL_USER_CSS']);
-        $this->assertCount(1, $GLOBALS['TL_CSS']);
-
-        $listener = $this->createTestInstance([
-            'bundleConfig' => [
-                'unset_global_keys' => [
-                    'js' => ['contao-b-bundle'],
-                    'jquery' => ['contao-b-bundle', 'contao-a-bundle', 'contao-jquery-bundle'],
-                    'css' => ['contao-a-bundle', 'contao-css-bundle'],
-                ],
-                'unset_jquery' => true,
-            ],
-            'container' => $container,
-        ]);
-        $GLOBALS['TL_JAVASCRIPT'] = ['assets/jquery/js/jquery.min.js|static', 'contao-a-bundle' => '', 'contao-b-bundle' => ''];
-        $GLOBALS['TL_JQUERY'] = ['contao-a-bundle' => '', 'contao-c-bundle' => '', 'contao-jquery-bundle' => '', 'contao-d-bundle' => ''];
-        $GLOBALS['TL_USER_CSS'] = ['contao-a-bundle' => '', 'contao-b-bundle' => '', 'contao-jquery-bundle' => ''];
-        $GLOBALS['TL_CSS'] = ['contao-a-bundle' => '', 'contao-c-bundle' => '', 'contao-css-bundle' => ''];
-        $listener->cleanGlobalArrays($layout);
-        $this->assertCount(1, $GLOBALS['TL_JAVASCRIPT']);
-        $this->assertCount(2, $GLOBALS['TL_JQUERY']);
-        $this->assertCount(2, $GLOBALS['TL_USER_CSS']);
-        $this->assertCount(1, $GLOBALS['TL_CSS']);
     }
 }

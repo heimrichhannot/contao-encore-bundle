@@ -1,19 +1,16 @@
 <?php
-/**
- * Contao Open Source CMS
- *
- * Copyright (c) 2020 Heimrich & Hannot GmbH
- *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
- */
 
+/*
+ * Copyright (c) 2021 Heimrich & Hannot GmbH
+ *
+ * @license LGPL-3.0-or-later
+ */
 
 namespace HeimrichHannot\EncoreBundle\EventListener;
 
-use Contao\LayoutModel;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
 use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
+use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 
 /**
  * @Hook("replaceDynamicScriptTags")
@@ -28,14 +25,19 @@ class ReplaceDynamicScriptTagsListener
      * @var ContainerUtil
      */
     protected $containerUtil;
+    /**
+     * @var ModelUtil
+     */
+    protected $modelUtil;
 
     /**
      * ReplaceDynamicScriptTagsListener constructor.
      */
-    public function __construct(array $bundleConfig, ContainerUtil $containerUtil)
+    public function __construct(array $bundleConfig, ContainerUtil $containerUtil, ModelUtil $modelUtil)
     {
         $this->bundleConfig = $bundleConfig;
         $this->containerUtil = $containerUtil;
+        $this->modelUtil = $modelUtil;
     }
 
     public function __invoke(string $buffer): string
@@ -43,13 +45,15 @@ class ReplaceDynamicScriptTagsListener
         if (!$this->containerUtil->isFrontend()) {
             return $buffer;
         }
+
         global $objPage;
-        $objLayout = LayoutModel::findByPk($objPage->layoutId);
+        $objLayout = $this->modelUtil->findModelInstanceByPk('tl_layout', $objPage->layoutId);
         if (!$objLayout || !$objLayout->addEncore) {
             return $buffer;
         }
 
         $this->cleanGlobalArrays();
+
         return $buffer;
     }
 
