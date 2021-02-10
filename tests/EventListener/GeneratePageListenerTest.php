@@ -79,8 +79,8 @@ class GeneratePageListenerTest extends ContaoTestCase
 
     public function testInvoke()
     {
-        $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['addEncore', 'cleanGlobalArrays']));
-        $hookListener->expects($this->never())->method('addEncore')->willReturn(true);
+        $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['createEncoreScriptTags']));
+        $hookListener->expects($this->never())->method('createEncoreScriptTags')->willReturn(true);
 
         $pageModel = $this->mockClassWithProperties(PageModel::class, []);
         $layoutModel = $this->mockModelObject(LayoutModel::class, ['addEncore' => '']);
@@ -88,8 +88,8 @@ class GeneratePageListenerTest extends ContaoTestCase
         $hookListener->__invoke($pageModel, $layoutModel, $pageRegular);
         unset($hookListener);
 
-        $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['addEncore']));
-        $hookListener->expects($this->once())->method('addEncore')->willReturn(true);
+        $hookListener = $this->createTestInstance([], $this->getMockBuilder(GeneratePageListener::class)->setMethods(['createEncoreScriptTags']));
+        $hookListener->expects($this->once())->method('createEncoreScriptTags')->willReturn(true);
 
         $pageModel = $this->mockClassWithProperties(PageModel::class, []);
         $layoutModel = $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '1']);
@@ -117,5 +117,21 @@ class GeneratePageListenerTest extends ContaoTestCase
 
         $listener->addEncore($pageModel, $layoutModel, $pageRegular, null, true);
         $this->assertSame('<styles>a.custom{color:blue;}</styles>', $pageRegular->Template->encoreStylesheetsInline);
+    }
+
+    public function testCreateEncoreScriptTags()
+    {
+        /** @var GeneratePageListener $instance */
+        $instance = $this->createTestInstance();
+
+        $pageModel = $this->mockClassWithProperties(PageModel::class, []);
+        $layoutModel = $this->mockModelObject(LayoutModel::class, ['addEncore' => '1']);
+        $pageRegular = $this->mockClassWithProperties(PageRegular::class, ['Template' => new \stdClass()]);
+
+        $instance->__invoke($pageModel, $layoutModel, $pageRegular);
+
+        $this->assertSame('[[HUH_ENCORE_CSS]]', $pageRegular->Template->encoreStylesheets);
+        $this->assertSame('[[HUH_ENCORE_JS]]', $pageRegular->Template->encoreScripts);
+        $this->assertSame('[[HUH_ENCORE_HEAD_JS]]', $pageRegular->Template->encoreHeadScripts);
     }
 }
