@@ -6,49 +6,52 @@ The complete bundle configuration:
 # Default configuration for extension with alias: "huh_encore"
 huh_encore:
 
-    # Add javascript files which should be registered as encore entries.
-    js_entries:
+  # Use contao template variables in fe_page (stylesheets, head, mootools) for inserting assets instead of the custom template variables of this bundle. Recommended: true. Default: false (due bc reasons). Will be default true in next major version.
+  use_contao_template_variables: false
 
-        # Prototype
-        -
+  # Add javascript files which should be registered as encore entries.
+  js_entries:
 
-            # Will be shown in contao backend and will be used as alias/identifier in the database.
-            name:                 ~ # Required
+    # Prototype
+    -
 
-            # Path to the Javascript file.
-            file:                 ~ # Required
+      # Will be shown in contao backend and will be used as alias/identifier in the database.
+      name:                 ~ # Required
 
-            # Set to true, if entry requires css.
-            requires_css:         ~
+      # Path to the Javascript file.
+      file:                 ~ # Required
 
-            # Set to true, if entry should added to the encoreHeadScripts section in your page layout instead to the bottom (CSS will always be added to the head).
-            head:                 ~
-    templates:
+      # Set to true, if entry requires css.
+      requires_css:         ~
 
-        # Register import templates to customize how assets are imported into your templates.
-        imports:
+      # Set to true, if entry should added to the encoreHeadScripts section in your page layout instead to the bottom (CSS will always be added to the head).
+      head:                 ~
+  templates:
 
-            # Prototype
-            -
+    # Register import templates to customize how assets are imported into your templates.
+    imports:
 
-                # Unique template alias. Example: default_css
-                name:                 ~ # Required
+      # Prototype
+      -
 
-                # Full references twig template path. Example: @HeimrichHannotContaoEncore/encore_css_imports.html.twig
-                template:             ~ # Required
+        # Unique template alias. Example: default_css
+        name:                 ~ # Required
 
-    # A list of keys that should be stripped from the global contao arrays. Here you can add assets, that you serve with webpack, so they won't be loaded twice or on the wrong page. IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
-    unset_global_keys:
+        # Full references twig template path. Example: @HeimrichHannotContaoEncore/encore_css_imports.html.twig
+        template:             ~ # Required
 
-        # Assets will be stripped from $GLOBALS['TL_JAVASCRIPT']
-        js:                   []
+  # A list of keys that should be stripped from the global contao arrays. Here you can add assets, that you serve with webpack, so they won't be loaded twice or on the wrong page. IMPORTANT: The strings defined here must match the array keys in Contao's global arrays
+  unset_global_keys:
 
-        # Assets will be stripped from $GLOBALS['TL_JQUERY']
-        jquery:               []
+    # Assets will be stripped from $GLOBALS['TL_JAVASCRIPT']
+    js:                   []
 
-        # Assets will be stripped from $GLOBALS['TL_USER_CSS'] and $GLOBALS['TL_CSS']
-        css:                  []
+    # Assets will be stripped from $GLOBALS['TL_JQUERY']
+    jquery:               []
 
-    # Remove jQuery from global array, if addJQuery is enabled in layout section.
-    unset_jquery:         false
+    # Assets will be stripped from $GLOBALS['TL_USER_CSS'] and $GLOBALS['TL_CSS']
+    css:                  []
+
+  # Remove jQuery from global array, if addJQuery is enabled in layout section.
+  unset_jquery:         false
 ```
