@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2020 Heimrich & Hannot GmbH
+ * Copyright (c) 2021 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -19,7 +19,7 @@ class ConfigurationTest extends ContaoTestCase
         $configuration = new Configuration();
         $treeBuilder = $configuration->getConfigTreeBuilder();
         $this->assertInstanceOf(TreeBuilder::class, $treeBuilder);
-        $this->assertCount(5, $treeBuilder->getRootNode()->getChildNodeDefinitions());
+        $this->assertCount(6, $treeBuilder->getRootNode()->getChildNodeDefinitions());
 
         $tree = $treeBuilder->buildTree();
         $this->assertSame('huh_encore', $tree->getName());

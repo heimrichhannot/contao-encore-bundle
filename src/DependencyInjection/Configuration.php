@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2020 Heimrich & Hannot GmbH
+ * Copyright (c) 2021 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -21,6 +21,10 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->booleanNode('use_contao_template_variables')
+                    ->defaultFalse()
+                    ->info('Use contao template variables in fe_page (stylesheets, head, mootools) for inserting assets instead of the custom template variables of this bundle. Recommended: true. Default: false (due bc reasons). Will be default true in next major version.')
+                ->end()
                 ->arrayNode('js_entries')
                     ->info('Add javascript files which should be registered as encore entries.')
                     ->arrayPrototype()

@@ -7,8 +7,14 @@ With encore bundle you can prepare your bundles to automatically create encore e
     ```yaml
     huh_encore:
       js_entries:
-        - { name: contao-my-project-bundle, requires_css: true, head: false, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/my-project-bundle.js" }
-        - { name: special-feature, requires_css: true, head: false, file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/awesome-but-rare-used-feature.js" }
+        - name: contao-my-project-bundle
+          requires_css: true
+          head: false
+          file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/my-project-bundle.js"
+        - name: special-feature
+          requires_css: true
+          head: false
+          file: "vendor/acme/contao-my-project-bundle/src/Resources/public/js/awesome-but-rare-used-feature.js"
       unset_global_keys:
         js:
         - contao-my-project-bundle
@@ -51,12 +57,7 @@ With encore bundle you can prepare your bundles to automatically create encore e
 
     > If you want encore bundle to be an optional dependency, please consider the [developers documentation](developers.md).
 
-1. You probably want to have your bundle's node dependencies added automatically to the project's node_modules directory when installed. You can simply use [Foxy](https://github.com/fxpio/foxy) for this task. To keep it simple: besides having foxy installed in your project, you need to set `"foxy": true` in the `extra` section of your bundle's `composer.json` and add an ordinary `package.json` as usual for node modules. See [heimrichhannot/contao-list-bundle](https://github.com/heimrichhannot/contao-list-bundle) for an example.
+1. Optional: You probably want to have your bundle's node dependencies added automatically to the project's node_modules directory when installed. You can simply use [Foxy](https://github.com/fxpio/foxy) for this task. To keep it simple: besides having foxy installed in your project, you need to set `"foxy": true` in the `extra` section of your bundle's `composer.json` and add an ordinary `package.json` as usual for node modules. See [heimrichhannot/contao-list-bundle](https://github.com/heimrichhannot/contao-list-bundle) for an example.
 
-1. Optional: Add encore entries automatically from code (for example in frontend module):
+1. Optional: If your bundle need an encore entry to be loaded to work (e.g. if it's needed for a frontend module or widget), you can load entries from you code. See [developers documentation](developers.md) for how to do that.
 
-```php
-if ($this->container->has('huh.encore.asset.frontend')) {
-    $this->container->get('huh.encore.asset.frontend')->addActiveEntrypoint('contao-slick-bundle');
-}
-```

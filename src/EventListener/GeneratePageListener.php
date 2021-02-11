@@ -60,7 +60,9 @@ class GeneratePageListener
         if (!$layout->addEncore) {
             return;
         }
-        $this->addEncore($pageModel, $layout, $pageRegular);
+        if (!isset($this->bundleConfig['use_contao_template_variables']) || true !== $this->bundleConfig['use_contao_template_variables']) {
+            $this->createEncoreScriptTags($pageRegular);
+        }
     }
 
     /**
@@ -80,6 +82,9 @@ class GeneratePageListener
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      * @throws \Exception
+     *
+     * @deprecated This method is not used anymore and will be removed in next major release
+     * @codeCoverageIgnore
      */
     public function addEncore(PageModel $page, LayoutModel $layout, PageRegular $pageRegular, ?string $encoreField = 'encoreEntries', bool $includeInline = false): void
     {
@@ -111,5 +116,12 @@ class GeneratePageListener
         }
 
         EntryHelper::cleanGlobalArrays($this->bundleConfig);
+    }
+
+    protected function createEncoreScriptTags(PageRegular $pageRegular)
+    {
+        $pageRegular->Template->encoreStylesheets = '[[HUH_ENCORE_CSS]]';
+        $pageRegular->Template->encoreScripts = '[[HUH_ENCORE_JS]]';
+        $pageRegular->Template->encoreHeadScripts = '[[HUH_ENCORE_HEAD_JS]]';
     }
 }
