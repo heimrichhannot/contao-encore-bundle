@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.9.0] - 2021-02-11
+- Add script tag support (#16)
+- added use_contao_template_variables option (#16)
+- updated documentation (#16)
+
 ## [1.8.5] - 2021-02-01
 - fixed encore assets not correctly added to all contao error pages
 
