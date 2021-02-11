@@ -128,5 +128,48 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $this->assertSame('<script> Hallo', $instance->__invoke('[[HUH_ENCORE_JS]] Hallo'));
         $this->assertSame('<head>Hallo', $instance->__invoke('[[HUH_ENCORE_HEAD_JS]]Hallo'));
         $this->assertSame('<head>Ha<script>llo <link>', $instance->__invoke('[[HUH_ENCORE_HEAD_JS]]Ha[[HUH_ENCORE_JS]]llo [[HUH_ENCORE_CSS]]'));
+        $this->assertSame(
+            '<head>Ha<script>llo <link> [[TL_CSS]]',
+            $instance->__invoke('[[HUH_ENCORE_HEAD_JS]]Ha[[HUH_ENCORE_JS]]llo [[HUH_ENCORE_CSS]] [[TL_CSS]]'));
+    }
+
+    public function testReplaceContaoTags()
+    {
+        /** @var ContainerUtil|MockObject $containerUtilMock */
+        $containerUtilMock = $this->createMock(ContainerUtil::class);
+        $containerUtilMock->method('isFrontend')->willReturn(true);
+
+        $modelUtilMock = $this->createMock(ModelUtil::class);
+        $modelUtilMock->method('findModelInstanceByPk')->willReturn(
+            $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '1'])
+        );
+
+        $templateAssetMock = $this->createMock(TemplateAsset::class);
+        $templateAssetMock->method('createInstance')->willReturnSelf();
+        $templateAssetMock->method('linkTags')->willReturn('<link>');
+        $templateAssetMock->method('scriptTags')->willReturn('<script>');
+        $templateAssetMock->method('headScriptTags')->willReturn('<head>');
+
+        $mockBilder = $this->getMockBuilder(ReplaceDynamicScriptTagsListener::class)
+            ->setMethods(['cleanGlobalArrays']);
+
+        $instance = $this->getTestInstance([
+            'bundleConfig' => ['use_contao_template_variables' => true],
+            'containerUtil' => $containerUtilMock,
+            'modelUtil' => $modelUtilMock,
+            'templateAsset' => $templateAssetMock,
+        ], $mockBilder);
+        $instance->method('cleanGlobalArrays')->willReturn(null);
+
+        $GLOBALS['objPage'] = $this->mockClassWithProperties(PageModel::class, ['layoutId' => 1]);
+
+        $this->assertSame('Hallo', $instance->__invoke('Hallo'));
+        $this->assertSame('Hallo [[TL_CSS]]<link>', $instance->__invoke('Hallo [[TL_CSS]]'));
+        $this->assertSame('<script>[[TL_BODY]] Hallo', $instance->__invoke('[[TL_BODY]] Hallo'));
+        $this->assertSame('[[TL_HEAD]]<head>Hallo', $instance->__invoke('[[TL_HEAD]]Hallo'));
+        $this->assertSame('[[TL_HEAD]]<head>Ha<script>[[TL_BODY]]llo [[TL_CSS]]<link>', $instance->__invoke('[[TL_HEAD]]Ha[[TL_BODY]]llo [[TL_CSS]]'));
+        $this->assertSame(
+            '[[TL_HEAD]]<head>Ha<script>[[TL_BODY]]llo [[TL_CSS]]<link> [[HUH_ENCORE_CSS]]',
+            $instance->__invoke('[[TL_HEAD]]Ha[[TL_BODY]]llo [[TL_CSS]] [[HUH_ENCORE_CSS]]'));
     }
 }

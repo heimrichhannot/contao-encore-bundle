@@ -60,7 +60,11 @@ class ReplaceDynamicScriptTagsListener
             return $buffer;
         }
 
-        $buffer = $this->replaceEncoreTags($buffer, $objPage, $layout);
+        if (!isset($this->bundleConfig['use_contao_template_variables']) || true !== $this->bundleConfig['use_contao_template_variables']) {
+            $buffer = $this->replaceEncoreTags($buffer, $objPage, $layout);
+        } else {
+            $buffer = $this->replaceContaoTags($buffer, $objPage, $layout);
+        }
 
         $this->cleanGlobalArrays();
 
@@ -75,6 +79,18 @@ class ReplaceDynamicScriptTagsListener
         $replace['[[HUH_ENCORE_CSS]]'] = trim($templateAssets->linkTags());
         $replace['[[HUH_ENCORE_JS]]'] = trim($templateAssets->scriptTags());
         $replace['[[HUH_ENCORE_HEAD_JS]]'] = trim($templateAssets->headScriptTags());
+
+        return str_replace(array_keys($replace), $replace, $buffer);
+    }
+
+    protected function replaceContaoTags(string $buffer, PageModel $page, LayoutModel $layout): string
+    {
+        $templateAssets = $this->templateAsset->createInstance($page, $layout, 'encoreEntries');
+
+        $replace = [];
+        $replace['[[TL_CSS]]'] = '[[TL_CSS]]'.trim($templateAssets->linkTags());
+        $replace['[[TL_BODY]]'] = trim($templateAssets->scriptTags()).'[[TL_BODY]]';
+        $replace['[[TL_HEAD]]'] = '[[TL_HEAD]]'.trim($templateAssets->headScriptTags());
 
         return str_replace(array_keys($replace), $replace, $buffer);
     }

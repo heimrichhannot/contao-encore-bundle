@@ -60,7 +60,9 @@ class GeneratePageListener
         if (!$layout->addEncore) {
             return;
         }
-        $this->createEncoreScriptTags($pageRegular);
+        if (!isset($this->bundleConfig['use_contao_template_variables']) || true !== $this->bundleConfig['use_contao_template_variables']) {
+            $this->createEncoreScriptTags($pageRegular);
+        }
     }
 
     /**
