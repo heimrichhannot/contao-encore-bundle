@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.9.1] - 2021-02-22
+- fixed issue with FragmentControllers
+
 ## [1.9.0] - 2021-02-11
 - Add script tag support (#16)
 - added use_contao_template_variables option (#16)

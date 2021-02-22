@@ -14,6 +14,7 @@ use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
 use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @Hook("replaceDynamicScriptTags")
@@ -36,21 +37,30 @@ class ReplaceDynamicScriptTagsListener
      * @var TemplateAsset
      */
     protected $templateAsset;
+    /**
+     * @var RequestStack
+     */
+    protected $requestStack;
 
     /**
      * ReplaceDynamicScriptTagsListener constructor.
      */
-    public function __construct(array $bundleConfig, ContainerUtil $containerUtil, ModelUtil $modelUtil, TemplateAsset $templateAsset)
+    public function __construct(array $bundleConfig, ContainerUtil $containerUtil, ModelUtil $modelUtil, TemplateAsset $templateAsset, RequestStack $requestStack)
     {
         $this->bundleConfig = $bundleConfig;
         $this->containerUtil = $containerUtil;
         $this->modelUtil = $modelUtil;
         $this->templateAsset = $templateAsset;
+        $this->requestStack = $requestStack;
     }
 
     public function __invoke(string $buffer): string
     {
         if (!$this->containerUtil->isFrontend()) {
+            return $buffer;
+        }
+
+        if (null !== $this->requestStack->getParentRequest()) {
             return $buffer;
         }
 
