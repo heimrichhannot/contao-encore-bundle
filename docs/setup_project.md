@@ -60,7 +60,7 @@ Setup your project for encore bundle.
     module.exports = config;
     ```
         
-        > We recommend adding corejs polyfill (former babel polyfill) into your setup, see [Javascript setup section](setup_javascript.md) for more informations.
+   > We recommend adding corejs polyfill (former babel polyfill) into your setup, see [Javascript setup section](setup_javascript.md) for more informations.
 
 1. Set `huh_encore.use_contao_template_variables` to true
 
