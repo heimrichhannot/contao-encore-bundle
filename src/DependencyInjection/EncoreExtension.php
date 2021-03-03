@@ -1,13 +1,14 @@
 <?php
 
 /*
- * Copyright (c) 2020 Heimrich & Hannot GmbH
+ * Copyright (c) 2021 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
 
 namespace HeimrichHannot\EncoreBundle\DependencyInjection;
 
+use HeimrichHannot\EncoreBundle\Exception\FeatureNotSupportedException;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -38,7 +39,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
             $this->entrypointsJsons[] = $processedConfigs['output_path'].'/entrypoints.json';
         } else {
             // TODO: multiple builds are not supported yet
-            throw new \Exception('Multiple encore builds are currently not supported by the Contao Encore Bundle');
+            throw new FeatureNotSupportedException('Multiple encore builds are currently not supported by the Contao Encore Bundle');
         }
     }
 

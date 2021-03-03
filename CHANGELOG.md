@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.9.2-DEV] - 2021-03-03
+- fixed ordering issue with use_contao_template_variables
+- added notice to layout settings if use_contao_template_variables used together with "Add jQuery"
+- updated tests
+
 ## [1.9.1] - 2021-02-22
 - fixed issue with FragmentControllers
 

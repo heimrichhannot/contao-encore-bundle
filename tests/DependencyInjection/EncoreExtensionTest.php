@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2020 Heimrich & Hannot GmbH
+ * Copyright (c) 2021 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -10,6 +10,8 @@ namespace HeimrichHannot\EncoreBundle\Test\DependencyInjection;
 
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\DependencyInjection\EncoreExtension;
+use HeimrichHannot\EncoreBundle\Exception\FeatureNotSupportedException;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class EncoreExtensionTest extends ContaoTestCase
 {
@@ -87,5 +89,56 @@ class EncoreExtensionTest extends ContaoTestCase
             ],
         ]);
         $mergedConfig = $extension->mergeLegacyConfig($config, []);
+    }
+
+    public function testGetAlias()
+    {
+        $extension = new EncoreExtension();
+        $this->assertSame('huh_encore', $extension->getAlias());
+    }
+
+    public function testPreparend()
+    {
+        $extension = new EncoreExtension();
+//        $extension = $this->getMockBuilder(EncoreExtension::class)
+//            ->disableOriginalConstructor()
+//            ->setMethods(['processConfiguration'])
+//            ->getMock();
+//        $extension->method('processConfiguration')->willReturn([
+//            'output_path' => 'web/build',
+//        ]);
+
+        $container = $this->createMock(ContainerBuilder::class);
+        $container->method('getExtensionConfig')->willReturn([
+            ['output_path' => 'web/build'],
+        ]);
+
+        $extension->prepend($container);
+
+        $reflectionClass = new \ReflectionClass(EncoreExtension::class);
+
+        $reflectionProperty = $reflectionClass->getProperty('entrypointsJsons');
+        $reflectionProperty->setAccessible(true);
+        $this->assertSame(['web/build/entrypoints.json'], $reflectionProperty->getValue($extension));
+
+        $reflectionProperty = $reflectionClass->getProperty('encoreCacheEnabled');
+        $reflectionProperty->setAccessible(true);
+        $this->assertFalse($reflectionProperty->getValue($extension));
+
+        $container = $this->createMock(ContainerBuilder::class);
+        $container->method('getExtensionConfig')->willReturn([
+            ['output_path' => 'web/build', 'cache' => true],
+        ]);
+        $extension->prepend($container);
+        $reflectionProperty = $reflectionClass->getProperty('encoreCacheEnabled');
+        $reflectionProperty->setAccessible(true);
+        $this->assertTrue($reflectionProperty->getValue($extension));
+
+        $container = $this->createMock(ContainerBuilder::class);
+        $container->method('getExtensionConfig')->willReturn([
+            ['output_path' => false, 'cache' => true, 'builds' => ['a']],
+        ]);
+        $this->expectException(FeatureNotSupportedException::class);
+        $extension->prepend($container);
     }
 }

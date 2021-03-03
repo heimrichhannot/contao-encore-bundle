@@ -100,7 +100,7 @@ class ReplaceDynamicScriptTagsListener
         $replace = [];
         $replace['[[TL_CSS]]'] = '[[TL_CSS]]'.trim($templateAssets->linkTags());
         $replace['[[TL_BODY]]'] = trim($templateAssets->scriptTags()).'[[TL_BODY]]';
-        $replace['[[TL_HEAD]]'] = '[[TL_HEAD]]'.trim($templateAssets->headScriptTags());
+        $replace['[[TL_HEAD]]'] = trim($templateAssets->headScriptTags()).'[[TL_HEAD]]';
 
         return str_replace(array_keys($replace), $replace, $buffer);
     }

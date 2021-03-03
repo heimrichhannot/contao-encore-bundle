@@ -35,3 +35,7 @@ services:
   HeimrichHannot\EncoreBundle\EventListener\Contao\:
     resource: "../../EventListener/Contao/*"
     public: true
+
+  HeimrichHannot\EncoreBundle\DataContainer\:
+    resource: "../../DataContainer/*"
+    public: true
