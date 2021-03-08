@@ -5,9 +5,10 @@ services:
       $bundleConfig: '%huh_encore%'
       $webDir: '%contao.web_dir%'
 
-  HeimrichHannot\EncoreBundle\Asset\PageEntrypoints: ~
 
-  HeimrichHannot\EncoreBundle\Asset\FrontendAsset:
+  HeimrichHannot\EncoreBundle\Asset\:
+    resource: '../../Asset/*'
+    exclude: '../../Asset/{EntrypointCollection.php,EntrypointsJsonLookup.php}'
     public: true
 
   huh.encore.asset.frontend:
@@ -17,8 +18,6 @@ services:
   HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup:
     bind:
       Psr\Cache\CacheItemPoolInterface: "@webpack_encore.cache"
-
-  HeimrichHannot\EncoreBundle\Asset\TemplateAsset: ~
 
   huh.encore.asset.template:
     alias: HeimrichHannot\EncoreBundle\Asset\TemplateAsset
@@ -36,6 +35,6 @@ services:
     resource: "../../EventListener/Contao/*"
     public: true
 
-  HeimrichHannot\EncoreBundle\DataContainer\:
-    resource: "../../DataContainer/*"
+  HeimrichHannot\EncoreBundle\:
+    resource: "../../{DataContainer,Dca}/*"
     public: true

@@ -1,0 +1,11 @@
+huh.encore:
+  fields:
+    encoreEntriesSelect:
+      name: "Encore Entries"
+      description: "Wählen Sie hier aus, welche Encore Entries im Template eingebunden werden sollen"
+    encoreEntriesSelect_entry:
+      name: "Entry"
+      description: ""
+    encoreEntriesSelect_active:
+      name: "Aktiv"
+      description: ""
