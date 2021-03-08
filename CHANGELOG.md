@@ -1,7 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.10.0-DEV] - 2021-03-08
+## [1.10.0] - 2021-03-08
+This release enhances the possibilities to include encore in custom routes. See developer documentation for more information.
+
 - added DcaGenerator class
 - added EntrypointCollectionFactory and EntrypointCollection class
 - added TemplateAssetGenerator class
