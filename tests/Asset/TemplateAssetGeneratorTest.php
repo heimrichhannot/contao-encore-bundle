@@ -11,6 +11,7 @@ namespace HeimrichHannot\EncoreBundle\Test\Asset;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Asset\EntrypointCollection;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAssetGenerator;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\WebpackEncoreBundle\Exception\EntrypointNotFoundException;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -18,6 +19,18 @@ use Twig\Error\RuntimeError;
 
 class TemplateAssetGeneratorTest extends ContaoTestCase
 {
+    public function createInstance(array $parameters)
+    {
+        if (!isset($parameters['bundleConfig'])) {
+            $parameters['bundleConfig'] = [];
+        }
+        if (!isset($parameters['webDir'])) {
+            $parameters['webDir'] = $this->getTempDir().'/web';
+        }
+
+        return new TemplateAssetGenerator($parameters['twig'], $parameters['bundleConfig'], $parameters['webDir']);
+    }
+
     public function testInstance()
     {
         $twig = $this->createMock(Environment::class);
@@ -34,11 +47,18 @@ class TemplateAssetGeneratorTest extends ContaoTestCase
             if ('@RuntimeError' == $template) {
                 throw new RuntimeError('');
             }
+            if ('@InlineCss' == $template) {
+                return '<link rel="stylesheet" href="/styles.css">';
+            }
+            if ('@EmptyInlineCss' == $template) {
+                return '';
+            }
 
             return $template;
         });
-        $bundleConfig = [];
-        $instance = new TemplateAssetGenerator($twig, $bundleConfig);
+        $instance = $this->createInstance([
+            'twig' => $twig,
+        ]);
 
         $collection = new EntrypointCollection();
         $collection->addJsHeadEntry('contao-head-bundle');
@@ -54,7 +74,11 @@ class TemplateAssetGeneratorTest extends ContaoTestCase
         $bundleConfig = ['templates' => ['imports' => [
             ['name' => 'never-used-template', 'template' => '@NeverUsedTemplate'],
         ]]];
-        $instance = new TemplateAssetGenerator($twig, $bundleConfig);
+
+        $instance = $this->createInstance([
+            'twig' => $twig,
+            'bundleConfig' => $bundleConfig,
+        ]);
         $exception = false;
         try {
             $instance->linkTags($collection);
@@ -70,8 +94,13 @@ class TemplateAssetGeneratorTest extends ContaoTestCase
             ['name' => 'default_js', 'template' => '@DefaultJs'],
             ['name' => 'missing_entrypoint', 'template' => '@MissingEntrypoint'],
             ['name' => 'runtime_error', 'template' => '@RuntimeError'],
+            ['name' => 'inline_css', 'template' => '@InlineCss'],
+            ['name' => 'empty_inline_css', 'template' => '@EmptyInlineCss'],
         ]]];
-        $instance = new TemplateAssetGenerator($twig, $bundleConfig);
+        $instance = $this->createInstance([
+            'twig' => $twig,
+            'bundleConfig' => $bundleConfig,
+        ]);
 
         $this->assertSame('@DefaultCss', $instance->linkTags($collection));
         $this->assertSame('@CustomCss', $instance->linkTags($collection, 'custom_css'));
@@ -79,6 +108,13 @@ class TemplateAssetGeneratorTest extends ContaoTestCase
         $this->assertSame('@DefaultJs', $instance->scriptTags($collection));
 
         $this->assertSame('@DefaultHeadJscontao-head-bundle', $instance->headScriptTags($collection));
+
+        $webDir = $this->getTempDir().'/web';
+        $filesystem = new Filesystem();
+        $filesystem->dumpFile($webDir.'/styles.css', '.style{}');
+        $this->assertSame('.style{}', $instance->inlineCssLinkTag($collection, 'inline_css'));
+
+        $this->assertEmpty($instance->inlineCssLinkTag($collection, 'empty_inline_css'));
 
         $runtimeError = false;
         try {

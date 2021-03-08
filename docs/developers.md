@@ -69,74 +69,41 @@ If you create a reusable bundle and want to support setups that don't use encore
 
 ## Add encore entries to custom template
 
-If your template generation don't rely on the onGeneratePage hook, it is possible to encore entries to your own implementation. Use the `TemplateAsset` service to create an instance of it and add the assets you need to your template. Following example is an short version of how the onGeneratePage hook is implemented.
+If you don't want to render assets on page basis, it is possible to generate a custom set of encore entries.
+
+1. Create an `EntrypointCollection` with the `EntrypointCollectionFactory` service
+1. Get your assets with `TemplateAssetGenerator` service. 
+1. Optional: If you want an input field in the contao backend to select entries, you can use the `DcaGenerator` service to generate an input like on layout or page settings.
 
 ```php
-class CustomTemplateGenerator 
-{
-    /**
-     * @var \HeimrichHannot\EncoreBundle\Asset\TemplateAsset
-     */
-    private $templateAsset;
+use Contao\FrontendTemplate;
+use HeimrichHannot\EncoreBundle\Asset\EntrypointCollectionFactory;
+use HeimrichHannot\EncoreBundle\Asset\TemplateAssetGenerator;
 
-    public function addEncoreToTemplate(FrontendTemplate $template, \Contao\PageModel $page, \Contao\LayoutModel $layout)
-    {
-        $templateAssets = $this->templateAsset->createInstance($page, $layout);
-        $template->encoreStylesheets = $templateAssets->linkTags();
-        $template->encoreScripts = $templateAssets->scriptTags();
-        $template->encoreHeadScripts = $templateAssets->headScriptTags();
-    }
+function renderTemplateWithEncore(array $entrypoints, EntrypointCollectionFactory $entrypointCollectionFactory, TemplateAssetGenerator $templateAssetGenerator)
+{
+    $template = new FrontendTemplate();
+    $collection = $entrypointCollectionFactory->createCollection($entrypoints);
+    $template->stylesheets = $templateAssetGenerator->linkTags($collection);
+    $template->headJavaScript = $templateAssetGenerator->headScriptTags($collection);
+    $template->javaScript = $templateAssetGenerator->scriptTags($collection);
+    return $template->getResponse();
 }
 ```
 
-It is also possible to make this optional using TemplateAsset public service alias (`huh.encore.asset.template`):
+It is also possible to get the stylesheets inline:
 
 ```php
-// Example from heimrichhannot/contao-amp-bundle
+use Contao\FrontendTemplate;
+use HeimrichHannot\EncoreBundle\Asset\EntrypointCollectionFactory;
+use HeimrichHannot\EncoreBundle\Asset\TemplateAssetGenerator;
 
-class GeneratePageListener
+function renderTemplateWithEncore(array $entrypoints, EntrypointCollectionFactory $entrypointCollectionFactory, TemplateAssetGenerator $templateAssetGenerator)
 {
-    /**
-     * @var Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    private $container;
-
-    public function onGeneratePage(PageModel $pageModel, LayoutModel $layout, PageRegular $pageRegular): void
-    {
-        // [...]
-        
-        if ($this->container->has('huh.encore.asset.template')) {
-            $templateAssets = $this->container->get('huh.encore.asset.template')->createInstance($pageModel, $layout);
-            $pageRegular->Template->encoreStylesheetsInline = preg_replace('/@charset ".*?";/m', '', $templateAssets->inlineCssLinkTag());
-        }
-    }
-}
-```
-
-## Inline stylesheets
-
-If you need to add your stylesheets inline, use the `inlineCssLinkTag` method of `TemplateAsset` (see 'Add encore entries to custom template'). If your template rely on the onGeneratePage hook, you need to unset the hook entries of encore bundle.
-
-```php
-class HookListener 
-{
-    /**
-     * @var \HeimrichHannot\EncoreBundle\Asset\TemplateAsset
-     */
-    private $templateAsset;
-
-    public function onGetPageLayout(PageModel $page, LayoutModel &$layout, PageRegular $pageRegular)
-    {
-        if (isset($GLOBALS['TL_HOOKS']['generatePage']['huh.encore-bundle'])) {
-            unset($GLOBALS['TL_HOOKS']['generatePage']['huh.encore-bundle']);
-        }
-    }
-    public function onGeneratePage(PageModel $page, LayoutModel $layout, PageRegular $pageRegular) 
-    {
-        /** @var string $encoreField The dca field name where encore entries stored */
-        $templateAssets = $this->templateAsset->createInstance($page, $layout, $encoreField);
-        $pageRegular->Template->encoreEntriesAmp = $templateAssets->inlineCssLinkTag();
-    }
+    $template = new FrontendTemplate();
+    $collection = $entrypointCollectionFactory->createCollection($entrypoints);
+    $template->inlineCss = $templateAssetGenerator->inlineCssLinkTag($collection);
+    return $template->getResponse();
 }
 ```
 

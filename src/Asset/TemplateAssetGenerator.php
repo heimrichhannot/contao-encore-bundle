@@ -24,14 +24,19 @@ class TemplateAssetGenerator
      * @var array
      */
     protected $bundleConfig;
+    /**
+     * @var string
+     */
+    protected $webDir;
 
     /**
      * TemplateAssetGenerator constructor.
      */
-    public function __construct(Environment $twig, array $bundleConfig)
+    public function __construct(Environment $twig, array $bundleConfig, string $webDir)
     {
         $this->twig = $twig;
         $this->bundleConfig = $bundleConfig;
+        $this->webDir = $webDir;
     }
 
     /**
@@ -68,6 +73,30 @@ class TemplateAssetGenerator
     public function scriptTags(EntrypointCollection $collection, string $template = ''): string
     {
         return $this->generateTags($collection, $template, 'default_js');
+    }
+
+    /**
+     * Return a link tag with inline css.
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
+    public function inlineCssLinkTag(EntrypointCollection $collection, string $template = ''): string
+    {
+        $styleTags = $this->generateTags($collection, $template, 'default_css');
+
+        preg_match_all('@<link rel="stylesheet" href="([^"]+)">@i', $styleTags, $matches);
+
+        if (isset($matches[1]) && !empty($matches[1])) {
+            $inlineCss = implode("\n", array_map(function ($path) {
+                return file_get_contents($this->webDir.preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
+            }, $matches[1]));
+
+            return $inlineCss;
+        }
+
+        return '';
     }
 
     /**
