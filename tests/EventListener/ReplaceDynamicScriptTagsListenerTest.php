@@ -13,12 +13,10 @@ use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\EventListener\ReplaceDynamicScriptTagsListener;
-use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
+use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
 {
@@ -28,26 +26,23 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
     public function getTestInstance(array $parameter = [], ?MockBuilder $mockBuilder = null)
     {
         $parameter['bundleConfig'] = $parameter['bundleConfig'] ?? [];
-        $parameter['containerUtil'] = $parameter['containerUtil'] ?? $this->createMock(ContainerUtil::class);
         $parameter['modelUtil'] = $parameter['modelUtil'] ?? $this->createMock(ModelUtil::class);
         $parameter['templateAsset'] = $parameter['templateAsset'] ?? $this->createMock(TemplateAsset::class);
-        $parameter['requestStack'] = $parameter['requestStack'] ?? $this->createMock(RequestStack::class);
+        $parameter['configurationHelper'] = $parameter['configurationHelper'] ?? $this->createMock(ConfigurationHelper::class);
 
         if ($mockBuilder) {
             $instance = $mockBuilder->setConstructorArgs([
                 $parameter['bundleConfig'],
-                $parameter['containerUtil'],
                 $parameter['modelUtil'],
                 $parameter['templateAsset'],
-                $parameter['requestStack'],
+                $parameter['configurationHelper'],
             ])->getMock();
         } else {
             $instance = new ReplaceDynamicScriptTagsListener(
                 $parameter['bundleConfig'],
-                $parameter['containerUtil'],
                 $parameter['modelUtil'],
                 $parameter['templateAsset'],
-                $parameter['requestStack']
+                $parameter['configurationHelper']
             );
         }
 
@@ -56,53 +51,29 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
 
     public function testInvoke()
     {
-        // Test not in frontend
-
-        /** @var ContainerUtil|MockObject $containerUtilMock */
-        $containerUtilMock = $this->createMock(ContainerUtil::class);
-        $containerUtilMock->expects($this->once())->method('isFrontend')->willReturn(false);
+        // Encore not enabled
+        $configurationHelper = $this->createMock(ConfigurationHelper::class);
+        $configurationHelper->method('isEnabledOnCurrentPage')->willReturn(false);
 
         /** @var ReplaceDynamicScriptTagsListener|MockObject $instance */
         $mockBilder = $this->getMockBuilder(ReplaceDynamicScriptTagsListener::class)
             ->setMethods(['cleanGlobalArrays', 'replaceEncoreTags']);
         $instance = $this->getTestInstance([
-            'containerUtil' => $containerUtilMock,
+            'configurationHelper' => $configurationHelper,
         ], $mockBilder);
 
         $instance->expects($this->never())->method('cleanGlobalArrays')->willReturn(false);
         $instance->expects($this->never())->method('replaceEncoreTags')->willReturn(false);
         $instance->__invoke('test');
 
-        // Test Call in Fragment
-
-        /** @var ContainerUtil|MockObject $containerUtilMock */
-        $containerUtilMock = $this->createMock(ContainerUtil::class);
-        $containerUtilMock->expects($this->once())->method('isFrontend')->willReturn(true);
-
-        $requestStackMock = $this->createMock(RequestStack::class);
-        $requestStackMock->method('getParentRequest')->willReturn($this->createMock(Request::class));
-
-        /** @var ReplaceDynamicScriptTagsListener|MockObject $instance */
-        $mockBilder = $this->getMockBuilder(ReplaceDynamicScriptTagsListener::class)
-            ->setMethods(['cleanGlobalArrays', 'replaceEncoreTags']);
-        $instance = $this->getTestInstance([
-            'containerUtil' => $containerUtilMock,
-            'requestStack' => $requestStackMock,
-        ], $mockBilder);
-
-        $instance->expects($this->never())->method('cleanGlobalArrays')->willReturn(false);
-        $instance->expects($this->never())->method('replaceEncoreTags')->willReturn(false);
-        $instance->__invoke('test');
-
-        /** @var ContainerUtil|MockObject $containerUtilMock */
-        $containerUtilMock = $this->createMock(ContainerUtil::class);
-        $containerUtilMock->method('isFrontend')->willReturn(true);
+        //Encore enabled
+        $configurationHelper = $this->createMock(ConfigurationHelper::class);
+        $configurationHelper->method('isEnabledOnCurrentPage')->willReturn(true);
 
         /** @var ModelUtil|MockObject $modelUtilMock */
         $modelUtilMock = $this->createMock(ModelUtil::class);
         $modelUtilMock->method('findModelInstanceByPk')->willReturnOnConsecutiveCalls(
             null,
-            $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '']),
             $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '1'])
         );
 
@@ -110,7 +81,7 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $mockBilder = $this->getMockBuilder(ReplaceDynamicScriptTagsListener::class)
             ->setMethods(['cleanGlobalArrays', 'replaceEncoreTags']);
         $instance = $this->getTestInstance([
-            'containerUtil' => $containerUtilMock,
+            'configurationHelper' => $configurationHelper,
             'modelUtil' => $modelUtilMock,
         ], $mockBilder);
 
@@ -119,14 +90,12 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $instance->expects($this->once())->method('cleanGlobalArrays')->willReturn(true);
         $instance->__invoke('test');
         $instance->__invoke('test');
-        $instance->__invoke('test');
     }
 
     public function testReplaceEncoreTags()
     {
-        /** @var ContainerUtil|MockObject $containerUtilMock */
-        $containerUtilMock = $this->createMock(ContainerUtil::class);
-        $containerUtilMock->method('isFrontend')->willReturn(true);
+        $configurationHelper = $this->createMock(ConfigurationHelper::class);
+        $configurationHelper->method('isEnabledOnCurrentPage')->willReturn(true);
 
         $modelUtilMock = $this->createMock(ModelUtil::class);
         $modelUtilMock->method('findModelInstanceByPk')->willReturn(
@@ -143,7 +112,7 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
             ->setMethods(['cleanGlobalArrays']);
 
         $instance = $this->getTestInstance([
-            'containerUtil' => $containerUtilMock,
+            'configurationHelper' => $configurationHelper,
             'modelUtil' => $modelUtilMock,
             'templateAsset' => $templateAssetMock,
         ], $mockBilder);
@@ -163,9 +132,8 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
 
     public function testReplaceContaoTags()
     {
-        /** @var ContainerUtil|MockObject $containerUtilMock */
-        $containerUtilMock = $this->createMock(ContainerUtil::class);
-        $containerUtilMock->method('isFrontend')->willReturn(true);
+        $configurationHelper = $this->createMock(ConfigurationHelper::class);
+        $configurationHelper->method('isEnabledOnCurrentPage')->willReturn(true);
 
         $modelUtilMock = $this->createMock(ModelUtil::class);
         $modelUtilMock->method('findModelInstanceByPk')->willReturn(
@@ -183,7 +151,7 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
 
         $instance = $this->getTestInstance([
             'bundleConfig' => ['use_contao_template_variables' => true],
-            'containerUtil' => $containerUtilMock,
+            'configurationHelper' => $configurationHelper,
             'modelUtil' => $modelUtilMock,
             'templateAsset' => $templateAssetMock,
         ], $mockBilder);

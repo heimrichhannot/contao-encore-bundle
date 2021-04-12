@@ -11,10 +11,9 @@ namespace HeimrichHannot\EncoreBundle\EventListener;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
+use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
-use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @Hook("replaceDynamicScriptTags")
@@ -26,10 +25,6 @@ class ReplaceDynamicScriptTagsListener
      */
     protected $bundleConfig;
     /**
-     * @var ContainerUtil
-     */
-    protected $containerUtil;
-    /**
      * @var ModelUtil
      */
     protected $modelUtil;
@@ -38,35 +33,31 @@ class ReplaceDynamicScriptTagsListener
      */
     protected $templateAsset;
     /**
-     * @var RequestStack
+     * @var ConfigurationHelper
      */
-    protected $requestStack;
+    protected $configurationHelper;
 
     /**
      * ReplaceDynamicScriptTagsListener constructor.
      */
-    public function __construct(array $bundleConfig, ContainerUtil $containerUtil, ModelUtil $modelUtil, TemplateAsset $templateAsset, RequestStack $requestStack)
+    public function __construct(array $bundleConfig, ModelUtil $modelUtil, TemplateAsset $templateAsset, ConfigurationHelper $configurationHelper)
     {
         $this->bundleConfig = $bundleConfig;
-        $this->containerUtil = $containerUtil;
         $this->modelUtil = $modelUtil;
         $this->templateAsset = $templateAsset;
-        $this->requestStack = $requestStack;
+        $this->configurationHelper = $configurationHelper;
     }
 
     public function __invoke(string $buffer): string
     {
-        if (!$this->containerUtil->isFrontend()) {
-            return $buffer;
-        }
-
-        if (null !== $this->requestStack->getParentRequest()) {
+        if (!$this->configurationHelper->isEnabledOnCurrentPage()) {
             return $buffer;
         }
 
         global $objPage;
         $layout = $this->modelUtil->findModelInstanceByPk('tl_layout', $objPage->layoutId);
-        if (!$layout || !$layout->addEncore) {
+
+        if (!$layout) {
             return $buffer;
         }
 
