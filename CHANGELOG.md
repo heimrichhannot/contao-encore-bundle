@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.11.0-DEV] - 2021-04-11
+- added ConfigurationHelper class
+
 ## [1.10.0] - 2021-03-08
 This release enhances the possibilities to include encore in custom routes. See developer documentation for more information.
 

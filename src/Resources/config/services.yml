@@ -5,7 +5,6 @@ services:
       $bundleConfig: '%huh_encore%'
       $webDir: '%contao.web_dir%'
 
-
   HeimrichHannot\EncoreBundle\Asset\:
     resource: '../../Asset/*'
     exclude: '../../Asset/{EntrypointCollection.php,EntrypointsJsonLookup.php}'
@@ -36,5 +35,5 @@ services:
     public: true
 
   HeimrichHannot\EncoreBundle\:
-    resource: "../../{DataContainer,Dca}/*"
+    resource: "../../{DataContainer,Dca,Helper}/*"
     public: true

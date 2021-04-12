@@ -22,7 +22,8 @@
     "symfony/webpack-encore-bundle": "^1.0",
     "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
     "heimrichhannot/contao-utils-bundle": "^2.90",
-    "twig/twig": "^1.38.3|^2.7"
+    "twig/twig": "^1.38.3|^2.7",
+    "webmozart/path-util": "^2.3"
   },
   "require-dev": {
     "contao/test-case": "1.1.*",
