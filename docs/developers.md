@@ -6,7 +6,42 @@ This document contains additional information for developers working with encore
 
 Since version 1.3 it is possible to add encore entries from your code. So for example the slider assets are automatically included, if the slider module is added to the page. To do this, you can use the `FrontendAsset` service.
 
-Example with optional dependency injection (recommended): 
+Example with ServiceSubscriber (recommended):
+
+```php
+use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ServiceSubscriberInterface;
+
+class AcmeController implements ServiceSubscriberInterface
+{
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    public function addEncoreAssets()
+    {
+
+        if ($this->container->has('HeimrichHannot\EncoreBundle\Asset\FrontendAsset')) {
+            $this->container->get(\HeimrichHannot\EncoreBundle\Asset\FrontendAsset::class)->addActiveEntrypoint('contao-acme-bundle');
+        }
+    }
+
+    public static function getSubscribedServices()
+    {
+        return [
+            '?HeimrichHannot\EncoreBundle\Asset\FrontendAsset'
+        ];
+    }
+}
+```
+
+Example with optional dependency injection: 
 
 ```yaml
 # services.yml
@@ -106,6 +141,16 @@ function renderTemplateWithEncore(array $entrypoints, EntrypointCollectionFactor
     return $template->getResponse();
 }
 ```
+
+## ConfigurationHelper
+
+The `ConfigurationHelper` service can be used to obtain some configuration informations. Following methods are available:
+
+`isEnabledOnCurrentPage(?PageModel $pageModel = null): bool` - Return if encore is enabled for the current frontend page. You can pass a page object to check for a custom page, otherweise `global $objPage` is used.
+
+`getRelativeOutputPath(): string` - Return the relative output path configured by webpack encore bundle. Typical this is `build`.
+
+`getAbsoluteOutputPath(): string` - Return the absolute output path configured by webpack encore bundle. For example `/var/www/html/project/web/build`
 
 ## Custom import templates
 
