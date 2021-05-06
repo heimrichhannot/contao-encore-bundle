@@ -1,35 +1,29 @@
 <?php
-/**
- * Contao Open Source CMS
- *
- * Copyright (c) 2020 Heimrich & Hannot GmbH
- *
- * @author  Thomas Körner <t.koerner@heimrich-hannot.de>
- * @license http://www.gnu.org/licences/lgpl-3.0.html LGPL
- */
 
+/*
+ * Copyright (c) 2021 Heimrich & Hannot GmbH
+ *
+ * @license LGPL-3.0-or-later
+ */
 
 namespace HeimrichHannot\EncoreBundle\Test\Helper;
 
-
-use Contao\LayoutModel;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
-use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
 
 class EntryHelperTest extends ContaoTestCase
 {
     const TL_JAVASCRIPT = ['assets/jquery/js/jquery.min.js|static', 'contao-a-bundle' => '', 'contao-b-bundle' => ''];
-    const TL_JQUERY     = ['contao-a-bundle' => '', 'contao-c-bundle' => '', 'contao-jquery-bundle' => '', 'contao-d-bundle' => '', 'contao-e-bundle' => ''];
-    const TL_USER_CSS   = ['contao-a-bundle' => '', 'contao-b-bundle' => '', 'contao-jquery-bundle' => ''];
-    const TL_CSS             = ['contao-a-bundle' => '', 'contao-c-bundle' => '', 'contao-css-bundle' => ''];
+    const TL_JQUERY = ['contao-a-bundle' => '', 'contao-c-bundle' => '', 'contao-jquery-bundle' => '', 'contao-d-bundle' => '', 'contao-e-bundle' => ''];
+    const TL_USER_CSS = ['contao-a-bundle' => '', 'contao-b-bundle' => '', 'contao-jquery-bundle' => ''];
+    const TL_CSS = ['contao-a-bundle' => '', 'contao-c-bundle' => '', 'contao-css-bundle' => ''];
 
     public function testCleanGlobalArrays()
     {
         $GLOBALS['TL_JAVASCRIPT'] = self::TL_JAVASCRIPT;
-        $GLOBALS['TL_JQUERY']     = self::TL_JQUERY;
-        $GLOBALS['TL_USER_CSS']   = self::TL_USER_CSS;
-        $GLOBALS['TL_CSS']        = self::TL_CSS;
+        $GLOBALS['TL_JQUERY'] = self::TL_JQUERY;
+        $GLOBALS['TL_USER_CSS'] = self::TL_USER_CSS;
+        $GLOBALS['TL_CSS'] = self::TL_CSS;
 
         EntryHelper::cleanGlobalArrays([]);
 
@@ -37,7 +31,6 @@ class EntryHelperTest extends ContaoTestCase
         $this->assertSame(self::TL_JQUERY, $GLOBALS['TL_JQUERY']);
         $this->assertSame(self::TL_USER_CSS, $GLOBALS['TL_USER_CSS']);
         $this->assertSame(self::TL_CSS, $GLOBALS['TL_CSS']);
-
 
         EntryHelper::cleanGlobalArrays([
             'unset_global_keys' => [
@@ -54,9 +47,9 @@ class EntryHelperTest extends ContaoTestCase
         $this->assertCount(1, $GLOBALS['TL_CSS']);
 
         $GLOBALS['TL_JAVASCRIPT'] = self::TL_JAVASCRIPT;
-        $GLOBALS['TL_JQUERY']     = self::TL_JQUERY;
-        $GLOBALS['TL_USER_CSS']   = self::TL_USER_CSS;
-        $GLOBALS['TL_CSS']        = self::TL_CSS;
+        $GLOBALS['TL_JQUERY'] = self::TL_JQUERY;
+        $GLOBALS['TL_USER_CSS'] = self::TL_USER_CSS;
+        $GLOBALS['TL_CSS'] = self::TL_CSS;
 
         EntryHelper::cleanGlobalArrays([
             'unset_global_keys' => [

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2020 Heimrich & Hannot GmbH
+ * Copyright (c) 2021 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -79,6 +79,7 @@ class PageEntrypoints
         }
 
         $pageEntries = $this->collectPageEntries($layout, $page, $encoreField);
+
         foreach ($pageEntries as $pageEntry) {
             if (isset($pageEntry['active']) && !$pageEntry['active']) {
                 continue;

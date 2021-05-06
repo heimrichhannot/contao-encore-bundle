@@ -78,8 +78,9 @@ class ReplaceDynamicScriptTagsListener
 
         $replace = [];
         $replace['[[HUH_ENCORE_CSS]]'] = trim($templateAssets->linkTags());
-        $replace['[[HUH_ENCORE_JS]]'] = trim($templateAssets->scriptTags());
+        // caution: always render head first because of global dependencies like jQuery
         $replace['[[HUH_ENCORE_HEAD_JS]]'] = trim($templateAssets->headScriptTags());
+        $replace['[[HUH_ENCORE_JS]]'] = trim($templateAssets->scriptTags());
 
         return str_replace(array_keys($replace), $replace, $buffer);
     }
@@ -90,8 +91,10 @@ class ReplaceDynamicScriptTagsListener
 
         $replace = [];
         $replace['[[TL_CSS]]'] = '[[TL_CSS]]'.trim($templateAssets->linkTags());
-        $replace['[[TL_BODY]]'] = trim($templateAssets->scriptTags()).'[[TL_BODY]]';
+
+        // caution: always render head first because of global dependencies like jQuery
         $replace['[[TL_HEAD]]'] = trim($templateAssets->headScriptTags()).'[[TL_HEAD]]';
+        $replace['[[TL_BODY]]'] = trim($templateAssets->scriptTags()).'[[TL_BODY]]';
 
         return str_replace(array_keys($replace), $replace, $buffer);
     }

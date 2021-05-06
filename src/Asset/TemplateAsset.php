@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2020 Heimrich & Hannot GmbH
+ * Copyright (c) 2021 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -81,8 +81,9 @@ class TemplateAsset
             return;
         }
 
-        $this->templateData['jsEntries'] = $this->pageEntrypoints->getJsEntries();
+        // caution: always render head first because of global dependencies like jQuery
         $this->templateData['jsHeadEntries'] = $this->pageEntrypoints->getJsHeadEntries();
+        $this->templateData['jsEntries'] = $this->pageEntrypoints->getJsEntries();
         $this->templateData['cssEntries'] = $this->pageEntrypoints->getCssEntries();
 
         $this->initialized = true;

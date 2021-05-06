@@ -97,10 +97,11 @@ class GeneratePageListener
             $pageRegular->Template->encoreStylesheetsInline = $templateAssets->inlineCssLinkTag();
         }
 
+        // caution: always render head first because of global dependencies like jQuery
+        $pageRegular->Template->encoreHeadScripts = $templateAssets->headScriptTags();
+
         // render js alone (should be used in footer region)
         $pageRegular->Template->encoreScripts = $templateAssets->scriptTags();
-
-        $pageRegular->Template->encoreHeadScripts = $templateAssets->headScriptTags();
     }
 
     /**
@@ -121,7 +122,7 @@ class GeneratePageListener
     protected function createEncoreScriptTags(PageRegular $pageRegular)
     {
         $pageRegular->Template->encoreStylesheets = '[[HUH_ENCORE_CSS]]';
-        $pageRegular->Template->encoreScripts = '[[HUH_ENCORE_JS]]';
         $pageRegular->Template->encoreHeadScripts = '[[HUH_ENCORE_HEAD_JS]]';
+        $pageRegular->Template->encoreScripts = '[[HUH_ENCORE_JS]]';
     }
 }
