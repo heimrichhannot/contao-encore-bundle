@@ -8,14 +8,12 @@
 
 namespace HeimrichHannot\EncoreBundle\EventListener;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\PageRegular;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Twig\Environment;
 
 class GeneratePageListener
 {
@@ -27,26 +25,17 @@ class GeneratePageListener
      * @var TemplateAsset
      */
     private $templateAsset;
-    /**
-     * @var Environment
-     */
-    private $twig;
+
     /**
      * @var ContainerInterface
      */
     private $container;
-    /**
-     * @var \Contao\CoreBundle\Framework\ContaoFramework|object|null
-     */
-    private $framework;
 
     /**
      * Constructor.
      */
-    public function __construct(array $bundleConfig, ContaoFrameworkInterface $framework, ContainerInterface $container, Environment $twig, TemplateAsset $templateAsset)
+    public function __construct(array $bundleConfig, ContainerInterface $container, TemplateAsset $templateAsset)
     {
-        $this->framework = $framework;
-        $this->twig = $twig;
         $this->container = $container;
         $this->templateAsset = $templateAsset;
         $this->bundleConfig = $bundleConfig;

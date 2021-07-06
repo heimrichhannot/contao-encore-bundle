@@ -15,9 +15,14 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('huh_encore');
 
-        $rootNode = $treeBuilder->root('huh_encore');
+        // Keep compatibility with symfony/config < 4.2
+        if (!method_exists($treeBuilder, 'getRootNode')) {
+            $rootNode = $treeBuilder->root('huh_encore');
+        } else {
+            $rootNode = $treeBuilder->getRootNode();
+        }
 
         $rootNode
             ->children()
@@ -92,66 +97,83 @@ class Configuration implements ConfigurationInterface
                     ->info('Remove jQuery from global array, if addJQuery is enabled in layout section.')
                     ->defaultFalse()
                 ->end()
-            // TODO: Remove in version 2.0
-                ->arrayNode('encore')
+                ->append($this->addLegacyNode())
+            ->end()
+        ;
+
+        return $treeBuilder;
+    }
+
+    /**
+     * @deprecated Will be removed in version 2.0
+     */
+    public function addLegacyNode()
+    {
+        $treeBuilder = new TreeBuilder('encore');
+
+        // Keep compatibility with symfony/config < 4.2
+        if (!method_exists($treeBuilder, 'getRootNode')) {
+            $node = $treeBuilder->root('encore');
+        } else {
+            $node = $treeBuilder->getRootNode();
+        }
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->setDeprecated('Configs within encore key are deprecated and will be removed in next major version.')
+            ->children()
+                ->arrayNode('entries')
+                    ->arrayPrototype()
+                        ->children()
+                            ->scalarNode('name')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                            ->end()
+                            ->scalarNode('file')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                            ->end()
+                            ->booleanNode('requiresCss')->end()
+                            ->booleanNode('head')->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('templates')
                     ->addDefaultsIfNotSet()
-                    ->setDeprecated('Configs within encore key are deprecated and will be removed in next major version.')
                     ->children()
-                        ->arrayNode('entries')
+                        ->arrayNode('imports')
                             ->arrayPrototype()
                                 ->children()
                                     ->scalarNode('name')
                                         ->isRequired()
                                         ->cannotBeEmpty()
                                     ->end()
-                                    ->scalarNode('file')
+                                    ->scalarNode('template')
                                         ->isRequired()
                                         ->cannotBeEmpty()
                                     ->end()
-                                    ->booleanNode('requiresCss')
-                                    ->end()
-                                    ->booleanNode('head')
-                                    ->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                        ->arrayNode('templates')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->arrayNode('imports')
-                                ->arrayPrototype()
-                                        ->children()
-                                            ->scalarNode('name')
-                                                ->isRequired()
-                                                ->cannotBeEmpty()
-                                            ->end()
-                                            ->scalarNode('template')
-                                                ->isRequired()
-                                                ->cannotBeEmpty()
-                                            ->end()
-                                        ->end()
-                                    ->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                        ->arrayNode('legacy')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->arrayNode('js')
-                                    ->scalarPrototype()->end()
-                                ->end()
-                                ->arrayNode('jquery')
-                                    ->scalarPrototype()->end()
-                                ->end()
-                                ->arrayNode('css')
-                                    ->scalarPrototype()->end()
                                 ->end()
                             ->end()
                         ->end()
                     ->end()
                 ->end()
-            ->end();
+                ->arrayNode('legacy')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('js')
+                            ->scalarPrototype()->end()
+                        ->end()
+                        ->arrayNode('jquery')
+                            ->scalarPrototype()->end()
+                        ->end()
+                        ->arrayNode('css')
+                            ->scalarPrototype()->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
 
-        return $treeBuilder;
+        return $node;
     }
 }

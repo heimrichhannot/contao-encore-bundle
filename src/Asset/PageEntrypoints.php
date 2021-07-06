@@ -11,6 +11,7 @@ namespace HeimrichHannot\EncoreBundle\Asset;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Exception;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -148,7 +149,7 @@ class PageEntrypoints
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getJsEntries(): array
     {
@@ -158,7 +159,7 @@ class PageEntrypoints
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCssEntries(): array
     {
@@ -168,7 +169,7 @@ class PageEntrypoints
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getJsHeadEntries(): array
     {
@@ -180,7 +181,7 @@ class PageEntrypoints
     /**
      * Return all active entrypoints.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getActiveEntries(): array
     {
@@ -202,12 +203,12 @@ class PageEntrypoints
     /**
      * Check if initialized and throws exception, if not.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function isInitalized(): void
     {
         if (!$this->initialized) {
-            throw new \Exception('Page entrypoints are not initialized!');
+            throw new Exception('Page entrypoints are not initialized!');
         }
     }
 }

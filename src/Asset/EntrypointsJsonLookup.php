@@ -10,7 +10,6 @@ namespace HeimrichHannot\EncoreBundle\Asset;
 
 use Contao\LayoutModel;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EntrypointsJsonLookup
 {
@@ -26,8 +25,6 @@ class EntrypointsJsonLookup
 
     /**
      * EntrypointsJsonLookup constructor.
-     *
-     * @param ContainerInterface $container
      */
     public function __construct(array $bundleConfig, CacheItemPoolInterface $cache = null)
     {

@@ -17,7 +17,6 @@ use HeimrichHannot\EncoreBundle\EventListener\GeneratePageListener;
 use HeimrichHannot\EncoreBundle\Test\ModelMockTrait;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
-use Twig\Environment;
 
 class GeneratePageListenerTest extends ContaoTestCase
 {
@@ -36,15 +35,6 @@ class GeneratePageListenerTest extends ContaoTestCase
         if (!isset($parameters['container'])) {
             $parameters['container'] = $this->mockContainer();
         }
-        if (!isset($parameters['framework'])) {
-            $parameters['framework'] = $this->mockContaoFramework();
-        }
-        if (!isset($parameters['twig'])) {
-            /** @var Environment|MockObject $twig */
-            $twig = $this->createMock(Environment::class);
-            $twig->method('render')->willReturnArgument(1);
-            $parameters['twig'] = $twig;
-        }
         if (!isset($parameters['templateAsset'])) {
             /** @var TemplateAsset|MockObject $templateAsset */
             $templateAsset = $this->createMock(TemplateAsset::class);
@@ -59,17 +49,13 @@ class GeneratePageListenerTest extends ContaoTestCase
         if (!$hookListenerMock) {
             $hookListener = new GeneratePageListener(
                 $parameters['bundleConfig'],
-                $parameters['framework'],
                 $parameters['container'],
-                $parameters['twig'],
                 $parameters['templateAsset']
             );
         } else {
             $hookListener = $hookListenerMock->setConstructorArgs([
                 $parameters['bundleConfig'],
-                $parameters['framework'],
                 $parameters['container'],
-                $parameters['twig'],
                 $parameters['templateAsset'],
             ])->getMock();
         }

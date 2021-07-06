@@ -19,10 +19,17 @@
     "php": "^7.1",
     "ext-json": "*",
     "contao/core-bundle": "^4.4",
+    "symfony/cache": "^3.4|^4.4|^5.0",
+    "symfony/config": "^3.4|^4.4|^5.0",
+    "symfony/console": "^3.4|^4.4|^5.0",
+    "symfony/dependency-injection": "^3.4|^4.4|^5.0",
+    "symfony/http-foundation": "^3.4|^4.4|^5.0",
+    "symfony/http-kernel": "^3.4|^4.4|^5.0",
+    "symfony/translation": "^3.4|^4.4|^5.0",
     "symfony/webpack-encore-bundle": "^1.0",
     "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
     "heimrichhannot/contao-utils-bundle": "^2.90",
-    "twig/twig": "^1.38.3|^2.7",
+    "twig/twig": "^1.38.3|^2.7|^3.0",
     "webmozart/path-util": "^2.3"
   },
   "require-dev": {

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.11.2] - 2021-07-06
+- fixed symfony 5 issue
+- fixed missing dependencies
+- some small code enhancements
+
 ## [1.11.1] - 2021-05-06
 
 - fixed vendor dependency issue if non-head scripts were loaded after the head scripts while the head scripts contained
