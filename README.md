@@ -41,7 +41,7 @@ Setup your project for encore bundle:
 
 1. Run encore prepare command
 
-        php vendor/bin/contao-console encore:prepare
+        php vendor/bin/contao-console encore:prepare [--skip-entries="entry1,entry2"]
 
 1.  Run encore to generate the assets
 
@@ -77,11 +77,6 @@ Run encore to generate/compile your assets.
         yarn encore dev 
         yarn encore dev --watch 
         yarn encore prod
-
-This bundle adds to additional options to the encore command:
-
-* `entries`: Limit generation to passed entries. Useful if you have a large amount of entries and compilation needs time, but you're working on a specific entries.  Example: `yarn encore dev --entries="entry1,entry2,entry3"`
-* `skip-entries`: Skip given entries for generation. Example: `yarn encore dev --skip-entries="entry1,entry2,entry3"`
 
 ## Documentation
 

@@ -12,6 +12,7 @@ use Contao\CoreBundle\Command\AbstractLockedCommand;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -44,7 +45,8 @@ class PrepareCommand extends AbstractLockedCommand
     protected function configure()
     {
         $this->setName('encore:prepare')
-            ->setDescription('Does the necessary preparation for contao encore bundle. Needs to be called only after adding new webpack entries in your yml files.');
+            ->setDescription('Does the necessary preparation for contao encore bundle. Needs to be called only after adding new webpack entries in your yml files.')
+            ->addOption('skip-entries', null, InputOption::VALUE_OPTIONAL, 'Add a comma separated list of entries to skip their generation.', false);
     }
 
     /**
@@ -56,6 +58,8 @@ class PrepareCommand extends AbstractLockedCommand
         $this->rootDir = $this->getContainer()->getParameter('kernel.project_dir');
         $twig = $this->getContainer()->get('twig');
         $resultFile = $this->rootDir.\DIRECTORY_SEPARATOR.'encore.bundles.js';
+
+        $skipEntries = $input->getOption('skip-entries') ? explode(',', $input->getOption('skip-entries')) : [];
 
         $this->io->text('Using <fg=green>'.$this->getContainer()->getParameter('kernel.environment').'</> environment. (Use --env=[ENV] to change environment. See --help for more information!)');
 
@@ -85,6 +89,7 @@ class PrepareCommand extends AbstractLockedCommand
 
             $content = $twig->render('@HeimrichHannotContaoEncore/encore_bundles.js.twig', [
                 'entries' => $entries,
+                'skipEntries' => $skipEntries,
             ]);
 
             file_put_contents($resultFile, $content);

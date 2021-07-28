@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.0] - 2021-07-28
+
+- removed `skip-entries` and `entries` from js implementation because not supported by webpack anymore
+- added `skip-entries` to `encore:prepare` command
+
 ## [1.11.2] - 2021-07-06
+
 - fixed symfony 5 issue
 - fixed missing dependencies
 - some small code enhancements
