@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.12.1] - 2021-08-27
+
+- Added: php8 support
+
 ## [1.12.0] - 2021-07-28
 
 - removed `skip-entries` and `entries` from js implementation because not supported by webpack anymore

@@ -16,7 +16,7 @@
     "issues": "https://github.com/heimrichhannot/contao-encore-bundle/issues"
   },
   "require": {
-    "php": "^7.1",
+    "php": "^7.1|^8.0",
     "ext-json": "*",
     "contao/core-bundle": "^4.4",
     "symfony/cache": "^3.4|^4.4|^5.0",
