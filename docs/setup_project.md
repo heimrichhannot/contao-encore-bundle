@@ -8,9 +8,9 @@ Setup your project for encore bundle.
     composer require heimrichhannot/contao-encore-bundle
     ```
 
-1. Update your database
+2. Update your database
 
-1. Update/Create your webpack config file (`webpack.config.js`) in your project root.
+3. Update/Create your webpack config file (`webpack.config.js`) in your project root.
 
     1. Require the generated `encore.bundles.js` (this file is generated with the encore:prepare command, see [Run Encore](../README.md#run-encore))
     
@@ -62,17 +62,36 @@ Setup your project for encore bundle.
         
    > We recommend adding corejs polyfill (former babel polyfill) into your setup, see [Javascript setup section](setup_javascript.md) for more informations.
 
-1. Set `huh_encore.use_contao_template_variables` to true
+4. Set `huh_encore.use_contao_template_variables` to true
 
-```yaml
-# config/config.yml (Contao >= 4.9)
-# app/config/config.yml (Contao 4.4)
-huh_encore:
-  use_contao_template_variables: true
+   ```yaml
+   # config/config.yml (Contao >= 4.9)
+   # app/config/config.yml (Contao 4.4)
+   huh_encore:
+     use_contao_template_variables: true
+   ```
 
-```
+   > This option was added to use the default contao fe_page template variables instead of custom variables from this bundle. The old implementation is considered deprecated and will be removed in a future version. If you still want or need to use it, see `src/Resources/contao/templates/fe_page_encore_bundle.html5` for usage.
 
-> This option was added to use the default contao fe_page template variables instead of custom variables from this bundle. The old implementation is considered deprecated and will be removed in a future version. If you still want or need to use it, see `src/Resources/contao/templates/fe_page_encore_bundle.html5` for usage.
+5. Optional (but hardly recommended if you want to use encore bundle also in your bundles!): Install [foxy](https://github.com/fxpio/foxy). This bundle adds the node/javascript dependencies of foxy enabled bundles to your project when doing a composer install or update.
 
-1. Optional: Add entries.    
+   Install with composer:
+   ```
+   composer require "foxy/foxy:^1.1.1"
+   ```
+   
+   Configure your project composer.json:
+   ```json
+   {
+      "config": {
+         "foxy": {
+            "manager": "yarn",
+            "manager-version": "^1.20.0",
+            "enabled": true
+         }
+      }
+   }
+   ```
+
+7. Optional: Add entries.    
    You can now add entries from your project, if you maintain your assets in your project code. The easiest way would be to just add them in your webpack.config.js. But you can also add them from configuration, see [Bundle Setup](setup_bundle.md) for more information. 
