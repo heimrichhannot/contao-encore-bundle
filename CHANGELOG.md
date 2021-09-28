@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.13.0] - 2021-09-28
+- Changed: refactored runonce to Migration
+- Changed: minimum contao version is now 4.9
+
 ## [1.12.1] - 2021-08-27
 
 - Added: php8 support

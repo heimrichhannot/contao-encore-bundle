@@ -35,5 +35,6 @@ services:
     public: true
 
   HeimrichHannot\EncoreBundle\:
-    resource: "../../{DataContainer,Dca,Helper}/*"
+    resource: "../../{DataContainer,Dca,Helper,Migration}/*"
     public: true
+    autoconfigure: true
