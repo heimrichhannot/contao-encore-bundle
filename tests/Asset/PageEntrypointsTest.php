@@ -29,7 +29,7 @@ class PageEntrypointsTest extends ContaoTestCase
             $parameter['bundleConfig'] = [];
         }
         if (!isset($parameter['container'])) {
-            $container = $this->mockContainer();
+            $container = $this->getContainerWithContaoConfiguration();
         } else {
             $container = $parameter['container'];
         }
@@ -376,7 +376,7 @@ class PageEntrypointsTest extends ContaoTestCase
      */
     public function testPageEntryOrder($pageParents, $bundleConfig, $page, $layout, $result)
     {
-        $container = $this->mockContainer();
+        $container = $this->getContainerWithContaoConfiguration();
         $modelUtil = $this->createMock(ModelUtil::class);
         $modelUtil->method('findParentsRecursively')->willReturn($pageParents);
         $container->set('huh.utils.model', $modelUtil);

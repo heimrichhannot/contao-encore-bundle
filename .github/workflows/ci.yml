@@ -9,11 +9,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ 7.1, 7.2., 7.3, 7.4, 8.0 ]
-        contao: [ 4.4.*, 4.9.*, 4.* ]
+        php: [ 7.2., 7.3, 7.4, 8.0, 8.1 ]
+        contao: [ 4.9.*, 4.* ]
         exclude:
-          - php: 8.0
-            contao: 4.4.*
           - php: 7.1
             contao: 4.9.*
           - php: 7.1
@@ -36,7 +34,7 @@ jobs:
       - name: Install the dependencies
         id: composer-install
         run: composer require contao/core-bundle:${{ matrix.contao }} --no-interaction
-        continue-on-error: ${{ matrix.php == 8.0 }}
+        continue-on-error: ${{ matrix.php >= 8.0 }}
 
       - name: Run the unit tests
         if: steps.composer-install.conclusion == 'success' && steps.composer-install.outcome == 'success'
