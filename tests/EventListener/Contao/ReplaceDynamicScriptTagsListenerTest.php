@@ -62,8 +62,8 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
             'configurationHelper' => $configurationHelper,
         ], $mockBilder);
 
-        $instance->expects($this->never())->method('cleanGlobalArrays')->willReturn(false);
-        $instance->expects($this->never())->method('replaceEncoreTags')->willReturn(false);
+        $instance->expects($this->never())->method('cleanGlobalArrays');
+        $instance->expects($this->never())->method('replaceEncoreTags');
         $instance->__invoke('test');
 
         //Encore enabled
