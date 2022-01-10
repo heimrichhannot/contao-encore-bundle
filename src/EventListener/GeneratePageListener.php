@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @deprecated This class is outdated and will be removed in next major version
+ * @codeCoverageIgnore
  */
 class GeneratePageListener
 {
