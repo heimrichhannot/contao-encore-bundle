@@ -15,6 +15,9 @@ use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @deprecated This class is outdated and will be removed in next major version
+ */
 class GeneratePageListener
 {
     /**
@@ -39,31 +42,6 @@ class GeneratePageListener
         $this->container = $container;
         $this->templateAsset = $templateAsset;
         $this->bundleConfig = $bundleConfig;
-    }
-
-    /**
-     * @Hook("generatePage")
-     */
-    public function __invoke(PageModel $pageModel, LayoutModel $layout, PageRegular $pageRegular)
-    {
-        if (!$layout->addEncore) {
-            return;
-        }
-        if (!isset($this->bundleConfig['use_contao_template_variables']) || true !== $this->bundleConfig['use_contao_template_variables']) {
-            $this->createEncoreScriptTags($pageRegular);
-        }
-    }
-
-    /**
-     * @deprecated use __invoke instead
-     * @codeCoverageIgnore
-     */
-    public function onGeneratePage(PageModel $pageModel, LayoutModel $layout, PageRegular $pageRegular): void
-    {
-        if (!$layout->addEncore) {
-            return;
-        }
-        $this->addEncore($pageModel, $layout, $pageRegular);
     }
 
     /**
@@ -106,12 +84,5 @@ class GeneratePageListener
         }
 
         EntryHelper::cleanGlobalArrays($this->bundleConfig);
-    }
-
-    protected function createEncoreScriptTags(PageRegular $pageRegular)
-    {
-        $pageRegular->Template->encoreStylesheets = '[[HUH_ENCORE_CSS]]';
-        $pageRegular->Template->encoreHeadScripts = '[[HUH_ENCORE_HEAD_JS]]';
-        $pageRegular->Template->encoreScripts = '[[HUH_ENCORE_JS]]';
     }
 }

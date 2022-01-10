@@ -8,6 +8,7 @@
 
 namespace HeimrichHannot\EncoreBundle\EventListener\Contao;
 
+use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\PageRegular;

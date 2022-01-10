@@ -6,8 +6,9 @@
  * @license LGPL-3.0-or-later
  */
 
-namespace HeimrichHannot\EncoreBundle\EventListener;
+namespace HeimrichHannot\EncoreBundle\EventListener\Contao;
 
+use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;

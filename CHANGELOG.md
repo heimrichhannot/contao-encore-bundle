@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - 2022-01-10
+- Changed: hooks not using service annotations
+- Changed: some refactoring and cleanup
+- Fixed: changes in contao 4.9 leading to warning/non working asset insertion if encore bundle template variables are used
+
+
 ## [1.13.0] - 2021-09-28
 - Changed: refactored runonce to Migration
 - Changed: minimum contao version is now 4.9

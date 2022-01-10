@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Class HookListener.
  *
- * @todo Remove in version 2.0
+ * @deprecated Will be removed in next major verison.
  */
 class HookListener
 {

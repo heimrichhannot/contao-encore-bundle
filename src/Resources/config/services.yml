@@ -5,6 +5,11 @@ services:
       $bundleConfig: '%huh_encore%'
       $webDir: '%contao.web_dir%'
 
+  HeimrichHannot\EncoreBundle\:
+    resource: "../../{DataContainer,Dca,EventListener,Helper,Migration}/*"
+    public: true
+    autoconfigure: true
+
   HeimrichHannot\EncoreBundle\Asset\:
     resource: '../../Asset/*'
     exclude: '../../Asset/{EntrypointCollection.php,EntrypointsJsonLookup.php}'
@@ -30,11 +35,10 @@ services:
     class: HeimrichHannot\EncoreBundle\Choice\ImportsTemplateChoice
     public: true
 
-  HeimrichHannot\EncoreBundle\EventListener\Contao\:
-    resource: "../../EventListener/Contao/*"
-    public: true
+  huh.encore.listener.hooks: '@HeimrichHannot\EncoreBundle\EventListener\HookListener'
 
-  HeimrichHannot\EncoreBundle\:
-    resource: "../../{DataContainer,Dca,Helper,Migration}/*"
-    public: true
-    autoconfigure: true
+#  huh.encore.listener.hooks:
+#    class: HeimrichHannot\EncoreBundle\EventListener\HookListener
+#  HeimrichHannot\EncoreBundle\EventListener\HookListener: '@huh.encore.listener.hooks'
+
+#  HeimrichHannot\EncoreBundle\EventListener\GeneratePageListener: ~

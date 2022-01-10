@@ -6,13 +6,13 @@
  * @license LGPL-3.0-or-later
  */
 
-namespace HeimrichHannot\EncoreBundle\Test\EventListener;
+namespace HeimrichHannot\EncoreBundle\Test\EventListener\Contao;
 
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
-use HeimrichHannot\EncoreBundle\EventListener\ReplaceDynamicScriptTagsListener;
+use HeimrichHannot\EncoreBundle\EventListener\Contao\ReplaceDynamicScriptTagsListener;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use PHPUnit\Framework\MockObject\MockBuilder;

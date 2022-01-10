@@ -37,7 +37,6 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
     {
         $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/config.yml');
         $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/commands.yml');
-        $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/listeners.yml');
         $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/services.yml');
     }
 }
