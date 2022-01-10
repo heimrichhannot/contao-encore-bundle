@@ -41,7 +41,8 @@
     "php-http/guzzle6-adapter": "^1.1",
     "php-http/message-factory": "^1.0.2",
     "php-coveralls/php-coveralls": "^2.0",
-    "symfony/phpunit-bridge": "^3.2|^4.0"
+    "symfony/phpunit-bridge": "^3.2|^4.0",
+    "heimrichhannot/contao-test-utilities-bundle": "^0.1.4"
   },
   "suggest": {
     "foxy/foxy": "Install this bundle in your project so that node extensions are automatically installed to your project's node_modules directory."

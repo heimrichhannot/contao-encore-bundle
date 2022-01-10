@@ -4,6 +4,7 @@ namespace HeimrichHannot\EncoreBundle\EventListener\Contao;
 
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\LayoutModel;
+use Contao\Model;
 use Contao\Template;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 
@@ -34,7 +35,7 @@ class ParseTemplateListener
 
             $layout = $this->getLayout($template);
 
-            if (!$layout->addEncore) {
+            if (!$layout || !$layout->addEncore) {
                 return;
             }
 
@@ -44,7 +45,7 @@ class ParseTemplateListener
         }
     }
 
-    protected function getLayout(Template $template): ?LayoutModel
+    protected function getLayout(Template $template): ?Model
     {
         if (isset($template->layout) && $template->layout instanceof LayoutModel) {
             return $template->layout;
@@ -55,7 +56,6 @@ class ParseTemplateListener
             return null;
         }
 
-        $layout = LayoutModel::findByPk($page->layout);
-        return $layout;
+        return $this->utils->model()->findModelInstanceByPk(LayoutModel::getTable(), $page->layout);
     }
 }
