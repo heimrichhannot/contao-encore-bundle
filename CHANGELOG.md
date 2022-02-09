@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.15.0] - 2022-02-09
+
+- Changed: minimum contao version is now 4.9
+- Changed: supported symfony versions are `^4.4||^5.4`
+
 ## [1.14.0] - 2022-01-10
 - Changed: hooks not using service annotations
 - Changed: some refactoring and cleanup

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -10,7 +10,7 @@ namespace HeimrichHannot\EncoreBundle\Test\Dca;
 
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Dca\DcaGenerator;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DcaGeneratorTest extends ContaoTestCase
 {
