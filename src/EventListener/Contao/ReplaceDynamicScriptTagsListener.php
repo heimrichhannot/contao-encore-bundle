@@ -8,6 +8,7 @@
 
 namespace HeimrichHannot\EncoreBundle\EventListener\Contao;
 
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\LayoutModel;
 use Contao\PageModel;
@@ -90,12 +91,17 @@ class ReplaceDynamicScriptTagsListener
     {
         $templateAssets = $this->templateAsset->createInstance($page, $layout, 'encoreEntries');
 
+        $nonce = '';
+        if (method_exists(ContaoFramework::class, 'getNonce')) {
+            $nonce = '_'.ContaoFramework::getNonce();
+        }
+
         $replace = [];
-        $replace['[[TL_CSS]]'] = '[[TL_CSS]]'.trim($templateAssets->linkTags());
+        $replace["[[TL_CSS$nonce]]"] = "[[TL_CSS$nonce]]".trim($templateAssets->linkTags());
 
         // caution: always render head first because of global dependencies like jQuery
-        $replace['[[TL_HEAD]]'] = trim($templateAssets->headScriptTags()).'[[TL_HEAD]]';
-        $replace['[[TL_BODY]]'] = trim($templateAssets->scriptTags()).'[[TL_BODY]]';
+        $replace["[[TL_HEAD$nonce]]"] = trim($templateAssets->headScriptTags())."[[TL_HEAD$nonce]]";
+        $replace["[[TL_BODY$nonce]]"] = trim($templateAssets->scriptTags())."[[TL_BODY$nonce]]";
 
         return str_replace(array_keys($replace), $replace, $buffer);
     }
