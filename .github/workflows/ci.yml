@@ -9,15 +9,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ 7.2., 7.3, 7.4, 8.0, 8.1 ]
-        contao: [ 4.9.*, 4.* ]
+        php: [ 7.2, 7.3, 7.4, 8.0, 8.1 ]
+        contao: [ 4.9.*, 4.13.* ]
         exclude:
-          - php: 7.1
-            contao: 4.9.*
-          - php: 7.1
-            contao: 4.*
           - php: 7.2
-            contao: 4.*
+            contao: 4.13.*
+          - php: 7.3
+            contao: 4.13.*
 
     steps:
       - name: Setup PHP
@@ -39,6 +37,7 @@ jobs:
       - name: Run the unit tests
         if: steps.composer-install.conclusion == 'success' && steps.composer-install.outcome == 'success'
         run: php vendor/bin/phpunit -c phpunit.xml.dist --colors=always
+        continue-on-error: ${{ matrix.php >= 8.0 }}
 
   coverage:
     runs-on: ubuntu-latest

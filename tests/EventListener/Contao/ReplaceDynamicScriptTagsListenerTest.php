@@ -8,6 +8,7 @@
 
 namespace HeimrichHannot\EncoreBundle\Test\EventListener\Contao;
 
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
@@ -159,13 +160,21 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
 
         $GLOBALS['objPage'] = $this->mockClassWithProperties(PageModel::class, ['layoutId' => 1]);
 
+        $nonce = '';
+        if (method_exists(ContaoFramework::class, 'getNonce')) {
+            $nonce = '_'.ContaoFramework::getNonce();
+        }
+
         $this->assertSame('Hallo', $instance->__invoke('Hallo'));
-        $this->assertSame('Hallo [[TL_CSS]]<link>', $instance->__invoke('Hallo [[TL_CSS]]'));
-        $this->assertSame('<script>[[TL_BODY]] Hallo', $instance->__invoke('[[TL_BODY]] Hallo'));
-        $this->assertSame('<head>[[TL_HEAD]]Hallo', $instance->__invoke('[[TL_HEAD]]Hallo'));
-        $this->assertSame('<head>[[TL_HEAD]]Ha<script>[[TL_BODY]]llo [[TL_CSS]]<link>', $instance->__invoke('[[TL_HEAD]]Ha[[TL_BODY]]llo [[TL_CSS]]'));
+        $this->assertSame("Hallo [[TL_CSS$nonce]]<link>", $instance->__invoke("Hallo [[TL_CSS$nonce]]"));
+        $this->assertSame("<script>[[TL_BODY$nonce]] Hallo", $instance->__invoke("[[TL_BODY$nonce]] Hallo"));
+        $this->assertSame("<head>[[TL_HEAD$nonce]]Hallo", $instance->__invoke("[[TL_HEAD$nonce]]Hallo"));
         $this->assertSame(
-            '<head>[[TL_HEAD]]Ha<script>[[TL_BODY]]llo [[TL_CSS]]<link> [[HUH_ENCORE_CSS]]',
-            $instance->__invoke('[[TL_HEAD]]Ha[[TL_BODY]]llo [[TL_CSS]] [[HUH_ENCORE_CSS]]'));
+            "<head>[[TL_HEAD$nonce]]Ha<script>[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]<link>",
+            $instance->__invoke("[[TL_HEAD$nonce]]Ha[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]")
+        );
+        $this->assertSame(
+            "<head>[[TL_HEAD$nonce]]Ha<script>[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]<link> [[HUH_ENCORE_CSS]]",
+            $instance->__invoke("[[TL_HEAD$nonce]]Ha[[TL_BODY$nonce]]llo [[TL_CSS$nonce]] [[HUH_ENCORE_CSS]]"));
     }
 }
