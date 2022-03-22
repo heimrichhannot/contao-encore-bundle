@@ -171,7 +171,7 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $this->assertSame("<head>[[TL_HEAD$nonce]]Hallo", $instance->__invoke("[[TL_HEAD$nonce]]Hallo"));
         $this->assertSame(
             "<head>[[TL_HEAD$nonce]]Ha<script>[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]<link>",
-            $instance->__invoke('[[TL_HEAD$nonce]]Ha[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]')
+            $instance->__invoke("[[TL_HEAD$nonce]]Ha[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]")
         );
         $this->assertSame(
             "<head>[[TL_HEAD$nonce]]Ha<script>[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]<link> [[HUH_ENCORE_CSS]]",
