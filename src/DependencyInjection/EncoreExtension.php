@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -10,6 +10,7 @@ namespace HeimrichHannot\EncoreBundle\DependencyInjection;
 
 use HeimrichHannot\EncoreBundle\Exception\FeatureNotSupportedException;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
+use HeimrichHannot\EncoreContracts\EncoreExtensionInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -64,6 +65,9 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
         $processedConfig['outputPath'] = $this->outputPath;
 
         $container->setParameter('huh_encore', $processedConfig);
+
+        $container->registerForAutoconfiguration(EncoreExtensionInterface::class)
+            ->addTag('huh.encore.extension');
 
         // Deprecated:
         $container->setParameter('huh.encore', ['encore' => $processedConfig]);

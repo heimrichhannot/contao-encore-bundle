@@ -1,23 +1,26 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
 
 namespace HeimrichHannot\EncoreBundle\Command;
 
-use Contao\CoreBundle\Command\AbstractLockedCommand;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class PrepareCommand extends AbstractLockedCommand
+class PrepareCommand extends Command
 {
+    protected static $defaultName = 'huh:encore:prepare';
+    protected static $defaultDescription = 'Does the necessary preparation for contao encore bundle. Needs to be called only after adding new webpack entries in your yml files.';
+
     /**
      * @var SymfonyStyle
      */
@@ -44,15 +47,15 @@ class PrepareCommand extends AbstractLockedCommand
      */
     protected function configure()
     {
-        $this->setName('encore:prepare')
-            ->setDescription('Does the necessary preparation for contao encore bundle. Needs to be called only after adding new webpack entries in your yml files.')
+        $this->setAliases(['encore:prepare'])
+            ->setDescription(static::$defaultDescription)
             ->addOption('skip-entries', null, InputOption::VALUE_OPTIONAL, 'Add a comma separated list of entries to skip their generation.', false);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function executeLocked(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->io = new SymfonyStyle($input, $output);
         $this->rootDir = $this->getContainer()->getParameter('kernel.project_dir');
