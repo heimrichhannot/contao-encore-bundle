@@ -33,6 +33,7 @@ class AcmeController
 Example with ServiceSubscriber for loose dependency (recommended):
 
 ```php
+use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ServiceSubscriberInterface;
 
@@ -51,16 +52,19 @@ class AcmeController implements ServiceSubscriberInterface
     public function __invoke()
     {
 
-        if ($this->container->has('HeimrichHannot\EncoreBundle\Asset\FrontendAsset')) {
-            $this->container->get(\HeimrichHannot\EncoreBundle\Asset\FrontendAsset::class)->addActiveEntrypoint('contao-acme-bundle');
+        if (class_exists(FrontendAsset::class) && $this->container->has(FrontendAsset::class)) {
+            $this->container->get(FrontendAsset::class)->addActiveEntrypoint('contao-acme-bundle');
         }
     }
 
     public static function getSubscribedServices()
     {
-        return [
-            '?HeimrichHannot\EncoreBundle\Asset\FrontendAsset'
-        ];
+        $services = [];
+        if (class_exists(FrontendAsset::class)) {
+            $services[] = '?'.FrontendAsset::class;
+        }
+    
+        return $services;
     }
 }
 ```
@@ -75,11 +79,13 @@ App/FrontendModule/MyModule:
 ```
 
 ```php
+use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
+
 class MyModule
 {
     protected $encoreFrontendAsset;
 
-    public function setEncoreFrontendAsset(\HeimrichHannot\EncoreBundle\Asset\FrontendAsset $encoreFrontendAsset): void {
+    public function setEncoreFrontendAsset(FrontendAsset $encoreFrontendAsset): void {
         $this->encoreFrontendAsset = $encoreFrontendAsset;
     }
 
@@ -96,8 +102,11 @@ class MyModule
 Example for legacy code (old frontend modules or content elements): 
 
 ```php
-if (\Contao\System::getContainer()->has('huh.encore.asset.frontend')) {
-    \Contao\System::getContainer()->get('huh.encore.asset.frontend')->addActiveEntrypoint('contao-slick-bundle');
+use Contao\System;
+use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
+
+if (class_exists(FrontendAsset::class) && System::getContainer()->has(FrontendAsset::class)) {
+    System::getContainer()->get(FrontendAsset::class)->addActiveEntrypoint('contao-slick-bundle');
 }
 ```
 
