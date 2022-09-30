@@ -87,24 +87,32 @@ class PrepareCommand extends Command
                 $entries[] = $preparedEntry;
             }
 
-//            InstalledVersions::getInstallPath('heimrichhannot/contao-nwl-mobilitaetsforum-bundle');
-
             foreach ($this->extensionCollection->getExtensions() as $extension) {
                 $reflection = new \ReflectionClass($extension::getBundle());
-                $path = (new Filesystem())->makePathRelative($reflection->getFileName(), $this->kernel->getProjectDir());
+                $bundle = $this->kernel->getBundles()[$reflection->getShortName()];
+                $bundlePath = $bundle->getPath();
+                if (!str_starts_with($bundlePath, $this->kernel->getProjectDir())) {
+                    if (!file_exists($bundlePath.'/composer.json')) {
+                        trigger_error(
+                            '[Encore Bundle] Bundle '.$bundle->getName()
+                            .' seems to be symlinked, but a composer.json file could not be found.'
+                            .' Skipping EncoreExtension '.\get_class($extension).'.'
+                        );
+                        continue;
+                    }
 
-//
-//                $a = $reflection->get();
-//                $b = $reflection->getShortName();
+                    $composerData = json_decode(file_get_contents($bundlePath.'/composer.json'));
+                    $bundlePath = InstalledVersions::getInstallPath($composerData->name);
+                }
+
+                $bundlePath = rtrim((new Filesystem())->makePathRelative($bundlePath, $this->kernel->getProjectDir()), \DIRECTORY_SEPARATOR);
 
                 $preparedEntry = [];
                 foreach ($extension::getEntries() as $entry) {
-//                    dirname($)
-
                     $preparedEntry['name'] = $entry->getName();
-                    $preparedEntry['name'] = $entry->getName();
+                    $preparedEntry['file'] = $bundlePath.\DIRECTORY_SEPARATOR.ltrim($entry->getPath(), \DIRECTORY_SEPARATOR);
+                    $entries[] = $preparedEntry;
                 }
-                continue;
             }
 
             $content = $this->twig->render('@HeimrichHannotContaoEncore/encore_bundles.js.twig', [
@@ -112,7 +120,7 @@ class PrepareCommand extends Command
                 'skipEntries' => $skipEntries,
             ]);
 
-            file_put_contents($resultFile, $content);
+            $result = file_put_contents($resultFile, $content);
 
             $this->io->success('Created encore.bundles.js in your project root. You can now require it in your webpack.config.js!');
         } else {

@@ -13,7 +13,7 @@ use HeimrichHannot\EncoreContracts\EncoreExtensionInterface;
 class ExtensionCollection
 {
     /** @var array|EncoreExtensionInterface[] */
-    protected array $extensions;
+    protected array $extensions = [];
 
     /**
      * @return array|EncoreExtensionInterface[]
