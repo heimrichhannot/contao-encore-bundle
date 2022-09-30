@@ -6,7 +6,31 @@ This document contains additional information for developers working with encore
 
 Since version 1.3 it is possible to add encore entries from your code. So for example the slider assets are automatically included, if the slider module is added to the page. To do this, you can use the `FrontendAsset` service.
 
-Example with ServiceSubscriber (recommended):
+Example with dependency injection (with encore bundle as hard dependency):
+
+```php
+use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
+
+class AcmeController
+{
+    /**
+     * @var ContainerInterface
+     */
+    private $frontendAsset;
+
+    public function __construct(FrontendAsset $frontendAsset)
+    {
+        $this->frontendAsset = $frontendAsset;
+    }
+
+    public function __invoke()
+    {
+        $this->frontendAsset->addActiveEntrypoint('contao-acme-bundle');
+    }
+}
+```
+
+Example with ServiceSubscriber for loose dependency (recommended):
 
 ```php
 use Psr\Container\ContainerInterface;
@@ -24,7 +48,7 @@ class AcmeController implements ServiceSubscriberInterface
         $this->container = $container;
     }
 
-    public function addEncoreAssets()
+    public function __invoke()
     {
 
         if ($this->container->has('HeimrichHannot\EncoreBundle\Asset\FrontendAsset')) {
