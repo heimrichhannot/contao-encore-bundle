@@ -8,38 +8,39 @@
 
 namespace HeimrichHannot\EncoreBundle\Command;
 
+use Composer\InstalledVersions;
+use HeimrichHannot\EncoreBundle\Collection\ExtensionCollection;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Twig\Environment;
 
 class PrepareCommand extends Command
 {
     protected static $defaultName = 'huh:encore:prepare';
-    protected static $defaultDescription = 'Does the necessary preparation for contao encore bundle. Needs to be called only after adding new webpack entries in your yml files.';
+    protected static $defaultDescription = 'Does the necessary preparation for contao encore bundle. Needs to be called after changes to bundle encore entries.';
 
-    /**
-     * @var SymfonyStyle
-     */
-    private $io;
+    private SymfonyStyle           $io;
+    private CacheItemPoolInterface $encoreCache;
+    private KernelInterface        $kernel;
+    private array                  $bundleConfig;
+    private Environment            $twig;
+    private ExtensionCollection    $extensionCollection;
 
-    /**
-     * @var string
-     */
-    private $rootDir;
-    /**
-     * @var PhpArrayAdapter
-     */
-    private $encoreCache;
-
-    public function __construct(CacheItemPoolInterface $encoreCache)
+    public function __construct(CacheItemPoolInterface $encoreCache, KernelInterface $kernel, array $bundleConfig, Environment $twig, ExtensionCollection $extensionCollection)
     {
-        $this->encoreCache = $encoreCache;
-
         parent::__construct();
+
+        $this->encoreCache = $encoreCache;
+        $this->kernel = $kernel;
+        $this->bundleConfig = $bundleConfig;
+        $this->twig = $twig;
+        $this->extensionCollection = $extensionCollection;
     }
 
     /**
@@ -58,39 +59,55 @@ class PrepareCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->io = new SymfonyStyle($input, $output);
-        $this->rootDir = $this->getContainer()->getParameter('kernel.project_dir');
-        $twig = $this->getContainer()->get('twig');
-        $resultFile = $this->rootDir.\DIRECTORY_SEPARATOR.'encore.bundles.js';
+        $resultFile = $this->kernel->getProjectDir().\DIRECTORY_SEPARATOR.'encore.bundles.js';
 
         $skipEntries = $input->getOption('skip-entries') ? explode(',', $input->getOption('skip-entries')) : [];
 
-        $this->io->text('Using <fg=green>'.$this->getContainer()->getParameter('kernel.environment').'</> environment. (Use --env=[ENV] to change environment. See --help for more information!)');
+        $this->io->text('Using <fg=green>'.$this->kernel->getEnvironment().'</> environment. (Use --env=[ENV] to change environment. See --help for more information!)');
 
         @unlink($resultFile);
 
         $this->encoreCache->clear();
 
-        $config = $this->getContainer()->getParameter('huh_encore');
-
         // js
-        if (isset($config['js_entries']) && \is_array($config['js_entries'])) {
+        if (isset($this->bundleConfig['js_entries']) && \is_array($this->bundleConfig['js_entries'])) {
             // entries
             $entries = [];
 
-            foreach ($config['js_entries'] as $entry) {
+            foreach ($this->bundleConfig['js_entries'] as $entry) {
                 $preparedEntry = [
                     'name' => $entry['name'],
                 ];
 
-                if (!$this->getContainer()->get('huh.utils.string')->startsWith($entry['file'], '@')) {
+                if (!str_starts_with($entry['file'], '@')) {
                     $preparedEntry['file'] = './'.preg_replace('@^\.?\/@i', '', $entry['file']);
                 } else {
-                    $preparedEntry['file'] = $this->getContainer()->get('file_locator')->locate($entry['file']);
+                    $preparedEntry['file'] = rtrim((new Filesystem())->makePathRelative($this->kernel->locateResource($entry['file']), $this->kernel->getProjectDir()), \DIRECTORY_SEPARATOR);
                 }
                 $entries[] = $preparedEntry;
             }
 
-            $content = $twig->render('@HeimrichHannotContaoEncore/encore_bundles.js.twig', [
+//            InstalledVersions::getInstallPath('heimrichhannot/contao-nwl-mobilitaetsforum-bundle');
+
+            foreach ($this->extensionCollection->getExtensions() as $extension) {
+                $reflection = new \ReflectionClass($extension::getBundle());
+                $path = (new Filesystem())->makePathRelative($reflection->getFileName(), $this->kernel->getProjectDir());
+
+//
+//                $a = $reflection->get();
+//                $b = $reflection->getShortName();
+
+                $preparedEntry = [];
+                foreach ($extension::getEntries() as $entry) {
+//                    dirname($)
+
+                    $preparedEntry['name'] = $entry->getName();
+                    $preparedEntry['name'] = $entry->getName();
+                }
+                continue;
+            }
+
+            $content = $this->twig->render('@HeimrichHannotContaoEncore/encore_bundles.js.twig', [
                 'entries' => $entries,
                 'skipEntries' => $skipEntries,
             ]);

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -36,7 +36,6 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
     public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
     {
         $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/config.yml');
-        $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/commands.yml');
         $loader->load('@HeimrichHannotContaoEncoreBundle/Resources/config/services.yml');
     }
 }
