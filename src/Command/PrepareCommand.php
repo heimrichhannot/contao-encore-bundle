@@ -120,7 +120,7 @@ class PrepareCommand extends Command
                 'skipEntries' => $skipEntries,
             ]);
 
-            $result = file_put_contents($resultFile, $content);
+            file_put_contents($resultFile, $content);
 
             $this->io->success('Created encore.bundles.js in your project root. You can now require it in your webpack.config.js!');
         } else {

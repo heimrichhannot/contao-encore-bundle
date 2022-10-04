@@ -18,7 +18,11 @@
   "require": {
     "php": "^7.4 || ^8.0",
     "ext-json": "*",
+    "composer-runtime-api": "^2.0",
     "contao/core-bundle": "^4.9",
+    "heimrichhannot/contao-encore-contracts": "*",
+    "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
+    "heimrichhannot/contao-utils-bundle": "^2.207",
     "symfony/cache": "^4.4||^5.4",
     "symfony/config": "^4.4||^5.4",
     "symfony/console": "^4.4||^5.0",
@@ -29,8 +33,6 @@
     "symfony/translation": "^4.4||^5.4",
     "symfony/translation-contracts": "^1.1.6||^2||^3",
     "symfony/webpack-encore-bundle": "^1.0",
-    "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
-    "heimrichhannot/contao-utils-bundle": "^2.207",
     "twig/twig": "^1.38.3|^2.7|^3.0",
     "webmozart/path-util": "^2.3"
   },
