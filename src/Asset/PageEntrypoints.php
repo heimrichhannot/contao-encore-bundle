@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -12,7 +12,10 @@ use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Exception;
+use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
+use HeimrichHannot\UtilsBundle\Arrays\ArrayUtil;
+use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PageEntrypoints
@@ -23,59 +26,34 @@ class PageEntrypoints
     protected $activeEntries = [];
 
     protected $initialized = false;
-    /**
-     * @var array
-     */
-    private $bundleConfig;
-    /**
-     * @var EntrypointsJsonLookup
-     */
-    private $entrypointsJsonLookup;
 
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-    /**
-     * @var FrontendAsset
-     */
-    private $frontendAsset;
+    private ContainerInterface $container;
+    private FrontendAsset      $frontendAsset;
+    private EntryCollection    $entryCollection;
+    private ArrayUtil          $arrayUtil;
+    private ModelUtil          $modelUtil;
 
     /**
      * PageEntrypoints constructor.
      */
-    public function __construct(array $bundleConfig, EntrypointsJsonLookup $entrypointsJsonLookup, ContainerInterface $container, FrontendAsset $frontendAsset)
+    public function __construct(ContainerInterface $container, FrontendAsset $frontendAsset, EntryCollection $entryCollection, ArrayUtil $arrayUtil, ModelUtil $modelUtil)
     {
-        $this->bundleConfig = $bundleConfig;
-        $this->entrypointsJsonLookup = $entrypointsJsonLookup;
         $this->container = $container;
         $this->frontendAsset = $frontendAsset;
+        $this->entryCollection = $entryCollection;
+        $this->arrayUtil = $arrayUtil;
+        $this->modelUtil = $modelUtil;
     }
 
     public function generatePageEntrypoints(PageModel $page, LayoutModel $layout, ?string $encoreField = null): bool
     {
         if ($this->initialized) {
-            trigger_error('PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided. ', E_USER_WARNING);
-        }
-        // add entries from the entrypoints.json
-        if (isset($this->bundleConfig['entrypoints_jsons'])
-            && \is_array($this->bundleConfig['entrypoints_jsons'])
-            && !empty($this->bundleConfig['entrypoints_jsons'])
-        ) {
-            if (!isset($this->bundleConfig['js_entries'])) {
-                $this->bundleConfig['js_entries'] = [];
-            } elseif (!\is_array($this->bundleConfig['js_entries'])) {
-                return false;
-            }
-
-            $this->bundleConfig['js_entries'] = $this->entrypointsJsonLookup->mergeEntries(
-                $this->bundleConfig['entrypoints_jsons'],
-                $this->bundleConfig['js_entries'],
-                $layout
-            );
+            trigger_error('PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided. ', \E_USER_WARNING);
         }
 
-        if (!isset($this->bundleConfig['js_entries']) || !\is_array($this->bundleConfig['js_entries']) || empty($this->bundleConfig['js_entries'])) {
+        $projectEntries = $this->entryCollection->getEntries();
+
+        if (empty($projectEntries)) {
             return false;
         }
 
@@ -85,7 +63,7 @@ class PageEntrypoints
             if (isset($pageEntry['active']) && !$pageEntry['active']) {
                 continue;
             }
-            if (!($entry = $this->container->get('huh.utils.array')->getArrayRowByFieldValue('name', $pageEntry['entry'], $this->bundleConfig['js_entries']))) {
+            if (!($entry = $this->arrayUtil->getArrayRowByFieldValue('name', $pageEntry['entry'], $projectEntries))) {
                 continue;
             }
             $this->activeEntries[] = $entry['name'];
@@ -116,7 +94,7 @@ class PageEntrypoints
             $encoreField = 'encoreEntries';
         }
         $parents = [$layout];
-        $parentPages = $this->container->get('huh.utils.model')->findParentsRecursively('pid', 'tl_page', $currentPage);
+        $parentPages = $this->modelUtil->findParentsRecursively('pid', 'tl_page', $currentPage);
         if (\is_array($parentPages)) {
             $parents = array_merge($parents, $parentPages);
         }
@@ -197,7 +175,7 @@ class PageEntrypoints
      */
     public function createInstance()
     {
-        return new static($this->bundleConfig, $this->entrypointsJsonLookup, $this->container, $this->frontendAsset);
+        return new static($this->container, $this->frontendAsset, $this->entryCollection, $this->arrayUtil, $this->modelUtil);
     }
 
     /**

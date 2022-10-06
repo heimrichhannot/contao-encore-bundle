@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -14,6 +14,7 @@ use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
 use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\PageEntrypoints;
+use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Test\ModelMockTrait;
 use HeimrichHannot\UtilsBundle\Arrays\ArrayUtil;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
@@ -23,27 +24,61 @@ class PageEntrypointsTest extends ContaoTestCase
 {
     use ModelMockTrait;
 
-    public function mockPageEntrypointsObject(array $parameter = [])
+    public function createTestInstance(array $parameter = [])
     {
-        if (!isset($parameter['bundleConfig'])) {
-            $parameter['bundleConfig'] = [];
-        }
-        if (!isset($parameter['container'])) {
-            $container = $this->getContainerWithContaoConfiguration();
+        $container = $parameter['container'] ?? $this->getContainerWithContaoConfiguration();
+
+        if (isset($parameter['frontendAsset'])) {
+            $frontendAsset = $parameter['frontendAsset'];
         } else {
-            $container = $parameter['container'];
-        }
-        if (!isset($parameter['framework'])) {
-            $container->set('contao.framework', $this->mockContaoFramework());
-        } else {
-            $container->set('contao.framework', $parameter['framework']);
+            $frontendAsset = $this->createMock(FrontendAsset::class);
+            $frontendAsset->method('getActiveEntrypoints')->willReturn([]);
         }
 
-        if (!$container->has('huh.utils.model')) {
+        if (isset($parameter['modelUtil'])) {
+            $modelUtil = $parameter['modelUtil'];
+        } else {
             $modelUtil = $this->createMock(ModelUtil::class);
             $modelUtil->method('findParentsRecursively')->willReturn([]);
-            $container->set('huh.utils.model', $modelUtil);
         }
+
+        if (isset($parameter['arrayUtil'])) {
+            $arrayUtil = $parameter['arrayUtil'];
+        } else {
+            $container = $this->getContainerWithContaoConfiguration();
+            $container->set('contao.framework', $this->mockContaoFramework());
+            $arrayUtil = new ArrayUtil($container);
+        }
+
+        if (isset($parameter['entryCollection'])) {
+            $entryCollection = $parameter['entryCollection'];
+        } else {
+            $entryCollection = $this->createMock(EntryCollection::class);
+
+            if (isset($parameter['bundleConfig'])) {
+                $bundleConfig = $parameter['bundleConfig'];
+                if (isset($bundleConfig['entrypoints_jsons']) && \is_array($bundleConfig['entrypoints_jsons'])) {
+                    array_walk(
+                        $bundleConfig['entrypoints_jsons'],
+                        function (&$item, $key) {
+                            $item = [
+                                'name' => $key,
+                                'requires_css' => isset($item['css']),
+                            ];
+                        }
+                    );
+                }
+                $entryCollection->method('getEntries')->willReturn(
+                    array_merge(($bundleConfig['js_entries'] ?? []), ($bundleConfig['entrypoints_jsons'] ?? []))
+                );
+            }
+        }
+
+        return new PageEntrypoints($container, $frontendAsset, $entryCollection, $arrayUtil, $modelUtil);
+    }
+
+    public function mockPageEntrypointsObject(array $parameter = [])
+    {
         if (!$container->has('huh.utils.array')) {
             $arrayUtil = new ArrayUtil($container);
             $entrypointsJsonLookup = $this->createMock(EntrypointsJsonLookup::class);
@@ -69,26 +104,12 @@ class PageEntrypointsTest extends ContaoTestCase
 
     public function entryPointProvider()
     {
-        return  [
+        return [
             [
                 false,
                 $this->mockModelObject(PageModel::class, []),
                 $this->mockClassWithProperties(LayoutModel::class, []),
                 [],
-                null,
-            ],
-            [
-                false,
-                $this->mockModelObject(PageModel::class, []),
-                $this->mockClassWithProperties(LayoutModel::class, []),
-                ['js_entries' => ''],
-                null,
-            ],
-            [
-                false,
-                $this->mockModelObject(PageModel::class, []),
-                $this->mockClassWithProperties(LayoutModel::class, []),
-                ['js_entries' => 123],
                 null,
             ],
             [
@@ -254,28 +275,6 @@ class PageEntrypointsTest extends ContaoTestCase
                 null,
                 1,
             ],
-            [
-                false,
-                $this->mockModelObject(PageModel::class, ['encoreEntries' => serialize([
-                    ['entry' => 'contao-a-bundle', 'active' => '1'],
-                    ['entry' => 'contao-b-bundle', 'active' => ''],
-                ])]),
-                $this->mockClassWithProperties(LayoutModel::class, ['encoreEntries' => serialize([
-                    ['entry' => 'contao-encore-bundle'],
-                    ['entry' => 'bootstrap'],
-                ])]),
-                [
-                    'js_entries' => 5,
-                    'entrypoints_jsons' => [
-                        'bootstrap' => [
-                            'js' => ['boostrap.js'],
-                            'css' => ['style.css'],
-                        ],
-                    ],
-                ],
-                null,
-                0,
-            ],
         ];
     }
 
@@ -284,7 +283,29 @@ class PageEntrypointsTest extends ContaoTestCase
      */
     public function testGeneratePageEntrypoints(bool $returnValue, $pageModel, $layoutModel, $bundleConfig, $encoreField, $count = 0)
     {
-        $pageEntrypoints = $this->mockPageEntrypointsObject(['bundleConfig' => $bundleConfig]);
+        if (isset($bundleConfig['entrypoints_jsons']) && \is_array($bundleConfig['entrypoints_jsons'])) {
+            array_walk(
+                $bundleConfig['entrypoints_jsons'],
+                function (&$item, $key) {
+                    $item = [
+                        'name' => $key,
+                    ];
+                }
+            );
+        }
+
+        $entryCollection = $this->createMock(EntryCollection::class);
+        $entryCollection->method('getEntries')->willReturn(
+            array_merge(($bundleConfig['js_entries'] ?? []), ($bundleConfig['entrypoints_jsons'] ?? []))
+        );
+
+        $frontendAsset = new FrontendAsset();
+        $frontendAsset->addActiveEntrypoint('contao-slick-bundle');
+
+        $pageEntrypoints = $this->createTestInstance([
+            'entryCollection' => $entryCollection,
+            'frontendAsset' => $frontendAsset,
+        ]);
         if ($returnValue) {
             $this->assertTrue($pageEntrypoints->generatePageEntrypoints($pageModel, $layoutModel, $encoreField));
             $this->assertCount($count, $pageEntrypoints->getActiveEntries());
@@ -376,14 +397,19 @@ class PageEntrypointsTest extends ContaoTestCase
      */
     public function testPageEntryOrder($pageParents, $bundleConfig, $page, $layout, $result)
     {
-        $container = $this->getContainerWithContaoConfiguration();
         $modelUtil = $this->createMock(ModelUtil::class);
         $modelUtil->method('findParentsRecursively')->willReturn($pageParents);
-        $container->set('huh.utils.model', $modelUtil);
 
-        $pageEntrypoints = $this->mockPageEntrypointsObject([
-            'bundleConfig' => $bundleConfig,
-            'container' => $container,
+        $entryCollection = $this->createMock(EntryCollection::class);
+        $entryCollection->method('getEntries')->willReturn(($bundleConfig['js_entries'] ?? []));
+
+        $frontendAsset = new FrontendAsset();
+        $frontendAsset->addActiveEntrypoint('contao-slick-bundle');
+
+        $pageEntrypoints = $this->createTestInstance([
+            'modelUtil' => $modelUtil,
+            'entryCollection' => $entryCollection,
+            'frontendAsset' => $frontendAsset,
         ]);
 
         $this->assertTrue($pageEntrypoints->generatePageEntrypoints($page, $layout));
@@ -393,7 +419,7 @@ class PageEntrypointsTest extends ContaoTestCase
     public function testGetterNotInitialized()
     {
         $this->expectException(\Exception::class);
-        $pageEntrypoints = $this->mockPageEntrypointsObject();
+        $pageEntrypoints = $this->createTestInstance();
         $pageEntrypoints->getActiveEntries();
     }
 
@@ -421,7 +447,14 @@ class PageEntrypointsTest extends ContaoTestCase
                 ],
             ],
         ];
-        $pageEntrypoints = $this->mockPageEntrypointsObject(['bundleConfig' => $config]);
+
+        $frontendAsset = new FrontendAsset();
+        $frontendAsset->addActiveEntrypoint('contao-slick-bundle');
+
+        $pageEntrypoints = $this->createTestInstance([
+            'bundleConfig' => $config,
+            'frontendAsset' => $frontendAsset,
+        ]);
         $pageEntrypoints->generatePageEntrypoints($pageModel, $layoutModel);
 
         $this->assertCount(4, $pageEntrypoints->getActiveEntries());
@@ -432,7 +465,7 @@ class PageEntrypointsTest extends ContaoTestCase
 
     public function testCreateInstance()
     {
-        $instance = $this->mockPageEntrypointsObject();
+        $instance = $this->createTestInstance();
         $newInstance = $instance->createInstance();
         $this->assertInstanceOf(PageEntrypoints::class, $newInstance);
         $this->assertNotSame($instance, $newInstance);
@@ -443,7 +476,7 @@ class PageEntrypointsTest extends ContaoTestCase
         $page = $this->mockModelObject(PageModel::class, []);
         $layout = $this->mockClassWithProperties(LayoutModel::class, []);
 
-        $instance = $this->mockPageEntrypointsObject(['bundleConfig' => ['js_entries' => [['name' => 'contao-encore-bundle'], ['name' => 'b']]]]);
+        $instance = $this->createTestInstance(['bundleConfig' => ['js_entries' => [['name' => 'contao-encore-bundle'], ['name' => 'b']]]]);
         $instance->generatePageEntrypoints($page, $layout);
 
         $this->expectException(Warning::class);
@@ -452,7 +485,7 @@ class PageEntrypointsTest extends ContaoTestCase
 
     public function testLegacyAddBabelEntry()
     {
-        $instance = $this->mockPageEntrypointsObject();
+        $instance = $this->createTestInstance();
         $page = $this->mockModelObject(PageModel::class, []);
         $layout = $this->mockModelObject(LayoutModel::class, [
             'addEncoreBabelPolyfill' => '1',
@@ -460,7 +493,6 @@ class PageEntrypointsTest extends ContaoTestCase
         ]);
         $this->assertSame([
             ['entry' => 'babel-polyfill'],
-            ['entry' => 'contao-slick-bundle'],
         ], $instance->collectPageEntries($layout, $page));
     }
 }

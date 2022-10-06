@@ -6,3 +6,5 @@ vendor
 composer.lock
 composer.json~
 composer.phar
+.ddev/
+.phpunit.result.cache
