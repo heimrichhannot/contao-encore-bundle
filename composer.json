@@ -42,9 +42,6 @@
     "contao/manager-plugin": "^2.0",
     "friendsofphp/php-cs-fixer": "^2.2",
     "phpunit/phpunit": "^8.0",
-    "phpunit/php-token-stream": "^1.4|^2.0|^3.0",
-    "php-http/guzzle6-adapter": "^1.1",
-    "php-http/message-factory": "^1.0.2",
     "php-coveralls/php-coveralls": "^2.0",
     "symfony/phpunit-bridge": "^3.2|^4.0",
     "heimrichhannot/contao-test-utilities-bundle": "^0.1.4"
