@@ -20,7 +20,7 @@
     "ext-json": "*",
     "composer-runtime-api": "^2.0",
     "contao/core-bundle": "^4.9",
-    "heimrichhannot/contao-encore-contracts": "dev-main",
+    "heimrichhannot/contao-encore-contracts": "^1.0",
     "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
     "heimrichhannot/contao-utils-bundle": "^2.221.0",
     "symfony/cache": "^4.4||^5.4",
