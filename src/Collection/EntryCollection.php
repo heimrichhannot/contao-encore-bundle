@@ -9,6 +9,7 @@
 namespace HeimrichHannot\EncoreBundle\Collection;
 
 use Contao\LayoutModel;
+use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
 use Psr\Cache\CacheItemPoolInterface;
 
 class EntryCollection
@@ -17,8 +18,9 @@ class EntryCollection
     private array                   $bundleConfig;
     private bool                    $useCache = false;
     private array                   $entries;
+    private CacheItemPoolInterface $cache;
 
-    public function __construct(ConfigurationCollection $configurationCollection, array $bundleConfig, CacheItemPoolInterface $cache = null)
+    public function __construct(ConfigurationCollection $configurationCollection, array $bundleConfig, CacheItemPoolInterface $cache)
     {
         $this->configurationCollection = $configurationCollection;
         $this->bundleConfig = $bundleConfig;
@@ -26,6 +28,7 @@ class EntryCollection
         if ($bundleConfig['encore_cache_enabled'] ?? false) {
             $this->useCache = true;
         }
+        $this->cache = $cache;
     }
 
     /**
@@ -106,7 +109,7 @@ class EntryCollection
         }
 
         if (!isset($entriesData['entrypoints'])) {
-            throw new \InvalidArgumentException(sprintf('There is no "entrypoints" key in "%s"', $entrypointsJson));
+            throw new NoEntrypointsException(sprintf('There is no "entrypoints" key in "%s"', $entrypointsJson));
         }
 
         if ($this->useCache && null !== $cached && !$cached->isHit()) {

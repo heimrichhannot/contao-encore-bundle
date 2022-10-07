@@ -52,7 +52,7 @@ class ConfigurationCollection
         }
 
         if ($options['array']) {
-            $entrypoints = array_merge($entrypoints, $this->bundleConfig['js_entries']);
+            $entrypoints = array_merge($entrypoints, ($this->bundleConfig['js_entries'] ?? []));
         } else {
             foreach (($this->bundleConfig['js_entries'] ?? []) as $key => $value) {
                 $entry = EncoreEntry::create($value['name'], $value['file']);
