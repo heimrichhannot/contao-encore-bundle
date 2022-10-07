@@ -12,6 +12,7 @@ use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Collection\ConfigurationCollection;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
+use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
 class EntryCollectionTest extends ContaoTestCase
@@ -78,5 +79,50 @@ class EntryCollectionTest extends ContaoTestCase
         ]);
 
         $this->assertCount(5, $instance->getEntries());
+
+        $bundleConfig = [
+            'entrypoints_jsons' => [
+                __DIR__.'/../Fixtures/entrypoints.json',
+            ],
+            'encore_cache_enabled' => true,
+        ];
+
+        $cacheItem = $this->createMock(CacheItemInterface::class);
+        $cacheItem->method('isHit')->willReturn(false);
+        $cacheItem->method('set')->willReturnSelf();
+        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache->method('getItem')->willReturn($cacheItem);
+
+        $instance = $this->createTestInstance([
+            'bundleConfig' => $bundleConfig,
+            'configurationCollection' => $configurationCollection,
+            'cache' => $cache,
+        ]);
+
+        $this->assertCount(5, $instance->getEntries());
+
+        $cacheItem = $this->createMock(CacheItemInterface::class);
+        $cacheItem->method('isHit')->willReturn(true);
+        $cacheItem->method('set')->willReturnSelf();
+        $cacheItem->method('get')->willReturn([
+            'entrypoints' => [
+                'contao-choices-bundle' => [
+                    'js' => [
+                        '/build/runtime.3e0e070e.js',
+                    ],
+                ],
+            ],
+        ]);
+
+        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache->method('getItem')->willReturn($cacheItem);
+
+        $instance = $this->createTestInstance([
+            'bundleConfig' => $bundleConfig,
+            'configurationCollection' => $configurationCollection,
+            'cache' => $cache,
+        ]);
+
+        $this->assertCount(3, $instance->getEntries());
     }
 }
