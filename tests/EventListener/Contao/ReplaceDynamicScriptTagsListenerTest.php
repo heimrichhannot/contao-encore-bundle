@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -9,41 +9,53 @@
 namespace HeimrichHannot\EncoreBundle\Test\EventListener\Contao;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\ServiceAnnotation\Page;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
+use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\EventListener\Contao\ReplaceDynamicScriptTagsListener;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
+use HeimrichHannot\TestUtilitiesBundle\Mock\ModelMockTrait;
+use HeimrichHannot\UtilsBundle\Util\Request\RequestUtil;
+use HeimrichHannot\UtilsBundle\Util\Utils;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
 {
+    use ModelMockTrait;
+
     /**
      * @return ReplaceDynamicScriptTagsListener|MockObject
      */
-    public function getTestInstance(array $parameter = [], ?MockBuilder $mockBuilder = null)
+    public function createTestInstance(array $parameter = [], ?MockBuilder $mockBuilder = null)
     {
         $parameter['bundleConfig'] = $parameter['bundleConfig'] ?? [];
-        $parameter['modelUtil'] = $parameter['modelUtil'] ?? $this->createMock(ModelUtil::class);
+        $parameter['contaoFramework'] = $parameter['contaoFramework'] ?? $this->mockContaoFramework();
+        $parameter['utils'] = $parameter['utils'] ?? $this->createMock(Utils::class);
         $parameter['templateAsset'] = $parameter['templateAsset'] ?? $this->createMock(TemplateAsset::class);
         $parameter['configurationHelper'] = $parameter['configurationHelper'] ?? $this->createMock(ConfigurationHelper::class);
+        $parameter['globalContaoAsset'] = $parameter['globalContaoAsset'] ?? $this->createMock(GlobalContaoAsset::class);
 
         if ($mockBuilder) {
             $instance = $mockBuilder->setConstructorArgs([
                 $parameter['bundleConfig'],
-                $parameter['modelUtil'],
+                $parameter['contaoFramework'],
+                $parameter['utils'],
                 $parameter['templateAsset'],
                 $parameter['configurationHelper'],
+                $parameter['globalContaoAsset'],
             ])->getMock();
         } else {
             $instance = new ReplaceDynamicScriptTagsListener(
                 $parameter['bundleConfig'],
-                $parameter['modelUtil'],
+                $parameter['contaoFramework'],
+                $parameter['utils'],
                 $parameter['templateAsset'],
-                $parameter['configurationHelper']
+                $parameter['configurationHelper'],
+                $parameter['globalContaoAsset'],
             );
         }
 
@@ -52,56 +64,66 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
 
     public function testInvoke()
     {
+        //
         // Encore not enabled
+        //
+
         $configurationHelper = $this->createMock(ConfigurationHelper::class);
         $configurationHelper->method('isEnabledOnCurrentPage')->willReturn(false);
 
-        /** @var ReplaceDynamicScriptTagsListener|MockObject $instance */
-        $mockBilder = $this->getMockBuilder(ReplaceDynamicScriptTagsListener::class)
-            ->setMethods(['cleanGlobalArrays', 'replaceEncoreTags']);
-        $instance = $this->getTestInstance([
-            'configurationHelper' => $configurationHelper,
-        ], $mockBilder);
+        $utils = $this->createMock(Utils::class);
+        $utils->expects($this->never())->method('request');
 
-        $instance->expects($this->never())->method('cleanGlobalArrays');
-        $instance->expects($this->never())->method('replaceEncoreTags');
+        $instance = $this->createTestInstance([
+            'utils' => $utils,
+            'configurationHelper' => $configurationHelper,
+        ]);
         $instance->__invoke('test');
 
-        //Encore enabled
+        //
+        // No page
+        //
+
         $configurationHelper = $this->createMock(ConfigurationHelper::class);
         $configurationHelper->method('isEnabledOnCurrentPage')->willReturn(true);
 
-        /** @var ModelUtil|MockObject $modelUtilMock */
-        $modelUtilMock = $this->createMock(ModelUtil::class);
-        $modelUtilMock->method('findModelInstanceByPk')->willReturnOnConsecutiveCalls(
-            null,
-            $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '1'])
-        );
+        $requestUtil = $this->createMock(RequestUtil::class);
+        $requestUtil->method('getCurrentPageModel')->willReturn(null);
+        $utils = $this->createMock(Utils::class);
+        $utils->method('request')->willReturn($requestUtil);
 
-        /** @var ReplaceDynamicScriptTagsListener|MockObject $instance */
-        $mockBilder = $this->getMockBuilder(ReplaceDynamicScriptTagsListener::class)
-            ->setMethods(['cleanGlobalArrays', 'replaceEncoreTags']);
-        $instance = $this->getTestInstance([
+        $layoutAdapter = $this->mockAdapter(['findByPk']);
+        $layoutAdapter->expects($this->never())->method('findByPk');
+
+        $framework = $this->mockContaoFramework([
+            LayoutModel::class => $layoutAdapter,
+        ]);
+
+        $instance = $this->createTestInstance([
+            'utils' => $utils,
             'configurationHelper' => $configurationHelper,
-            'modelUtil' => $modelUtilMock,
-        ], $mockBilder);
+            'contaoFramework' => $framework,
+        ]);
 
-        $GLOBALS['objPage'] = $this->mockClassWithProperties(PageModel::class, ['layoutId' => 1]);
-
-        $instance->expects($this->once())->method('cleanGlobalArrays')->willReturn(true);
         $instance->__invoke('test');
-        $instance->__invoke('test');
-    }
 
-    public function testReplaceEncoreTags()
-    {
-        $configurationHelper = $this->createMock(ConfigurationHelper::class);
-        $configurationHelper->method('isEnabledOnCurrentPage')->willReturn(true);
+        //
+        // No Layout
+        //
 
-        $modelUtilMock = $this->createMock(ModelUtil::class);
-        $modelUtilMock->method('findModelInstanceByPk')->willReturn(
-            $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '1'])
-        );
+        $requestUtil = $this->createMock(RequestUtil::class);
+        $requestUtil->method('getCurrentPageModel')->willReturn($this->mockModelObject(PageModel::class, [
+            'layoutId' => 3,
+        ]));
+        $utils = $this->createMock(Utils::class);
+        $utils->method('request')->willReturn($requestUtil);
+
+        $layoutAdapter = $this->mockAdapter(['findByPk']);
+        $layoutAdapter->method('findByPk')->willReturn(null);
+
+        $framework = $this->mockContaoFramework([
+            LayoutModel::class => $layoutAdapter,
+        ]);
 
         $templateAssetMock = $this->createMock(TemplateAsset::class);
         $templateAssetMock->method('createInstance')->willReturnSelf();
@@ -109,72 +131,53 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $templateAssetMock->method('scriptTags')->willReturn('<script>');
         $templateAssetMock->method('headScriptTags')->willReturn('<head>');
 
-        $mockBilder = $this->getMockBuilder(ReplaceDynamicScriptTagsListener::class)
-            ->setMethods(['cleanGlobalArrays']);
-
-        $instance = $this->getTestInstance([
+        $instance = $this->createTestInstance([
+            'utils' => $utils,
             'configurationHelper' => $configurationHelper,
-            'modelUtil' => $modelUtilMock,
+            'contaoFramework' => $framework,
             'templateAsset' => $templateAssetMock,
-        ], $mockBilder);
-        $instance->method('cleanGlobalArrays')->willReturn(null);
+        ]);
 
-        $GLOBALS['objPage'] = $this->mockClassWithProperties(PageModel::class, ['layoutId' => 1]);
+        $this->assertSame('[[HUH_ENCORE_CSS]]', $instance->__invoke('[[HUH_ENCORE_CSS]]'));
 
-        $this->assertSame('Hallo', $instance->__invoke('Hallo'));
-        $this->assertSame('Hallo <link>', $instance->__invoke('Hallo [[HUH_ENCORE_CSS]]'));
-        $this->assertSame('<script> Hallo', $instance->__invoke('[[HUH_ENCORE_JS]] Hallo'));
-        $this->assertSame('<head>Hallo', $instance->__invoke('[[HUH_ENCORE_HEAD_JS]]Hallo'));
-        $this->assertSame('<head>Ha<script>llo <link>', $instance->__invoke('[[HUH_ENCORE_HEAD_JS]]Ha[[HUH_ENCORE_JS]]llo [[HUH_ENCORE_CSS]]'));
-        $this->assertSame(
-            '<head>Ha<script>llo <link> [[TL_CSS]]',
-            $instance->__invoke('[[HUH_ENCORE_HEAD_JS]]Ha[[HUH_ENCORE_JS]]llo [[HUH_ENCORE_CSS]] [[TL_CSS]]'));
-    }
+        //
+        // With Layout
+        //
 
-    public function testReplaceContaoTags()
-    {
-        $configurationHelper = $this->createMock(ConfigurationHelper::class);
-        $configurationHelper->method('isEnabledOnCurrentPage')->willReturn(true);
+        $layoutAdapter = $this->mockAdapter(['findByPk']);
+        $layoutAdapter->method('findByPk')->willReturn($this->mockModelObject(LayoutModel::class, []));
 
-        $modelUtilMock = $this->createMock(ModelUtil::class);
-        $modelUtilMock->method('findModelInstanceByPk')->willReturn(
-            $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '1'])
-        );
+        $framework = $this->mockContaoFramework([
+            LayoutModel::class => $layoutAdapter,
+        ]);
 
-        $templateAssetMock = $this->createMock(TemplateAsset::class);
-        $templateAssetMock->method('createInstance')->willReturnSelf();
-        $templateAssetMock->method('linkTags')->willReturn('<link>');
-        $templateAssetMock->method('scriptTags')->willReturn('<script>');
-        $templateAssetMock->method('headScriptTags')->willReturn('<head>');
-
-        $mockBilder = $this->getMockBuilder(ReplaceDynamicScriptTagsListener::class)
-            ->setMethods(['cleanGlobalArrays']);
-
-        $instance = $this->getTestInstance([
-            'bundleConfig' => ['use_contao_template_variables' => true],
+        $instance = $this->createTestInstance([
+            'utils' => $utils,
             'configurationHelper' => $configurationHelper,
-            'modelUtil' => $modelUtilMock,
+            'contaoFramework' => $framework,
             'templateAsset' => $templateAssetMock,
-        ], $mockBilder);
-        $instance->method('cleanGlobalArrays')->willReturn(null);
+        ]);
 
-        $GLOBALS['objPage'] = $this->mockClassWithProperties(PageModel::class, ['layoutId' => 1]);
+        $this->assertSame('<link>', $instance->__invoke('[[HUH_ENCORE_CSS]]'));
+
+        $bundleConfig = [
+            'use_contao_template_variables' => true,
+        ];
+
+        $instance = $this->createTestInstance([
+            'utils' => $utils,
+            'configurationHelper' => $configurationHelper,
+            'contaoFramework' => $framework,
+            'templateAsset' => $templateAssetMock,
+            'bundleConfig' => $bundleConfig,
+        ]);
 
         $nonce = '';
         if (method_exists(ContaoFramework::class, 'getNonce')) {
             $nonce = '_'.ContaoFramework::getNonce();
         }
 
-        $this->assertSame('Hallo', $instance->__invoke('Hallo'));
-        $this->assertSame("Hallo [[TL_CSS$nonce]]<link>", $instance->__invoke("Hallo [[TL_CSS$nonce]]"));
-        $this->assertSame("<script>[[TL_BODY$nonce]] Hallo", $instance->__invoke("[[TL_BODY$nonce]] Hallo"));
-        $this->assertSame("<head>[[TL_HEAD$nonce]]Hallo", $instance->__invoke("[[TL_HEAD$nonce]]Hallo"));
-        $this->assertSame(
-            "<head>[[TL_HEAD$nonce]]Ha<script>[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]<link>",
-            $instance->__invoke("[[TL_HEAD$nonce]]Ha[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]")
-        );
-        $this->assertSame(
-            "<head>[[TL_HEAD$nonce]]Ha<script>[[TL_BODY$nonce]]llo [[TL_CSS$nonce]]<link> [[HUH_ENCORE_CSS]]",
-            $instance->__invoke("[[TL_HEAD$nonce]]Ha[[TL_BODY$nonce]]llo [[TL_CSS$nonce]] [[HUH_ENCORE_CSS]]"));
+        $this->assertSame('[[HUH_ENCORE_CSS]]', $instance->__invoke('[[HUH_ENCORE_CSS]]'));
+        $this->assertSame("[[TL_CSS$nonce]]<link>", $instance->__invoke("[[TL_CSS$nonce]]"));
     }
 }

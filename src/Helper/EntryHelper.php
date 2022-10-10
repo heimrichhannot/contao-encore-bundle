@@ -1,17 +1,23 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
 
 namespace HeimrichHannot\EncoreBundle\Helper;
 
+/**
+ * @deprecated
+ * @codeCoverageIgnore
+ */
 class EntryHelper
 {
     /**
      * Clean up contao global asset arrays.
+     *
+     * @deprecated Use GlobalContaoAsset service instead
      */
     public static function cleanGlobalArrays(array $bundleConfig): void
     {
