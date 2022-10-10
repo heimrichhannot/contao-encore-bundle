@@ -9,8 +9,8 @@ Since version 1.3 it is possible to add encore entries from your code. So for ex
 ### PageAssetsTrait (recommended)
 
 The most simple method is to use the `PageAssetsTrait` of [Contao Encore Contracts](https://github.com/heimrichhannot/contao-encore-contracts).
-This trait is usable since encore bundle version 1.16. After adding the trait to your class, you have a new method `addPageEntrypoint()` available.
-This method allows you to just pass the encore entry name and, optional, pass fallback assets, if encore bundle is not installed. 
+After adding the trait to your class, you have a new method `addPageEntrypoint()` available.
+This method allows you to just pass the encore entry name and, optional, pass fallback assets. 
 The trait takes care for you if encore bundle is installed and register the fallback assets, if not.
 
 ```php

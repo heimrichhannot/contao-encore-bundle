@@ -46,9 +46,6 @@
     "symfony/phpunit-bridge": "^3.2 || ^4.0 || ^5.0 || ^6.0",
     "heimrichhannot/contao-test-utilities-bundle": "^0.1.4"
   },
-  "suggest": {
-    "foxy/foxy": "Install this bundle in your project so that node extensions are automatically installed to your project's node_modules directory."
-  },
   "autoload": {
     "psr-4": {
       "HeimrichHannot\\EncoreBundle\\": "src/"
@@ -77,7 +74,6 @@
     }
   },
   "extra": {
-    "contao-manager-plugin": "HeimrichHannot\\EncoreBundle\\ContaoManager\\Plugin",
-    "foxy": true
+    "contao-manager-plugin": "HeimrichHannot\\EncoreBundle\\ContaoManager\\Plugin"
   }
 }

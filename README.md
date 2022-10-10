@@ -8,7 +8,7 @@ Use the power and simplicity of symfony webpack encore in contao. This bundle le
 
 ## Features
 - use symfony encore ([symfony/webpack-encore](https://github.com/symfony/webpack-encore) and [symfony/webpack-encore-bundle](https://github.com/symfony/webpack-encore-bundle)) to enhance your contao assets workflow
-- conditionally load your assets only if necessary (entrypoints can be activated in the backend in layout and page setting or added via service from your bundle code (e.g. in a frontend module))
+- conditionally load your assets only if necessary (entrypoints can be activated in the backend in layout and page setting or added from your bundle code (e.g. in a frontend module))
 - prepare your bundles to add encore entries when install them and strip assets from the contao global asset arrays
 
 
@@ -64,7 +64,8 @@ The prepare command must be executed after every change to the encore entries co
 
 The command collect encore entries from all bundle and creates a file  called `encore.bundles.js` in your project root.
 This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.
-If also collect the dependencies from the `package.json` files of bundles have EncoreExtensions registered.
+
+It also collects the dependencies from the `package.json` files of bundles have EncoreExtensions registered and adds them to the project dependencies.
 
 ### Run encore
 
