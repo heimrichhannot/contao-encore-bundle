@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.16.0] - 2022-10-10
+- Added: implemented and support [Contao Encore Contracts](https://github.com/heimrichhannot/contao-encore-contracts) ([#21])
+- Added: yarn dependencies now collected by prepare command for bundles using Encore Contracts, so [foxy](https://github.com/fxpio/foxy) is no more recommended (and can hopefully be dropped soon) ([#21])
+- Changed: a lot of internal refactoring ([#21])
+- Changed: minimum supported php version is now 7.4
+- Deprecated: usages of yaml for registering entrypoints  ([#21])
+
 ## [1.15.1] - 2022-03-21
 - Fixed: make use_contao_template_variables work with contao 4.13
 
