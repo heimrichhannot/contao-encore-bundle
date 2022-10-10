@@ -19,11 +19,6 @@ Use the power and simplicity of symfony webpack encore in contao. This bundle le
 
 * Read the [Encore Documentation](https://symfony.com/doc/current/frontend.html) in order to install Encore and understand the core concepts of Webpack and Symfony Encore.
 
-**Recommended:**
-
-* In order to add the node dependencies required by composer bundles, you probably want to add them to your project's node dependencies when running webpack in the project's scope. You can use [Foxy](docs/introductions/bundles_with_webpack.md) for this task.
-
-
 ### Prepare your project and bundle
 
 Setup your project for encore bundle: 
@@ -35,19 +30,19 @@ Setup your project for encore bundle:
 
 ### Run Encore
 
-1. Clear your cache
-   
-        php vendor/bin/contao-console cache:clear
-
 1. Run encore prepare command
 
-        php vendor/bin/contao-console encore:prepare [--skip-entries="entry1,entry2"]
+       php vendor/bin/contao-console huh:encore:prepare [--skip-entries="entry1,entry2"]
 
-1.  Run encore to generate the assets
+1. If (yarn) dependencies have changed, run yan install
 
-    `yarn encore dev`
+       yarn install
 
-1. Activate encore entries in the contao backend
+1. Run encore to generate the assets
+
+       yarn encore dev
+
+1. Activate encore entries in the contao backend (if not added from code)
 
 ## Usage
 
@@ -63,20 +58,21 @@ Setup your project for encore bundle:
 
 ### Prepare command
 
-        php vendor/bin/contao-console encore:prepare
+    php vendor/bin/contao-console huh:encore:prepare
 
 The prepare command must be executed after every change to the encore entries configuration, e.g. after a composer update or changes to that configurations in your own code. 
 
-This generates a file called `encore.bundles.js` in your project root.
+The command collect encore entries from all bundle and creates a file  called `encore.bundles.js` in your project root.
 This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.
+If also collect the dependencies from the `package.json` files of bundles have EncoreExtensions registered.
 
 ### Run encore
 
 Run encore to generate/compile your assets. 
 
-        yarn encore dev 
-        yarn encore dev --watch 
-        yarn encore prod
+    yarn encore dev 
+    yarn encore dev --watch 
+    yarn encore prod
 
 ## Documentation
 

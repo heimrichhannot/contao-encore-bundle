@@ -73,25 +73,5 @@ Setup your project for encore bundle.
 
    > This option was added to use the default contao fe_page template variables instead of custom variables from this bundle. The old implementation is considered deprecated and will be removed in a future version. If you still want or need to use it, see `src/Resources/contao/templates/fe_page_encore_bundle.html5` for usage.
 
-5. Optional (but hardly recommended if you want to use encore bundle also in your bundles!): Install [foxy](https://github.com/fxpio/foxy). This bundle adds the node/javascript dependencies of foxy enabled bundles to your project when doing a composer install or update.
-
-   Install with composer:
-   ```
-   composer require "foxy/foxy:^1.1.1"
-   ```
-   
-   Configure your project composer.json:
-   ```json
-   {
-      "config": {
-         "foxy": {
-            "manager": "yarn",
-            "manager-version": "^1.20.0",
-            "enabled": true
-         }
-      }
-   }
-   ```
-
-7. Optional: Add entries.    
+5. Optional: Add entries.    
    You can now add entries from your project, if you maintain your assets in your project code. The easiest way would be to just add them in your webpack.config.js. But you can also add them from configuration, see [Bundle Setup](setup_bundle.md) for more information. 
