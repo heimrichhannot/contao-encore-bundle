@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -10,15 +10,22 @@ namespace HeimrichHannot\EncoreBundle\Test\Asset;
 
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Asset\EntrypointCollectionFactory;
+use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\UtilsBundle\Arrays\ArrayUtil;
 
 class EntrypointCollectionFactoryTest extends ContaoTestCase
 {
+    public function createTestInstance(array $parameters = [])
+    {
+        $arrayUtil = $parameters['arrayUtil'] ?? $this->createMock(ArrayUtil::class);
+        $entryCollection = $parameters['entryCollection'] ?? $this->createMock(EntryCollection::class);
+
+        return new EntrypointCollectionFactory($arrayUtil, $entryCollection);
+    }
+
     public function testCreateCollection()
     {
-        $bundleConfig = [];
-        $arrayUtil = $this->createMock(ArrayUtil::class);
-        $instance = new EntrypointCollectionFactory($bundleConfig, $arrayUtil);
+        $instance = $this->createTestInstance();
         $collection = $instance->createCollection([]);
         $this->assertEmpty($collection->getActiveEntries());
 
@@ -26,21 +33,16 @@ class EntrypointCollectionFactoryTest extends ContaoTestCase
             ['entry' => 'contao-amce-bundle', 'active' => false],
         ]);
         $this->assertEmpty($collection->getActiveEntries());
-
         $collection = $instance->createCollection([
             ['contao-amce-bundle', 'active' => true],
         ]);
         $this->assertEmpty($collection->getActiveEntries());
-
         $collection = $instance->createCollection([
             ['entry' => 'contao-amce-bundle', 'active' => false],
             ['entry' => 'contao-amce-bundle', 'active' => true],
         ]);
         $this->assertEmpty($collection->getActiveEntries());
 
-        $bundleConfig = [
-            'js_entries' => ['entries'],
-        ];
         $arrayUtil = $this->createMock(ArrayUtil::class);
         $arrayUtil->method('getArrayRowByFieldValue')
             ->willReturnCallback(function ($key, $value, array $haystack) {
@@ -62,12 +64,20 @@ class EntrypointCollectionFactoryTest extends ContaoTestCase
                         ];
                 }
             });
-        $instance = new EntrypointCollectionFactory($bundleConfig, $arrayUtil);
+        $entryCollectionMock = $this->createMock(EntryCollection::class);
+        $entryCollectionMock->method('getEntries')->willReturn(['entries']);
+
+        $instance = $this->createTestInstance([
+            'arrayUtil' => $arrayUtil,
+            'entryCollection' => $entryCollectionMock,
+        ]);
         $collection = $instance->createCollection([
             ['entry' => 'contao-amce-bundle', 'active' => false],
             ['entry' => 'contao-amce-bundle', 'active' => true],
         ]);
         $this->assertCount(1, $collection->getActiveEntries());
+
+        return;
 
         $collection = $instance->createCollection([
             ['entry' => 'contao-amce-bundle'],

@@ -6,36 +6,44 @@
  * @license LGPL-3.0-or-later
  */
 
-namespace HeimrichHannot\EncoreBundle\Asset;
+namespace HeimrichHannot\EncoreBundle\Collection;
 
 use Contao\LayoutModel;
+use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
 use Psr\Cache\CacheItemPoolInterface;
 
-/**
- * @deprecated Use EntryCollection instead
- * @codeCoverageIgnore
- */
-class EntrypointsJsonLookup
+class EntryCollection
 {
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cache;
+    private ConfigurationCollection $configurationCollection;
+    private array                   $bundleConfig;
+    private bool                    $useCache = false;
+    private array                   $entries;
+    private CacheItemPoolInterface $cache;
 
-    /**
-     * @var bool
-     */
-    private $useCache = false;
-
-    /**
-     * EntrypointsJsonLookup constructor.
-     */
-    public function __construct(array $bundleConfig, CacheItemPoolInterface $cache = null)
+    public function __construct(ConfigurationCollection $configurationCollection, array $bundleConfig, CacheItemPoolInterface $cache)
     {
-        $this->cache = $cache;
-        if (isset($bundleConfig['encore_cache_enabled'])) {
-            $this->useCache = $bundleConfig['encore_cache_enabled'];
+        $this->configurationCollection = $configurationCollection;
+        $this->bundleConfig = $bundleConfig;
+
+        if ($bundleConfig['encore_cache_enabled'] ?? false) {
+            $this->useCache = true;
         }
+        $this->cache = $cache;
+    }
+
+    /**
+     * Return all encore entries (from webpack config and registered via bundle).
+     */
+    public function getEntries(): array
+    {
+        if (!isset($this->entries)) {
+            $this->entries = $this->mergeEntries(
+                ($this->bundleConfig['entrypoints_jsons'] ?? []),
+                $this->configurationCollection->getJsEntries(['array' => true])
+            );
+        }
+
+        return $this->entries;
     }
 
     /**
@@ -43,7 +51,7 @@ class EntrypointsJsonLookup
      * @param array       $bundleConfigEntries    Entries defined by encore bundle config
      * @param string|null $babelPolyfillEntryName entry name of babel polyfill
      */
-    public function mergeEntries(array $entrypointJsonFiles, array $bundleConfigEntries, LayoutModel $layout = null): array
+    private function mergeEntries(array $entrypointJsonFiles, array $bundleConfigEntries, LayoutModel $layout = null): array
     {
         foreach ($entrypointJsonFiles as $entrypointsJson) {
             $entrypoints = $this->parseEntrypoints($entrypointsJson);
@@ -76,10 +84,7 @@ class EntrypointsJsonLookup
         return $bundleConfigEntries;
     }
 
-    /**
-     * @throws \Psr\Cache\InvalidArgumentException
-     **/
-    public function parseEntrypoints(string $entrypointsJson): array
+    private function parseEntrypoints(string $entrypointsJson): array
     {
         $cached = null;
         if ($this->cache && $this->useCache) {
@@ -104,7 +109,7 @@ class EntrypointsJsonLookup
         }
 
         if (!isset($entriesData['entrypoints'])) {
-            throw new \InvalidArgumentException(sprintf('There is no "entrypoints" key in "%s"', $entrypointsJson));
+            throw new NoEntrypointsException(sprintf('There is no "entrypoints" key in "%s"', $entrypointsJson));
         }
 
         if ($this->useCache && null !== $cached && !$cached->isHit()) {

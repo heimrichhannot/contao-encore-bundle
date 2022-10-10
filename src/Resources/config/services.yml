@@ -4,16 +4,21 @@ services:
     bind:
       $bundleConfig: '%huh_encore%'
       $webDir: '%contao.web_dir%'
+      $encoreCache: '@webpack_encore.cache'
+      Psr\Cache\CacheItemPoolInterface: "@webpack_encore.cache"
 
   HeimrichHannot\EncoreBundle\:
-    resource: "../../{DataContainer,Dca,EventListener,Helper,Migration}/*"
+    resource: "../../{Asset,Collection,Command,DataContainer,Dca,EventListener,Helper,Migration}/*"
+    exclude: '../../Asset/{EntrypointCollection.php,EntrypointsJsonLookup.php}'
     public: true
     autoconfigure: true
 
-  HeimrichHannot\EncoreBundle\Asset\:
-    resource: '../../Asset/*'
-    exclude: '../../Asset/{EntrypointCollection.php,EntrypointsJsonLookup.php}'
-    public: true
+  HeimrichHannot\EncoreBundle\Command\PrepareCommand:
+    public: false
+    tags:
+      - { name: 'console.command', command: 'huh:encore:prepare' }
+      - { name: 'console.command', command: 'encore:prepare' }
+
 
   huh.encore.asset.frontend:
     alias: HeimrichHannot\EncoreBundle\Asset\FrontendAsset

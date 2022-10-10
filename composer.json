@@ -16,20 +16,24 @@
     "issues": "https://github.com/heimrichhannot/contao-encore-bundle/issues"
   },
   "require": {
-    "php": "^7.1||^8.0",
+    "php": "^7.4 || ^8.0",
     "ext-json": "*",
+    "composer-runtime-api": "^2.0",
     "contao/core-bundle": "^4.9",
+    "heimrichhannot/contao-encore-contracts": "^1.0",
+    "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
+    "heimrichhannot/contao-utils-bundle": "^2.221.0",
     "symfony/cache": "^4.4||^5.4",
     "symfony/config": "^4.4||^5.4",
     "symfony/console": "^4.4||^5.0",
     "symfony/dependency-injection": "^4.4||^5.4",
+    "symfony/filesystem": "^4.4 || ^5.4",
     "symfony/http-foundation": "^4.4||^5.4",
     "symfony/http-kernel": "^4.4||^5.4",
+    "symfony/polyfill-php80": "^1.26",
     "symfony/translation": "^4.4||^5.4",
     "symfony/translation-contracts": "^1.1.6||^2||^3",
     "symfony/webpack-encore-bundle": "^1.0",
-    "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
-    "heimrichhannot/contao-utils-bundle": "^2.207",
     "twig/twig": "^1.38.3|^2.7|^3.0",
     "webmozart/path-util": "^2.3"
   },
@@ -37,16 +41,10 @@
     "contao/test-case": "^4.0",
     "contao/manager-plugin": "^2.0",
     "friendsofphp/php-cs-fixer": "^2.2",
-    "phpunit/phpunit": "^8.0",
-    "phpunit/php-token-stream": "^1.4|^2.0|^3.0",
-    "php-http/guzzle6-adapter": "^1.1",
-    "php-http/message-factory": "^1.0.2",
+    "phpunit/phpunit": "^8.0 || ^9.0",
     "php-coveralls/php-coveralls": "^2.0",
-    "symfony/phpunit-bridge": "^3.2|^4.0",
+    "symfony/phpunit-bridge": "^3.2 || ^4.0 || ^5.0 || ^6.0",
     "heimrichhannot/contao-test-utilities-bundle": "^0.1.4"
-  },
-  "suggest": {
-    "foxy/foxy": "Install this bundle in your project so that node extensions are automatically installed to your project's node_modules directory."
   },
   "autoload": {
     "psr-4": {
@@ -76,7 +74,6 @@
     }
   },
   "extra": {
-    "contao-manager-plugin": "HeimrichHannot\\EncoreBundle\\ContaoManager\\Plugin",
-    "foxy": true
+    "contao-manager-plugin": "HeimrichHannot\\EncoreBundle\\ContaoManager\\Plugin"
   }
 }

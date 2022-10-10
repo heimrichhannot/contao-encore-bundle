@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -12,10 +12,11 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\LayoutModel;
 use Contao\PageModel;
+use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
+use HeimrichHannot\UtilsBundle\Util\Utils;
 
 /**
  * @Hook("replaceDynamicScriptTags")
@@ -27,10 +28,6 @@ class ReplaceDynamicScriptTagsListener
      */
     protected $bundleConfig;
     /**
-     * @var ModelUtil
-     */
-    protected $modelUtil;
-    /**
      * @var TemplateAsset
      */
     protected $templateAsset;
@@ -38,16 +35,21 @@ class ReplaceDynamicScriptTagsListener
      * @var ConfigurationHelper
      */
     protected $configurationHelper;
+    private GlobalContaoAsset $globalContaoAsset;
+    private ContaoFramework   $contaoFramework;
+    private Utils             $utils;
 
     /**
      * ReplaceDynamicScriptTagsListener constructor.
      */
-    public function __construct(array $bundleConfig, ModelUtil $modelUtil, TemplateAsset $templateAsset, ConfigurationHelper $configurationHelper)
+    public function __construct(array $bundleConfig, ContaoFramework $contaoFramework, Utils $utils, TemplateAsset $templateAsset, ConfigurationHelper $configurationHelper, GlobalContaoAsset $globalContaoAsset)
     {
         $this->bundleConfig = $bundleConfig;
-        $this->modelUtil = $modelUtil;
         $this->templateAsset = $templateAsset;
         $this->configurationHelper = $configurationHelper;
+        $this->globalContaoAsset = $globalContaoAsset;
+        $this->contaoFramework = $contaoFramework;
+        $this->utils = $utils;
     }
 
     public function __invoke(string $buffer): string
@@ -56,20 +58,20 @@ class ReplaceDynamicScriptTagsListener
             return $buffer;
         }
 
-        global $objPage;
-        $layout = $this->modelUtil->findModelInstanceByPk('tl_layout', $objPage->layoutId);
+        $pageModel = $this->utils->request()->getCurrentPageModel();
 
-        if (!$layout) {
+        /** @var LayoutModel|null $layout */
+        if (!$pageModel || !($layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($pageModel->layoutId))) {
             return $buffer;
         }
 
         if (!isset($this->bundleConfig['use_contao_template_variables']) || true !== $this->bundleConfig['use_contao_template_variables']) {
-            $buffer = $this->replaceEncoreTags($buffer, $objPage, $layout);
+            $buffer = $this->replaceEncoreTags($buffer, $pageModel, $layout);
         } else {
-            $buffer = $this->replaceContaoTags($buffer, $objPage, $layout);
+            $buffer = $this->replaceContaoTags($buffer, $pageModel, $layout);
         }
 
-        $this->cleanGlobalArrays();
+        $this->globalContaoAsset->cleanGlobalArrayFromConfiguration();
 
         return $buffer;
     }
@@ -108,6 +110,8 @@ class ReplaceDynamicScriptTagsListener
 
     /**
      * @codeCoverageIgnore
+     *
+     * @deprecated
      */
     protected function cleanGlobalArrays()
     {

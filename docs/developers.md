@@ -4,7 +4,45 @@ This document contains additional information for developers working with encore
 
 ## Add entries from your code (frontend module, content element,...)
 
-Since version 1.3 it is possible to add encore entries from your code. So for example the slider assets are automatically included, if the slider module is added to the page. To do this, you can use the `FrontendAsset` service.
+Since version 1.3 it is possible to add encore entries from your code. So for example the slider assets are automatically included, if the slider module is added to the page. 
+
+### PageAssetsTrait (recommended)
+
+The most simple method is to use the `PageAssetsTrait` of [Contao Encore Contracts](https://github.com/heimrichhannot/contao-encore-contracts).
+After adding the trait to your class, you have a new method `addPageEntrypoint()` available.
+This method allows you to just pass the encore entry name and, optional, pass fallback assets. 
+The trait takes care for you if encore bundle is installed and register the fallback assets, if not.
+
+```php
+use HeimrichHannot\EncoreContracts\PageAssetsTrait;
+use Symfony\Contracts\Service\ServiceSubscriberInterface;
+
+class FrontendController implements ServiceSubscriberInterface
+{
+    use PageAssetsTrait;
+    
+    public function __invoke()
+    {
+        $this->addPageEntrypoint(
+            // Encore entry point name
+            'contao-example-bundle', 
+             // Optional: define fallback assets to use if encore bundle is not installed
+            [
+                'TL_CSS' => ['main-theme' => 'assets/main/dist/main-theme.min.css|static'],
+                'TL_JAVASCRIPT' => [
+                    'main-theme' => 'assets/main/dist/main-theme.min.js|static',
+                    'some-dependency' => 'assets/some-dependency/some-dependency.min.js|static',
+                ],
+            ]
+        );
+    }
+}
+```
+
+### FrontendAsset service
+
+Encore bundle comes with a service, `FrontendAsset`, to register your entrypoints. 
+
 
 Example with dependency injection (with encore bundle as hard dependency):
 
@@ -109,31 +147,6 @@ if (class_exists(FrontendAsset::class) && System::getContainer()->has(FrontendAs
     System::getContainer()->get(FrontendAsset::class)->addActiveEntrypoint('contao-slick-bundle');
 }
 ```
-
-## Make encore bundle an optional dependency
-
-If you create a reusable bundle and want to support setups that don't use encore, you need adjust the encore bundle configuration:
-
-1. Move your `huh_encore` configuration to an own config file, for example `config_encore.yml`.
-
-1. In your `Plugin` class implement the `ConfigPluginInterface` and load the config, if encore bundle is installed. 
-
-    ```php
-    public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
-    {
-        if (class_exists('HeimrichHannot\EncoreBundle\HeimrichHannotContaoEncoreBundle')) {
-            $loader->load("@HeimrichHannotVideoBundle/Resources/config/config_encore.yml");
-        }
-    }
-    ```
-
-1. Optional: Add encore bundle to your composer.json suggest section.
-
-    ```json
-    "suggest": {
-        "heimrichhannot/contao-encore-bundle": "Symfony Webpack Encore integration for Contao.",
-      }
-    ``` 
 
 ## Add encore entries to custom template
 

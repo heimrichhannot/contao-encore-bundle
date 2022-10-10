@@ -1,48 +1,33 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
 
 namespace HeimrichHannot\EncoreBundle\DataContainer;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\DataContainer;
 use Contao\LayoutModel;
 use Contao\Message;
-use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
+use HeimrichHannot\UtilsBundle\Util\Utils;
 
 class LayoutContainer
 {
-    /**
-     * @var ContainerUtil
-     */
-    protected $containerUtil;
-    /**
-     * @var array
-     */
-    protected $bundleConfig;
-    /**
-     * @var ModelUtil
-     */
-    protected $modelUtil;
-    /**
-     * @var ContaoFrameworkInterface
-     */
-    protected $contaoFramework;
+    protected array           $bundleConfig;
+    protected ContaoFramework $contaoFramework;
+    private Utils             $utils;
 
     /**
      * LayoutContainer constructor.
      */
-    public function __construct(array $bundleConfig, ContainerUtil $containerUtil, ModelUtil $modelUtil, ContaoFrameworkInterface $contaoFramework)
+    public function __construct(array $bundleConfig, Utils $utils, ContaoFramework $contaoFramework)
     {
-        $this->containerUtil = $containerUtil;
         $this->bundleConfig = $bundleConfig;
-        $this->modelUtil = $modelUtil;
         $this->contaoFramework = $contaoFramework;
+        $this->utils = $utils;
     }
 
     /**
@@ -51,10 +36,10 @@ class LayoutContainer
     public function onLoadCallback($dc): void
     {
         if (!$dc
-            || !$this->containerUtil->isBackend()
+            || !$this->utils->container()->isBackend()
             || !isset($this->bundleConfig['use_contao_template_variables'])
             || true !== $this->bundleConfig['use_contao_template_variables']
-            || !($layout = $this->modelUtil->findModelInstanceByPk(LayoutModel::getTable(), $dc->id))) {
+            || !($layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($dc->id))) {
             return;
         }
 

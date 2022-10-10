@@ -1,0 +1,37 @@
+{
+    "entrypoints": {
+        "contao-choices-bundle": {
+            "js": [
+                "/build/runtime.3e0e070e.js",
+                "/build/3.e960c637.js",
+                "/build/contao-choices-bundle.99472ace.js"
+            ]
+        },
+        "contao-slick-bundle": {
+            "js": [
+                "/build/runtime.3e0e070e.js",
+                "/build/vendors~anwaltauskunft-head~anwaltauskunft-imprint-generator~contao-bootstrap-hover-dropdown-bundle~~0c2231e7.ae0974f2.js",
+                "/build/vendors~contao-slick-bundle.773817b5.js",
+                "/build/contao-slick-bundle.72102dc9.js"
+            ],
+            "css": [
+                "/build/contao-slick-bundle.85e5d9d0.css"
+            ]
+        },
+        "contao-filter-bundle": {
+            "js": [
+                "/build/runtime.3e0e070e.js",
+                "/build/vendors~contao-filter-bundle~contao-list-bundle~contao-youtube-bundle~ls_core.757542b0.js",
+                "/build/contao-filter-bundle.b1329564.js"
+            ]
+        },
+        "contao-list-bundle": {
+            "js": [
+                "/build/runtime.3e0e070e.js",
+                "/build/vendors~anwaltauskunft-head~anwaltauskunft-imprint-generator~contao-bootstrap-hover-dropdown-bundle~~0c2231e7.ae0974f2.js",
+                "/build/vendors~contao-filter-bundle~contao-list-bundle~contao-youtube-bundle~ls_core.757542b0.js",
+                "/build/contao-list-bundle.4771aff4.js"
+            ]
+        }
+    }
+}
