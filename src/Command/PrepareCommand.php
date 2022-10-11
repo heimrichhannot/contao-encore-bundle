@@ -69,7 +69,7 @@ class PrepareCommand extends Command
 
         $skipEntries = $input->getOption('skip-entries') ? explode(',', $input->getOption('skip-entries')) : [];
 
-        $this->io->text('Using <fg=green>'.$this->kernel->getEnvironment().'</> environment. (Use --env=[ENV] to change environment. See --help for more information!)');
+        $this->io->writeln('Using <fg=green>'.$this->kernel->getEnvironment().'</> environment. (Use --env=[ENV] to change environment. See --help for more information!)');
 
         @unlink($resultFile);
 
@@ -77,12 +77,11 @@ class PrepareCommand extends Command
 
         $this->io->text(['', ' // Collect entries', '']);
 
-        $this->io->writeln('Collect entries from yaml config');
+        $this->io->writeln('> Collect entries from yaml config');
 
         $encoreJsEntries = [];
 
         // collect entries from yaml
-        $yamlEntryCount = 0;
         if (isset($this->bundleConfig['js_entries']) && \is_array($this->bundleConfig['js_entries'])) {
             foreach ($this->bundleConfig['js_entries'] as $entry) {
                 $preparedEntry = [
@@ -95,44 +94,50 @@ class PrepareCommand extends Command
                     $preparedEntry['file'] = rtrim((new Filesystem())->makePathRelative($this->kernel->locateResource($entry['file']), $this->kernel->getProjectDir()), DIRECTORY_SEPARATOR);
                 }
                 $encoreJsEntries[] = $preparedEntry;
-                ++$yamlEntryCount;
             }
         }
+
+        $this->io->newLine();
+        $yamlEntryCount = \count($encoreJsEntries);
         if ($yamlEntryCount < 1) {
             $this->io->writeln('Found no encore entry registered through yaml config 👍');
         } elseif (1 === $yamlEntryCount) {
-            $this->io->writeln('<bg=yellow;fg=black>Found 1 encore entry registered through yaml config. This will be deprecated in the future.</>');
+            $this->io->writeln('<bg=yellow;fg=black>Found 1 encore entry registered through yaml config. This is deprecated and support will be dropped in a future version.</>');
         } else {
-            $this->io->writeln("<bg=yellow;fg=black>Found $yamlEntryCount encore entries registered through yaml config. This will be deprecated in the future.</>");
+            $this->io->writeln("<bg=yellow;fg=black>Found $yamlEntryCount encore entries registered through yaml config. This is deprecated and support will be dropped in a future version.</>");
         }
 
-        $this->io->writeln(['', 'Collect entries encore extensions']);
+        if ($this->io->isVerbose()) {
+            $this->io->text(['', 'Following entries registered through yaml:']);
+            $this->io->table(['name', 'path'], $encoreJsEntries);
+        }
+
+        $this->io->writeln(['', '> Collect entries from encore extensions']);
         $extensionDependencies = [];
+        $extensionList = [];
 
         foreach ($this->extensionCollection->getExtensions() as $extension) {
-            $reflection = new \ReflectionClass($extension::getBundle());
+            $reflection = new \ReflectionClass($extension->getBundle());
             $bundle = $this->kernel->getBundles()[$reflection->getShortName()];
             $bundlePath = $bundle->getPath();
-            if (!str_starts_with($bundlePath, $this->kernel->getProjectDir())) {
-                if (!file_exists($bundlePath.DIRECTORY_SEPARATOR.'composer.json')) {
-                    $bundlePath = $bundlePath.DIRECTORY_SEPARATOR.'..';
-                }
-                if (!file_exists($bundlePath.DIRECTORY_SEPARATOR.'composer.json')) {
-                    trigger_error(
-                        '[Encore Bundle] Bundle '.$bundle->getName()
-                        .' seems to be symlinked, but a composer.json file could not be found.'
-                        .' Skipping EncoreExtension '.\get_class($extension).'.'
-                    );
-                    continue;
-                }
-                $composerData = json_decode(file_get_contents($bundlePath.'/composer.json'));
-                $bundlePath = InstalledVersions::getInstallPath($composerData->name);
+            if (!file_exists($bundlePath.DIRECTORY_SEPARATOR.'composer.json')) {
+                $bundlePath = $bundlePath.DIRECTORY_SEPARATOR.'..';
             }
+            if (!file_exists($bundlePath.DIRECTORY_SEPARATOR.'composer.json')) {
+                trigger_error(
+                    '[Encore Bundle] Could not find composer.json file for '.$bundle->getName().'.'
+                    .' Skipping EncoreExtension '.\get_class($extension).'.'
+                );
+                continue;
+            }
+
+            $composerData = json_decode(file_get_contents($bundlePath.'/composer.json'));
+            $bundlePath = InstalledVersions::getInstallPath($composerData->name);
 
             $bundlePath = rtrim((new Filesystem())->makePathRelative($bundlePath, $this->kernel->getProjectDir()), DIRECTORY_SEPARATOR);
 
             $preparedEntry = [];
-            foreach ($extension::getEntries() as $entry) {
+            foreach ($extension->getEntries() as $entry) {
                 $preparedEntry['name'] = $entry->getName();
                 $preparedEntry['file'] = '.'.DIRECTORY_SEPARATOR.$bundlePath.DIRECTORY_SEPARATOR.ltrim($entry->getPath(), DIRECTORY_SEPARATOR);
                 $encoreJsEntries[] = $preparedEntry;
@@ -142,6 +147,15 @@ class PrepareCommand extends Command
                 $packageData = json_decode(file_get_contents($bundlePath.DIRECTORY_SEPARATOR.'package.json'), true);
                 $extensionDependencies = array_merge($extensionDependencies, ($packageData['dependencies'] ?? []));
             }
+
+            $extensionList[] = [$reflection->getShortName(), \get_class($extension), $bundlePath];
+        }
+
+        $this->io->newLine();
+        $this->io->writeln('Found <fg=green>'.\count($this->extensionCollection->getExtensions()).'</> registered encore extensions.');
+
+        if ($this->io->isVerbose()) {
+            $this->io->table(['Bundle', 'Extension', 'Bundle path'], $extensionList);
         }
 
         $this->io->text(['', ' // Update encore entry dependencies', '']);
@@ -186,7 +200,7 @@ class PrepareCommand extends Command
 
             file_put_contents($resultFile, $content);
 
-            $this->io->text('Created encore.bundles.js in your project root. You can now require it in your webpack.config.js');
+            $this->io->writeln('Created encore.bundles.js in your project root. You can now require it in your webpack.config.js');
         } else {
             $this->io->warning('Found no registered encore entries. Skipped encore.bundles.js creation.');
         }

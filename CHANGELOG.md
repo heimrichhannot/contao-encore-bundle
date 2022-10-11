@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.16.1] - 2022-10-11
+- Changed: enhances command output
+- Fixed: bundle path not correct for non-symlinked bundle
+
 ## [1.16.0] - 2022-10-10
 - Added: implemented and support [Contao Encore Contracts](https://github.com/heimrichhannot/contao-encore-contracts) ([#21])
 - Added: yarn dependencies now collected by prepare command for bundles using Encore Contracts, so [foxy](https://github.com/fxpio/foxy) is no more recommended (and can hopefully be dropped soon) ([#21])
