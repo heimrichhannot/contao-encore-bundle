@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.17.1] - 2022-10-11
+- Fixed: compatibility with contao 4.9
+
 ## [1.17.0] - 2022-10-11
 - Added: support for composer extra.public_folder setting (public folder)
 
