@@ -4,6 +4,3 @@ huh_encore:
     - { name: default_css, template: "@HeimrichHannotContaoEncore/encore_css_imports.html.twig" }
     - { name: default_js, template: "@HeimrichHannotContaoEncore/encore_js_imports.html.twig" }
     - { name: default_head_js, template: "@HeimrichHannotContaoEncore/encore_head_js_imports.html.twig" }
-
-webpack_encore:
-  output_path: '%kernel.project_dir%/web/build'

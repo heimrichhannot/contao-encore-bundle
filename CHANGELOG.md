@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.17.0] - 2022-10-11
+- Added: support for composer extra.public_folder setting (public folder)
+
 ## [1.16.1] - 2022-10-11
 - Changed: enhances command output
 - Fixed: bundle path not correct for non-symlinked bundle
