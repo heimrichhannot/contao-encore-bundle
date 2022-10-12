@@ -175,7 +175,7 @@ class PageEntrypoints
      */
     public function createInstance()
     {
-        return new static($this->container, $this->frontendAsset, $this->entryCollection, $this->arrayUtil, $this->modelUtil);
+        return new self($this->container, $this->frontendAsset, $this->entryCollection, $this->arrayUtil, $this->modelUtil);
     }
 
     /**

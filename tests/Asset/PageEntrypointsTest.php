@@ -11,7 +11,6 @@ namespace HeimrichHannot\EncoreBundle\Test\Asset;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
-use HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup;
 use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\PageEntrypoints;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
@@ -75,31 +74,6 @@ class PageEntrypointsTest extends ContaoTestCase
         }
 
         return new PageEntrypoints($container, $frontendAsset, $entryCollection, $arrayUtil, $modelUtil);
-    }
-
-    public function mockPageEntrypointsObject(array $parameter = [])
-    {
-        if (!$container->has('huh.utils.array')) {
-            $arrayUtil = new ArrayUtil($container);
-            $entrypointsJsonLookup = $this->createMock(EntrypointsJsonLookup::class);
-            $entrypointsJsonLookup->method('mergeEntries')->willReturnCallback(function (array $entrypointsJsons, array $entries, LayoutModel $layout = null) {
-                foreach ($entrypointsJsons as $name => $entrypoint) {
-                    $entry = ['name' => $name];
-                    if (isset($entrypoint['css'])) {
-                        $entry['requires_css'] = '1';
-                    }
-                    $entries[] = $entry;
-                }
-
-                return $entries;
-            });
-            $container->set('huh.utils.array', $arrayUtil);
-        }
-
-        $frontendAsset = new FrontendAsset();
-        $frontendAsset->addActiveEntrypoint('contao-slick-bundle');
-
-        return new PageEntrypoints($parameter['bundleConfig'], $entrypointsJsonLookup, $container, $frontendAsset);
     }
 
     public function entryPointProvider()
