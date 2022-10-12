@@ -9,7 +9,8 @@ Since version 1.3 it is possible to add encore entries from your code. So for ex
 ### PageAssetsTrait (recommended)
 
 The most simple method is to use the `PageAssetsTrait` of [Contao Encore Contracts](https://github.com/heimrichhannot/contao-encore-contracts).
-After adding the trait to your class, you have a new method `addPageEntrypoint()` available.
+Use this trait in your class in combination with `ServiceSubscriberInterface` and make sure your class is registered as service with autoconfigure activated.
+Now you have a new method `addPageEntrypoint()` available.
 This method allows you to just pass the encore entry name and, optional, pass fallback assets. 
 The trait takes care for you if encore bundle is installed and register the fallback assets, if not.
 
@@ -190,7 +191,7 @@ function renderTemplateWithEncore(array $entrypoints, EntrypointCollectionFactor
 
 ## ConfigurationHelper
 
-The `ConfigurationHelper` service can be used to obtain some configuration informations. Following methods are available:
+The `ConfigurationHelper` service can be used to obtain some configuration information. Following methods are available:
 
 `isEnabledOnCurrentPage(?PageModel $pageModel = null): bool` - Return if encore is enabled for the current frontend page. You can pass a page object to check for a custom page, otherweise `global $objPage` is used.
 
