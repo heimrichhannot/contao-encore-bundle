@@ -63,7 +63,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: php-actions/composer@v6
+      - name: Install the dependencies
+        run: composer install --no-interaction
       - name: PHPStan (php-actions)
         uses: php-actions/phpstan@v3.0.0
         with:
