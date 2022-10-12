@@ -209,7 +209,7 @@ class PrepareCommand extends Command
 
         $this->io->text([
             'Next steps:',
-            '1. If your dependencies have changed, run <fg=black;bg=cyan> yarn install </>.',
+            '1. If your dependencies have changed, run <fg=black;bg=cyan> yarn upgrade </>.',
             '2. Compile your asset with <fg=black;bg=cyan> yarn encore dev </>, <fg=black;bg=cyan> yarn encore dev --watch </> or <fg=black;bg=cyan> yarn encore prod </>',
             '',
         ]);
