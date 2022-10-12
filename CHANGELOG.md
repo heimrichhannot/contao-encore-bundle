@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.17.2] - 2022-10-12
+- Changed: Add phpstan to ci pipeline with level 1 ([#22])
+
 ## [1.17.1] - 2022-10-11
 - Fixed: compatibility with contao 4.9
 
@@ -406,3 +409,6 @@ Complete Changelog:
 ### Changed
 
 - updated readme
+
+[#22]: https://github.com/heimrichhannot/contao-encore-bundle/pull/22
+[#21]: https://github.com/heimrichhannot/contao-encore-bundle/pull/21
