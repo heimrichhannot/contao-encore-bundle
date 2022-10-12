@@ -74,4 +74,4 @@ jobs:
         run: composer install --no-interaction
 
       - name: PHPStan
-        run: vendor/bin/phpstan analyse src/ tests/ --level=0
+        run: vendor/bin/phpstan analyse src/ tests/ --level=1
