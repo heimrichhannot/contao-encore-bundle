@@ -59,9 +59,10 @@ class ReplaceDynamicScriptTagsListener
         }
 
         $pageModel = $this->utils->request()->getCurrentPageModel();
+        $pageModel->loadDetails();
 
         /** @var LayoutModel|null $layout */
-        if (!$pageModel || !($layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($pageModel->layoutId))) {
+        if (!$pageModel || !($layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk(($pageModel->layoutId ?? $pageModel->layout)))) {
             return $buffer;
         }
 

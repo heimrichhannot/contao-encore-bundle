@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.17.3] - 2022-11-17
+- Fixed: assets not applied on error pages
+
 ## [1.17.2] - 2022-10-12
 - Changed: Add phpstan to ci pipeline with level 1 ([#22])
 
