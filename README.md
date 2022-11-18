@@ -3,7 +3,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/heimrichhannot/contao-encore-bundle.svg)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
 ![CI](https://github.com/heimrichhannot/contao-encore-bundle/workflows/CI/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/heimrichhannot/contao-encore-bundle/badge.svg?branch=master)](https://coveralls.io/github/heimrichhannot/contao-encore-bundle?branch=master)
-![](https://img.shields.io/badge/PHPStan-level%201-brightgreen.svg?style=flat)
+![](https://img.shields.io/badge/PHPStan-level%202-brightgreen.svg?style=flat)
 
 Use the power and simplicity of symfony webpack encore in contao. This bundle let you decide on layout and page level, which encore entries should be loaded. If you want more, you can prepare your bundles define their own encore entries, so never need to manually add or remove encore entries again.
 

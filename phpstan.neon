@@ -1,0 +1,19 @@
+parameters:
+  level: 2
+  paths:
+    - src
+    - tests
+  universalObjectCratesClasses:
+    - Contao\LayoutModel
+    - Contao\Model
+    - Contao\Template
+    - PHPUnit\Framework\MockObject\MockObject
+  ignoreErrors:
+    - message: '#^Call to an undefined method PHPUnit\\Framework\\MockObject\\MockObject\:\:setName\(\)\.$#'
+      path: tests/EventListener/Contao/ParseTemplateListenerTest.php
+    - message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition\:\:getChildNodeDefinitions\(\)\.$#'
+      path: tests/DependencyInjection/ConfigurationTest.php
+    - message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\NodeInterface\:\:getChildren\(\)\.$#'
+      path: tests/DependencyInjection/ConfigurationTest.php
+includes:
+  - vendor/phpstan/phpstan-symfony/extension.neon

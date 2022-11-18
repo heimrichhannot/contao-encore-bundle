@@ -10,6 +10,7 @@ namespace HeimrichHannot\EncoreBundle\Asset;
 
 use Contao\LayoutModel;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 
 /**
  * @deprecated Use EntryCollection instead
@@ -39,9 +40,10 @@ class EntrypointsJsonLookup
     }
 
     /**
-     * @param array       $entrypointJsonFiles    entrypoint json files
-     * @param array       $bundleConfigEntries    Entries defined by encore bundle config
-     * @param string|null $babelPolyfillEntryName entry name of babel polyfill
+     * @param array $entrypointJsonFiles entrypoint json files
+     * @param array $bundleConfigEntries Entries defined by encore bundle config
+     *
+     * @throws InvalidArgumentException
      */
     public function mergeEntries(array $entrypointJsonFiles, array $bundleConfigEntries, LayoutModel $layout = null): array
     {

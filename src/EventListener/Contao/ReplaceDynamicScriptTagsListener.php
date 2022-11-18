@@ -66,10 +66,10 @@ class ReplaceDynamicScriptTagsListener
 
         $pageModel->loadDetails();
 
-        /** @var LayoutModel|null $layout */
         if (!($layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk(($pageModel->layoutId ?? $pageModel->layout)))) {
             return $buffer;
         }
+        /* @var LayoutModel|null $layout */
 
         if (!isset($this->bundleConfig['use_contao_template_variables']) || true !== $this->bundleConfig['use_contao_template_variables']) {
             $buffer = $this->replaceEncoreTags($buffer, $pageModel, $layout);

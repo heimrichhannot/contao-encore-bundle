@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -17,14 +17,7 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('huh_encore');
 
-        // Keep compatibility with symfony/config < 4.2
-        if (!method_exists($treeBuilder, 'getRootNode')) {
-            $rootNode = $treeBuilder->root('huh_encore');
-        } else {
-            $rootNode = $treeBuilder->getRootNode();
-        }
-
-        $rootNode
+        $treeBuilder->getRootNode()
             ->children()
                 ->booleanNode('use_contao_template_variables')
                     ->defaultFalse()
@@ -110,14 +103,7 @@ class Configuration implements ConfigurationInterface
     public function addLegacyNode()
     {
         $treeBuilder = new TreeBuilder('encore');
-
-        // Keep compatibility with symfony/config < 4.2
-        if (!method_exists($treeBuilder, 'getRootNode')) {
-            $node = $treeBuilder->root('encore');
-        } else {
-            $node = $treeBuilder->getRootNode();
-        }
-
+        $node = $treeBuilder->getRootNode();
         $node
             ->addDefaultsIfNotSet()
             ->setDeprecated('Configs within encore key are deprecated and will be removed in next major version.')
