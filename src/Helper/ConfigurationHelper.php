@@ -8,18 +8,14 @@
 
 namespace HeimrichHannot\EncoreBundle\Helper;
 
+use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\PageModel;
-use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Webmozart\PathUtil\Path;
 
 class ConfigurationHelper
 {
-    /**
-     * @var ContainerUtil
-     */
-    protected $containerUtil;
     /**
      * @var RequestStack
      */
@@ -35,15 +31,16 @@ class ConfigurationHelper
     /**
      * @var string
      */
-    protected $webDir;
+    protected            $webDir;
+    private ScopeMatcher $scopeMatcher;
 
-    public function __construct(ContainerUtil $containerUtil, RequestStack $requestStack, ModelUtil $modelUtil, array $bundleConfig, string $webDir)
+    public function __construct(RequestStack $requestStack, ModelUtil $modelUtil, array $bundleConfig, string $webDir, ScopeMatcher $scopeMatcher)
     {
-        $this->containerUtil = $containerUtil;
         $this->requestStack = $requestStack;
         $this->modelUtil = $modelUtil;
         $this->bundleConfig = $bundleConfig;
         $this->webDir = $webDir;
+        $this->scopeMatcher = $scopeMatcher;
     }
 
     /**
@@ -51,12 +48,20 @@ class ConfigurationHelper
      */
     public function isEnabledOnCurrentPage(?PageModel $pageModel = null): bool
     {
-        if (!$this->containerUtil->isFrontend()) {
+        $request = $this->requestStack->getCurrentRequest();
+
+        if (!$request || !$this->scopeMatcher->isFrontendRequest($request)) {
             return false;
         }
 
         if (null !== $this->requestStack->getParentRequest()) {
-            return false;
+
+            if (
+                !($pageModel = $request->attributes->get('pageModel'))
+                || !in_array($pageModel->type, ['error_401', 'error_403', 'error_404', 'error_503'])
+            ) {
+                return false;
+            }
         }
 
         if (null === $pageModel) {

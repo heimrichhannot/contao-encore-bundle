@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.17.4] - 2022-12-21
+- Fixed: encore not applied on some error page cases
+
 ## [1.17.3] - 2022-11-17
 - Fixed: assets not applied on error pages
 
