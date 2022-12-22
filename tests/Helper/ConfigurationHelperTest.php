@@ -1,18 +1,18 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
 
 namespace HeimrichHannot\EncoreBundle\Test\Helper;
 
+use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
-use HeimrichHannot\UtilsBundle\Container\ContainerUtil;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,18 +21,18 @@ class ConfigurationHelperTest extends ContaoTestCase
 {
     public function createTestInstance(array $parameters = [])
     {
-        $containerUtil = $parameters['containerUtil'] ?? $this->createMock(ContainerUtil::class);
         $requestStack = $parameters['requestStack'] ?? $this->createMock(RequestStack::class);
         $modelUtil = $parameters['modelUtil'] ?? $this->createMock(ModelUtil::class);
         $bundleConfig = $parameters['bundleConfig'] ?? [];
         $webDir = $parameters['webDir'] ?? '';
+        $scopeMatcher = $parameters['scopeMatcher'] ?? $this->createMock(ScopeMatcher::class);
 
         $instance = new ConfigurationHelper(
-            $containerUtil,
             $requestStack,
             $modelUtil,
             $bundleConfig,
-            $webDir
+            $webDir,
+            $scopeMatcher
         );
 
         return $instance;
@@ -40,29 +40,28 @@ class ConfigurationHelperTest extends ContaoTestCase
 
     public function testIsEnabledOnCurrentPage()
     {
-        $containerUtil = $this->createMock(ContainerUtil::class);
-        $containerUtil->method('isFrontend')->willReturn(false);
+        $scopeMatcher = $this->createMock(ScopeMatcher::class);
+        $scopeMatcher->method('isFrontendRequest')->willReturn(false);
         $instance = $this->createTestInstance([
-            'containerUtil' => $containerUtil,
+            'scopeMatcher' => $scopeMatcher,
         ]);
         $this->assertFalse($instance->isEnabledOnCurrentPage());
 
-        $containerUtil = $this->createMock(ContainerUtil::class);
-        $containerUtil->method('isFrontend')->willReturn(true);
+        $scopeMatcher = $this->createMock(ScopeMatcher::class);
+        $scopeMatcher->method('isFrontendRequest')->willReturn(true);
         $requestStack = $this->createMock(RequestStack::class);
         $requestStack->method('getParentRequest')->willReturn(new Request());
         $instance = $this->createTestInstance([
-            'containerUtil' => $containerUtil,
+            'scopeMatcher' => $scopeMatcher,
             'requestStack' => $requestStack,
         ]);
         $this->assertFalse($instance->isEnabledOnCurrentPage());
 
-        $containerUtil = $this->createMock(ContainerUtil::class);
-        $containerUtil->method('isFrontend')->willReturn(true);
         $requestStack = $this->createMock(RequestStack::class);
         $requestStack->method('getParentRequest')->willReturn(null);
+        $requestStack->method('getCurrentRequest')->willReturn(new Request());
         $instance = $this->createTestInstance([
-            'containerUtil' => $containerUtil,
+            'scopeMatcher' => $scopeMatcher,
             'requestStack' => $requestStack,
         ]);
         $pageModel = $this->mockClassWithProperties(PageModel::class, []);
@@ -80,7 +79,7 @@ class ConfigurationHelperTest extends ContaoTestCase
            }
         });
         $instance = $this->createTestInstance([
-            'containerUtil' => $containerUtil,
+            'scopeMatcher' => $scopeMatcher,
             'requestStack' => $requestStack,
             'modelUtil' => $modelUtil,
         ]);
