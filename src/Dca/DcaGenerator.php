@@ -8,6 +8,7 @@
 
 namespace HeimrichHannot\EncoreBundle\Dca;
 
+use HeimrichHannot\EncoreBundle\EventListener\Callback\EncoreEntryOptionListener;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DcaGenerator
@@ -42,7 +43,7 @@ class DcaGenerator
                             'exclude' => true,
                             'filter' => true,
                             'inputType' => 'select',
-                            'options_callback' => ['huh.encore.choice.entry', 'getCachedChoices'],
+                            'options_callback' => [EncoreEntryOptionListener::class, 'getEntriesAsOptions'],
                             'eval' => ['tl_class' => 'w50', 'mandatory' => true, 'includeBlankOption' => true, 'groupStyle' => 'width: 710px', 'chosen' => true],
                         ],
                     ],

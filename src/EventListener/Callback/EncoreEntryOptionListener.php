@@ -6,29 +6,20 @@
  * @license LGPL-3.0-or-later
  */
 
-namespace HeimrichHannot\EncoreBundle\Choice;
+namespace HeimrichHannot\EncoreBundle\EventListener\Callback;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
-use HeimrichHannot\UtilsBundle\Choice\AbstractChoice;
 
-/**
- * @deprecated use EncoreEntryOptionListener instead
- */
-class EntryChoice extends AbstractChoice
+class EncoreEntryOptionListener
 {
-    private EntryCollection         $entryCollection;
+    private EntryCollection $entryCollection;
 
-    public function __construct(ContaoFrameworkInterface $framework, EntryCollection $entryCollection)
+    public function __construct(EntryCollection $entryCollection)
     {
-        parent::__construct($framework);
         $this->entryCollection = $entryCollection;
     }
 
-    /**
-     * @return array
-     */
-    protected function collect()
+    public function getEntriesAsOptions(): array
     {
         $choices = [];
 

@@ -9,34 +9,37 @@
 namespace HeimrichHannot\EncoreBundle\DataContainer;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\DataContainer;
 use Contao\LayoutModel;
 use Contao\Message;
-use HeimrichHannot\UtilsBundle\Util\Utils;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class LayoutContainer
 {
     protected array           $bundleConfig;
     protected ContaoFramework $contaoFramework;
-    private Utils             $utils;
+    private RequestStack      $requestStack;
+    private ScopeMatcher      $scopeMatcher;
 
     /**
      * LayoutContainer constructor.
      */
-    public function __construct(array $bundleConfig, Utils $utils, ContaoFramework $contaoFramework)
+    public function __construct(array $bundleConfig, ContaoFramework $contaoFramework, RequestStack $requestStack, ScopeMatcher $scopeMatcher)
     {
         $this->bundleConfig = $bundleConfig;
         $this->contaoFramework = $contaoFramework;
-        $this->utils = $utils;
+        $this->requestStack = $requestStack;
+        $this->scopeMatcher = $scopeMatcher;
     }
 
-    /**
-     * @param DataContainer|null $dc
-     */
-    public function onLoadCallback($dc): void
+    public function onLoadCallback(DataContainer $dc = null): void
     {
-        if (!$dc
-            || !$this->utils->container()->isBackend()
+        $request = $this->requestStack->getCurrentRequest();
+
+        if (!$request
+            || !$dc
+            || !$this->scopeMatcher->isBackendRequest($request)
             || !isset($this->bundleConfig['use_contao_template_variables'])
             || true !== $this->bundleConfig['use_contao_template_variables']
             || !($layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($dc->id))) {
