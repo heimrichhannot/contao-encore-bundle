@@ -14,6 +14,7 @@ use HeimrichHannot\UtilsBundle\Choice\AbstractChoice;
 
 /**
  * @deprecated use EncoreEntryOptionListener instead
+ * @codeCoverageIgnore
  */
 class EntryChoice extends AbstractChoice
 {
