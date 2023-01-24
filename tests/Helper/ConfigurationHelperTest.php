@@ -183,7 +183,7 @@ class ConfigurationHelperTest extends ContaoTestCase
             return null;
         });
 
-        $contaoFramework = $parameters['contaoFramework'] ?? $this->mockContaoFramework([
+        $contaoFramework = $this->mockContaoFramework([
             PageModel::class => $pageModelAdapter,
         ]);
 
