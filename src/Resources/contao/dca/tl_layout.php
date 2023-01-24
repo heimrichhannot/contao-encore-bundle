@@ -1,10 +1,12 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2022 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
+
+use HeimrichHannot\EncoreBundle\EventListener\Callback\EncoreEntryOptionListener;
 
 $dca = &$GLOBALS['TL_DCA']['tl_layout'];
 
@@ -69,7 +71,7 @@ $fields = [
                         'exclude' => true,
                         'filter' => true,
                         'inputType' => 'select',
-                        'options_callback' => ['huh.encore.choice.entry', 'getCachedChoices'],
+                        'options_callback' => [EncoreEntryOptionListener::class, 'getEntriesAsOptions'],
                         'eval' => ['tl_class' => 'w50', 'mandatory' => true, 'includeBlankOption' => true, 'groupStyle' => 'width: 710px', 'chosen' => true],
                     ],
                 ],

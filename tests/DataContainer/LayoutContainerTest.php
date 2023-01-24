@@ -9,20 +9,36 @@
 namespace HeimrichHannot\EncoreBundle\Test\DataContainer;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\DataContainer;
 use Contao\LayoutModel;
 use Contao\Message;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\DataContainer\LayoutContainer;
-use HeimrichHannot\UtilsBundle\Util\Utils;
 use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class LayoutContainerTest extends ContaoTestCase
 {
+    public function createTestInstance(array $parameters = []): LayoutContainer
+    {
+        $bundleConfig = $parameters['bundleConfig'] ?? [];
+        $contaoFramework = $parameters['contaoFramework'] ?? $this->mockContaoFramework();
+        $requestStack = $parameters['requestStack'] ?? $this->createMock(RequestStack::class);
+        $scopeMatcher = $parameters['scopeMatcher'] ?? $this->createMock(ScopeMatcher::class);
+
+        return new LayoutContainer(
+            $bundleConfig,
+            $contaoFramework,
+            $requestStack,
+            $scopeMatcher
+        );
+    }
+
     public function testOnLoadCallback()
     {
         $GLOBALS['TL_LANG']['tl_layout']['INFO']['jquery_order_conflict'] = 'Info';
-        $bundleConfig = [];
 
         $messageAdapter = $this->mockAdapter(['addInfo']);
         $messageAdapter->expects($this->never())->method('addInfo')->willReturn(null);
@@ -32,35 +48,42 @@ class LayoutContainerTest extends ContaoTestCase
             Message::class => $messageAdapter,
         ]);
 
-        $utils = $this->createMock(Utils::class);
+        $instance = $this->createTestInstance([
+            'contaoFramework' => $contaoFramework,
+        ]);
+        $instance->onLoadCallback(null);
 
-        $instance = new LayoutContainer($bundleConfig, $utils, $contaoFramework);
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getCurrentRequest')->willReturn(new Request());
+
+        $instance = $this->createTestInstance([
+            'contaoFramework' => $contaoFramework,
+            'requestStack' => $requestStack,
+        ]);
         $instance->onLoadCallback(null);
 
         $dc = $this->mockClassWithProperties(DataContainer::class, ['id' => 1]);
         $instance->onLoadCallback($dc);
 
-        $instance = new LayoutContainer($bundleConfig, $utils, $contaoFramework);
-        $instance->onLoadCallback($dc);
-
         $bundleConfig['use_contao_template_variables'] = false;
-        $instance = new LayoutContainer($bundleConfig, $utils, $contaoFramework);
+
+        $instance = $this->createTestInstance([
+            'contaoFramework' => $contaoFramework,
+            'bundleConfig' => $bundleConfig,
+            'requestStack' => $requestStack,
+        ]);
         $instance->onLoadCallback($dc);
 
         $bundleConfig['use_contao_template_variables'] = true;
-        $instance = new LayoutContainer($bundleConfig, $utils, $contaoFramework);
+        $instance = $this->createTestInstance([
+            'contaoFramework' => $contaoFramework,
+            'bundleConfig' => $bundleConfig,
+            'requestStack' => $requestStack,
+        ]);
         $instance->onLoadCallback($dc);
 
-        $instance = new LayoutContainer($bundleConfig, $utils, $contaoFramework);
-        $instance->onLoadCallback($dc);
-
-        $utils = $this->createMock(Utils::class);
-        $utils->method('container')->willReturnCallback(function () {
-            $container = $this->createMock(\HeimrichHannot\UtilsBundle\Util\Container\ContainerUtil::class);
-            $container->method('isBackend')->willReturn(true);
-
-            return $container;
-        });
+        $scopeMatcher = $this->createMock(ScopeMatcher::class);
+        $scopeMatcher->method('isBackendRequest')->willReturn(true);
 
         $layoutModel = $this->mockAdapter(['findByPk']);
         $layoutModel->method('findByPk')->willReturn($this->mockClassWithProperties(LayoutModel::class, [
@@ -75,7 +98,12 @@ class LayoutContainerTest extends ContaoTestCase
             Message::class => $messageAdapter,
             LayoutModel::class => $layoutModel,
         ]);
-        $instance = new LayoutContainer($bundleConfig, $utils, $contaoFramework);
+        $instance = $this->createTestInstance([
+            'contaoFramework' => $contaoFramework,
+            'bundleConfig' => $bundleConfig,
+            'scopeMatcher' => $scopeMatcher,
+            'requestStack' => $requestStack,
+        ]);
         $instance->onLoadCallback($dc);
 
         $bundleConfig['unset_jquery'] = true;
@@ -86,7 +114,12 @@ class LayoutContainerTest extends ContaoTestCase
             Message::class => $messageAdapter,
             LayoutModel::class => $layoutModel,
         ]);
-        $instance = new LayoutContainer($bundleConfig, $utils, $contaoFramework);
+        $instance = $this->createTestInstance([
+            'contaoFramework' => $contaoFramework,
+            'bundleConfig' => $bundleConfig,
+            'scopeMatcher' => $scopeMatcher,
+            'requestStack' => $requestStack,
+        ]);
         $instance->onLoadCallback($dc);
     }
 }
