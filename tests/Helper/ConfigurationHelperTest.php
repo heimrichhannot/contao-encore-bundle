@@ -122,6 +122,47 @@ class ConfigurationHelperTest extends ContaoTestCase
         $this->assertTrue($instance->isEnabledOnCurrentPage());
 
         unset($GLOBALS['objPage']);
+
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getCurrentRequest')->willReturn(new Request());
+        $scopeMatcher = $this->createMock(ScopeMatcher::class);
+        $scopeMatcher->method('isFrontendRequest')->willReturn(false);
+
+        $instance = $this->createTestInstance([
+            'scopeMatcher' => $scopeMatcher,
+            'requestStack' => $requestStack,
+        ]);
+        $this->assertFalse($instance->isEnabledOnCurrentPage());
+
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getCurrentRequest')->willReturn(new Request());
+        $requestStack->method('getParentRequest')->willReturn(new Request());
+        $scopeMatcher = $this->createMock(ScopeMatcher::class);
+        $scopeMatcher->method('isFrontendRequest')->willReturn(true);
+
+        $instance = $this->createTestInstance([
+            'scopeMatcher' => $scopeMatcher,
+            'requestStack' => $requestStack,
+        ]);
+        $this->assertFalse($instance->isEnabledOnCurrentPage());
+
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getCurrentRequest')->willReturn(new Request([], [], [
+            'pageModel' => $this->mockClassWithProperties(PageModel::class, [
+                'layoutId' => 3,
+                'type' => 'error_404',
+            ]),
+        ]));
+        $requestStack->method('getParentRequest')->willReturn(new Request());
+        $scopeMatcher = $this->createMock(ScopeMatcher::class);
+        $scopeMatcher->method('isFrontendRequest')->willReturn(true);
+
+        $instance = $this->createTestInstance([
+            'scopeMatcher' => $scopeMatcher,
+            'requestStack' => $requestStack,
+            'contaoFramework' => $contaoFramework,
+        ]);
+        $this->assertTrue($instance->isEnabledOnCurrentPage());
     }
 
     public function testGetRelativeOutputPath()
