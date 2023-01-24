@@ -1,16 +1,17 @@
 <?php
 
 /*
- * Copyright (c) 2021 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
 
 namespace HeimrichHannot\EncoreBundle\Helper;
 
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
+use Contao\LayoutModel;
 use Contao\PageModel;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Webmozart\PathUtil\Path;
 
@@ -21,26 +22,23 @@ class ConfigurationHelper
      */
     protected $requestStack;
     /**
-     * @var ModelUtil
-     */
-    protected $modelUtil;
-    /**
      * @var array
      */
     protected $bundleConfig;
     /**
      * @var string
      */
-    protected            $webDir;
-    private ScopeMatcher $scopeMatcher;
+    protected $webDir;
+    private ScopeMatcher    $scopeMatcher;
+    private ContaoFramework $contaoFramework;
 
-    public function __construct(RequestStack $requestStack, ModelUtil $modelUtil, array $bundleConfig, string $webDir, ScopeMatcher $scopeMatcher)
+    public function __construct(RequestStack $requestStack, array $bundleConfig, string $webDir, ScopeMatcher $scopeMatcher, ContaoFramework $contaoFramework)
     {
         $this->requestStack = $requestStack;
-        $this->modelUtil = $modelUtil;
         $this->bundleConfig = $bundleConfig;
         $this->webDir = $webDir;
         $this->scopeMatcher = $scopeMatcher;
+        $this->contaoFramework = $contaoFramework;
     }
 
     /**
@@ -54,26 +52,25 @@ class ConfigurationHelper
             return false;
         }
 
-        if (null !== $this->requestStack->getParentRequest()) {
+        $parentPageModel = $this->getPageModel();
 
-            if (
-                !($pageModel = $request->attributes->get('pageModel'))
-                || !in_array($pageModel->type, ['error_401', 'error_403', 'error_404', 'error_503'])
-            ) {
+        // Check if error page
+        if (null !== $this->requestStack->getParentRequest()) {
+            if (!$parentPageModel || !\in_array($parentPageModel->type, ['error_401', 'error_403', 'error_404', 'error_503'], true)) {
                 return false;
             }
         }
 
         if (null === $pageModel) {
-            global $objPage;
-            $pageModel = $objPage;
+            $pageModel = $parentPageModel;
         }
 
         if (!$pageModel) {
             return false;
         }
 
-        $layout = $this->modelUtil->findModelInstanceByPk('tl_layout', $pageModel->layoutId);
+        $layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($pageModel->layoutId);
+
         if (!$layout || !$layout->addEncore) {
             return false;
         }
@@ -95,5 +92,30 @@ class ConfigurationHelper
     public function getAbsoluteOutputPath(): string
     {
         return $this->bundleConfig['outputPath'];
+    }
+
+    public function getPageModel(): ?PageModel
+    {
+        $request = $this->requestStack->getCurrentRequest();
+
+        if (null === $request || !$request->attributes->has('pageModel')) {
+            return null;
+        }
+
+        $pageModel = $request->attributes->get('pageModel');
+
+        if ($pageModel instanceof PageModel) {
+            return $pageModel;
+        }
+
+        if (
+            isset($GLOBALS['objPage'])
+            && $GLOBALS['objPage'] instanceof PageModel
+            && (int) $GLOBALS['objPage']->id === (int) $pageModel
+        ) {
+            return $GLOBALS['objPage'];
+        }
+
+        return $this->contaoFramework->getAdapter(PageModel::class)->findByPk((int) $pageModel);
     }
 }
