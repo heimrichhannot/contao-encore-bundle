@@ -27,6 +27,7 @@ class ConfigurationHelperTest extends ContaoTestCase
 
         $contaoFramework = $parameters['contaoFramework'] ?? $this->mockContaoFramework([
             LayoutModel::class => $this->mockAdapter(['findByPk']),
+            PageModel::class => $this->mockAdapter(['findByPk']),
         ]);
 
         $instance = new ConfigurationHelper(
@@ -79,6 +80,8 @@ class ConfigurationHelperTest extends ContaoTestCase
                case '3':
                    return $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => '1']);
            }
+
+            return null;
         });
         $contaoFramework = $this->mockContaoFramework([
             LayoutModel::class => $layoutModelAdapter,
@@ -139,5 +142,70 @@ class ConfigurationHelperTest extends ContaoTestCase
             'webDir' => '/a/b/c',
         ]);
         $this->assertSame('/a/b/c/d', $instance->getAbsoluteOutputPath());
+    }
+
+    public function testGetPageModel()
+    {
+        $instance = $this->createTestInstance();
+
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getCurrentRequest')->willReturn(null);
+        $instance = $this->createTestInstance([
+            'requestStack' => $requestStack,
+        ]);
+        $this->assertNull($instance->getPageModel());
+
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getCurrentRequest')->willReturn(new Request([], [], [
+            'pageModel' => $this->mockClassWithProperties(PageModel::class, ['layoutId' => 3]),
+        ]));
+        $instance = $this->createTestInstance([
+            'requestStack' => $requestStack,
+        ]);
+        $this->assertSame(3, $instance->getPageModel()->layoutId);
+
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getCurrentRequest')->willReturn(new Request([], [], [
+            'pageModel' => 3,
+        ]));
+        $instance = $this->createTestInstance([
+            'requestStack' => $requestStack,
+        ]);
+        $this->assertNull($instance->getPageModel());
+
+        $pageModelAdapter = $this->mockAdapter(['findByPk']);
+        $pageModelAdapter->method('findByPk')->willReturnCallback(function ($id) {
+            switch ($id) {
+                case '3':
+                    return $this->mockClassWithProperties(PageModel::class, ['layoutId' => 3]);
+            }
+
+            return null;
+        });
+
+        $contaoFramework = $parameters['contaoFramework'] ?? $this->mockContaoFramework([
+            PageModel::class => $pageModelAdapter,
+        ]);
+
+        $GLOBALS['objPage'] = $this->mockClassWithProperties(PageModel::class, ['id' => 2, 'layoutId' => 2]);
+
+        $instance = $this->createTestInstance([
+            'requestStack' => $requestStack,
+            'contaoFramework' => $contaoFramework,
+        ]);
+
+        $this->assertSame(3, $instance->getPageModel()->layoutId);
+
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getCurrentRequest')->willReturn(new Request([], [], [
+            'pageModel' => 2,
+        ]));
+
+        $instance = $this->createTestInstance([
+            'requestStack' => $requestStack,
+            'contaoFramework' => $contaoFramework,
+        ]);
+
+        $this->assertSame(2, $instance->getPageModel()->layoutId);
     }
 }
