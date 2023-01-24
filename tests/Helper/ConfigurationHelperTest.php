@@ -13,17 +13,25 @@ use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ConfigurationHelperTest extends ContaoTestCase
 {
     public function createTestInstance(array $parameters = [])
     {
         $requestStack = $parameters['requestStack'] ?? $this->createMock(RequestStack::class);
-        $bundleConfig = $parameters['bundleConfig'] ?? [];
-        $webDir = $parameters['webDir'] ?? '';
+        $parameterBag = $parameters['parameterBag'] ?? new ParameterBag([]);
         $scopeMatcher = $parameters['scopeMatcher'] ?? $this->createMock(ScopeMatcher::class);
+
+        if (!isset($parameters['eventDispatcher'])) {
+            $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+            $eventDispatcher->method('dispatch')->willReturnArgument(0);
+        } else {
+            $eventDispatcher = $parameters['eventDispatcher'];
+        }
 
         $contaoFramework = $parameters['contaoFramework'] ?? $this->mockContaoFramework([
             LayoutModel::class => $this->mockAdapter(['findByPk']),
@@ -32,10 +40,10 @@ class ConfigurationHelperTest extends ContaoTestCase
 
         $instance = new ConfigurationHelper(
             $requestStack,
-            $bundleConfig,
-            $webDir,
+            $parameterBag,
             $scopeMatcher,
-            $contaoFramework
+            $contaoFramework,
+            $eventDispatcher,
         );
 
         return $instance;
@@ -118,28 +126,40 @@ class ConfigurationHelperTest extends ContaoTestCase
 
     public function testGetRelativeOutputPath()
     {
+        $parameterBag = new ParameterBag([
+            'huh_encore' => ['outputPath' => ''],
+        ]);
+
         $instance = $this->createTestInstance([
-            'bundleConfig' => ['outputPath' => ''],
+            'parameterBag' => $parameterBag,
         ]);
         $this->assertEmpty($instance->getRelativeOutputPath());
 
+        $parameterBag->set('huh_encore', ['outputPath' => '/a/b/c/d']);
+        $parameterBag->set('contao.web_dir', '/a/b/c');
+
         $instance = $this->createTestInstance([
-            'bundleConfig' => ['outputPath' => '/a/b/c/d'],
-            'webDir' => '/a/b/c',
+            'parameterBag' => $parameterBag,
         ]);
         $this->assertSame('d', $instance->getRelativeOutputPath());
     }
 
     public function testGetAbsoluteOutputPath()
     {
+        $parameterBag = new ParameterBag([
+            'huh_encore' => ['outputPath' => ''],
+        ]);
+
         $instance = $this->createTestInstance([
-            'bundleConfig' => ['outputPath' => ''],
+            'parameterBag' => $parameterBag,
         ]);
         $this->assertEmpty($instance->getAbsoluteOutputPath());
 
+        $parameterBag->set('huh_encore', ['outputPath' => '/a/b/c/d']);
+        $parameterBag->set('contao.web_dir', '/a/b/c');
+
         $instance = $this->createTestInstance([
-            'bundleConfig' => ['outputPath' => '/a/b/c/d'],
-            'webDir' => '/a/b/c',
+            'parameterBag' => $parameterBag,
         ]);
         $this->assertSame('/a/b/c/d', $instance->getAbsoluteOutputPath());
     }
