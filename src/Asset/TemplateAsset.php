@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -61,7 +61,7 @@ class TemplateAsset
         $this->webDir = $webDir;
     }
 
-    public function createInstance(PageModel $pageModel, LayoutModel $layoutModel, ?string $entriesField = null)
+    public function createInstance(PageModel $pageModel, LayoutModel $layoutModel, ?string $entriesField = null): self
     {
         $instance = new self($this->bundleConfig, $this->webDir, $this->twig, $this->pageEntrypoints);
         $instance->initialize($pageModel, $layoutModel, $entriesField);

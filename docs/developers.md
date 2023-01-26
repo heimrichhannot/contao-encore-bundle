@@ -6,8 +6,6 @@ This document contains additional information for developers working with encore
 
 Since version 1.3 it is possible to add encore entries from your code. So for example the slider assets are automatically included, if the slider module is added to the page. 
 
-### PageAssetsTrait (recommended)
-
 The most simple method is to use the `PageAssetsTrait` of [Contao Encore Contracts](https://github.com/heimrichhannot/contao-encore-contracts).
 Use this trait in your class in combination with `ServiceSubscriberInterface` and make sure your class is registered as service with autoconfigure activated.
 Now you have a new method `addPageEntrypoint()` available.
@@ -40,114 +38,13 @@ class FrontendController implements ServiceSubscriberInterface
 }
 ```
 
-### FrontendAsset service
+There are other ways to add entries from your code, see [dynamic entries](developers/dynamic_entries.md).
 
-Encore bundle comes with a service, `FrontendAsset`, to register your entrypoints. 
+## Events
 
-
-Example with dependency injection (with encore bundle as hard dependency):
-
-```php
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
-
-class AcmeController
-{
-    /**
-     * @var ContainerInterface
-     */
-    private $frontendAsset;
-
-    public function __construct(FrontendAsset $frontendAsset)
-    {
-        $this->frontendAsset = $frontendAsset;
-    }
-
-    public function __invoke()
-    {
-        $this->frontendAsset->addActiveEntrypoint('contao-acme-bundle');
-    }
-}
-```
-
-Example with ServiceSubscriber for loose dependency (recommended):
-
-```php
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\DependencyInjection\ServiceSubscriberInterface;
-
-class AcmeController implements ServiceSubscriberInterface
-{
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
-    public function __invoke()
-    {
-
-        if (class_exists(FrontendAsset::class) && $this->container->has(FrontendAsset::class)) {
-            $this->container->get(FrontendAsset::class)->addActiveEntrypoint('contao-acme-bundle');
-        }
-    }
-
-    public static function getSubscribedServices()
-    {
-        $services = [];
-        if (class_exists(FrontendAsset::class)) {
-            $services[] = '?'.FrontendAsset::class;
-        }
-    
-        return $services;
-    }
-}
-```
-
-Example with optional dependency injection: 
-
-```yaml
-# services.yml
-App/FrontendModule/MyModule:
-    calls:
-      - [setEncoreFrontendAsset, ['@?HeimrichHannot\EncoreBundle\Asset\FrontendAsset']]
-```
-
-```php
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
-
-class MyModule
-{
-    protected $encoreFrontendAsset;
-
-    public function setEncoreFrontendAsset(FrontendAsset $encoreFrontendAsset): void {
-        $this->encoreFrontendAsset = $encoreFrontendAsset;
-    }
-
-    public function getResponse() {
-        // ...
-        if ($this->encoreFrontendAsset) {
-            $this->encoreFrontendAsset->addActiveEntrypoint('mymodule-assets');
-        }
-        //...
-    }
-}
-```
-
-Example for legacy code (old frontend modules or content elements): 
-
-```php
-use Contao\System;
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
-
-if (class_exists(FrontendAsset::class) && System::getContainer()->has(FrontendAsset::class)) {
-    System::getContainer()->get(FrontendAsset::class)->addActiveEntrypoint('contao-slick-bundle');
-}
-```
+| Event              | Description                                  |
+|--------------------|----------------------------------------------|
+| EncoreEnabledEvent | Add custom logic to enable encore on a page. |
 
 ## Add encore entries to custom template
 
