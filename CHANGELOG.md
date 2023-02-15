@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.18.1] - 2023-02-15
+- Changed: show a clear error message if composer.json syntax has an error in prepare command
+
 ## [1.18.0] - 2023-01-26
 - Added: [EncoreEnabledEvent](docs/developers.md#events) ([#26])
 - Changed: PageModel is now loaded from request instead from globals ([#26])

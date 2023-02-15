@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -131,7 +131,12 @@ class PrepareCommand extends Command
                 continue;
             }
 
-            $composerData = json_decode(file_get_contents($bundlePath.'/composer.json'));
+            try {
+                $composerData = json_decode(file_get_contents($bundlePath.'/composer.json'), null, 512, \JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                throw new \JsonException('composer.json of '.$reflection->getShortName().' has a syntax error.');
+            }
+
             $bundlePath = InstalledVersions::getInstallPath($composerData->name);
 
             $bundlePath = rtrim((new Filesystem())->makePathRelative($bundlePath, $this->kernel->getProjectDir()), DIRECTORY_SEPARATOR);
