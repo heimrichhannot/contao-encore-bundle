@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.19.0] - 2023-03-23
+- Changed: reduced utils bundle usage ([#28])
+- Deprecated: class `ImportsTemplateChoice`
+- Deprecated: service `huh.encore.choice.template.imports`
+- Fixed: some deprecation warnings
+
 ## [1.18.1] - 2023-02-15
 - Changed: show a clear error message if composer.json syntax has an error in prepare command
 
