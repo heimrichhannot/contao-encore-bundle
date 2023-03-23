@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -9,12 +9,6 @@
 use HeimrichHannot\EncoreBundle\EventListener\Callback\EncoreEntryOptionListener;
 
 $dca = &$GLOBALS['TL_DCA']['tl_layout'];
-
-/*
- * Config
- */
-
-$dca['config']['onload_callback'][] = [\HeimrichHannot\EncoreBundle\DataContainer\LayoutContainer::class, 'onLoadCallback'];
 
 /*
  * Palettes
@@ -80,18 +74,14 @@ $fields = [
         'sql' => 'blob NULL',
     ],
     'encoreStylesheetsImportsTemplate' => [
-        'label' => &$GLOBALS['TL_LANG']['tl_layout']['encoreStylesheetsImportsTemplate'],
         'exclude' => true,
         'inputType' => 'select',
-        'options_callback' => ['huh.encore.choice.template.imports', 'getCachedChoices'],
         'eval' => ['tl_class' => 'w50 clr', 'includeBlankOption' => true],
         'sql' => "varchar(128) NOT NULL default ''",
     ],
     'encoreScriptsImportsTemplate' => [
-        'label' => &$GLOBALS['TL_LANG']['tl_layout']['encoreScriptsImportsTemplate'],
         'exclude' => true,
         'inputType' => 'select',
-        'options_callback' => ['huh.encore.choice.template.imports', 'getCachedChoices'],
         'eval' => ['tl_class' => 'w50 clr', 'includeBlankOption' => true],
         'sql' => "varchar(128) NOT NULL default ''",
     ],

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -98,7 +98,7 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * @deprecated Will be removed in version 2.0
+     * @todo Remove in version 2.0
      */
     public function addLegacyNode()
     {

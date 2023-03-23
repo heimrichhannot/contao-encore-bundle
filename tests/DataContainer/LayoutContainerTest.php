@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -121,5 +121,27 @@ class LayoutContainerTest extends ContaoTestCase
             'requestStack' => $requestStack,
         ]);
         $instance->onLoadCallback($dc);
+    }
+
+    public function testOnImportTemplateOptionsCallback()
+    {
+        $instance = $this->createTestInstance();
+        $this->assertEmpty($instance->onImportTemplateOptionsCallback());
+
+        $instance = $this->createTestInstance(['bundleConfig' => [
+            'templates' => ['imports' => []],
+        ]]);
+        $this->assertEmpty($instance->onImportTemplateOptionsCallback());
+
+        $instance = $this->createTestInstance(['bundleConfig' => [
+            'templates' => ['imports' => [
+                ['name' => 'js_default', 'template' => '@Encore/js_default.html.twig'],
+                ['name' => 'css_default', 'template' => '@Encore/css_default.html.twig'],
+            ]],
+        ]]);
+        $this->assertSame([
+            'css_default' => '@Encore/css_default.html.twig',
+            'js_default' => '@Encore/js_default.html.twig',
+        ], $instance->onImportTemplateOptionsCallback());
     }
 }

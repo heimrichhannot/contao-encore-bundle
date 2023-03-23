@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -9,19 +9,17 @@
 namespace HeimrichHannot\EncoreBundle\Asset;
 
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
-use HeimrichHannot\UtilsBundle\Arrays\ArrayUtil;
+use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 
 class EntrypointCollectionFactory
 {
-    protected ArrayUtil     $arrayUtil;
     private EntryCollection $entryCollection;
 
     /**
      * EntrypointCollectionFactory constructor.
      */
-    public function __construct(ArrayUtil $arrayUtil, EntryCollection $entryCollection)
+    public function __construct(EntryCollection $entryCollection)
     {
-        $this->arrayUtil = $arrayUtil;
         $this->entryCollection = $entryCollection;
     }
 
@@ -36,7 +34,7 @@ class EntrypointCollectionFactory
             if (isset($entrypoint['active']) && !$entrypoint['active'] || !isset($entrypoint['entry'])) {
                 continue;
             }
-            if (!($entry = $this->arrayUtil->getArrayRowByFieldValue('name', $entrypoint['entry'], $this->entryCollection->getEntries()))) {
+            if (!($entry = ArrayHelper::getArrayRowByFieldValue('name', $entrypoint['entry'], $this->entryCollection->getEntries()))) {
                 continue;
             }
 

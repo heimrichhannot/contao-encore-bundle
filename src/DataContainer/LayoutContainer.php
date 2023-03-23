@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -10,6 +10,7 @@ namespace HeimrichHannot\EncoreBundle\DataContainer;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
+use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Contao\LayoutModel;
 use Contao\Message;
@@ -33,6 +34,9 @@ class LayoutContainer
         $this->scopeMatcher = $scopeMatcher;
     }
 
+    /**
+     * @Callback(table="tl_layout", target="config.onload")
+     */
     public function onLoadCallback(DataContainer $dc = null): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -49,5 +53,26 @@ class LayoutContainer
         if ($layout->addEncore && $layout->addJQuery && (!isset($this->bundleConfig['unset_jquery']) || true !== $this->bundleConfig['unset_jquery'])) {
             $this->contaoFramework->getAdapter(Message::class)->addInfo(($GLOBALS['TL_LANG']['tl_layout']['INFO']['jquery_order_conflict'] ?: ''));
         }
+    }
+
+    /**
+     * @Callback(table="tl_layout", target="fields.encoreStylesheetsImportsTemplate.options")
+     * @Callback(table="tl_layout", target="fields.encoreScriptsImportsTemplate.options")
+     */
+    public function onImportTemplateOptionsCallback(): array
+    {
+        $options = [];
+
+        if (!isset($this->bundleConfig['templates']['imports'])) {
+            return $options;
+        }
+
+        foreach ($this->bundleConfig['templates']['imports'] as $template) {
+            $options[$template['name']] = $template['template'];
+        }
+
+        asort($options);
+
+        return $options;
     }
 }
