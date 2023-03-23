@@ -17,14 +17,8 @@ use Symfony\WebpackEncoreBundle\Asset\EntrypointLookupCollectionInterface;
 
 class GetPageLayoutListener
 {
-    /**
-     * @var EntrypointLookupCollection
-     */
-    protected $entrypointLookupCollection;
-    /**
-     * @var array
-     */
-    protected $encoreBuildNames;
+    protected EntrypointLookupCollectionInterface $entrypointLookupCollection;
+    protected array                               $encoreBuildNames;
 
     /**
      * GetPageLayoutListener constructor.

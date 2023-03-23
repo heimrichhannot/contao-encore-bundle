@@ -168,7 +168,7 @@ class PageEntrypoints
     /**
      * Return a fresh instance of PageEntryPoint.
      *
-     * @return $this
+     * @return self
      */
     public function createInstance()
     {
