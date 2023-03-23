@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -40,5 +40,33 @@ class ArrayHelper
         }
 
         return $temp_array;
+    }
+
+    /**
+     * Returns a row of a multidimensional array by field value. Returns false, if no row found.
+     *
+     * @param string|int $key      The array key (field name)
+     * @param mixed      $value
+     * @param array      $haystack a multidimensional array
+     *
+     * @return array|false
+     */
+    public static function getArrayRowByFieldValue($key, $value, array $haystack)
+    {
+        foreach ($haystack as $row) {
+            if (!\is_array($row)) {
+                continue;
+            }
+
+            if (!isset($row[$key])) {
+                continue;
+            }
+
+            if ($row[$key] == $value) {
+                return $row;
+            }
+        }
+
+        return false;
     }
 }

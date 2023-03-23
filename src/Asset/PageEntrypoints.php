@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -14,7 +14,6 @@ use Contao\StringUtil;
 use Exception;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
-use HeimrichHannot\UtilsBundle\Arrays\ArrayUtil;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -30,18 +29,16 @@ class PageEntrypoints
     private ContainerInterface $container;
     private FrontendAsset      $frontendAsset;
     private EntryCollection    $entryCollection;
-    private ArrayUtil          $arrayUtil;
     private ModelUtil          $modelUtil;
 
     /**
      * PageEntrypoints constructor.
      */
-    public function __construct(ContainerInterface $container, FrontendAsset $frontendAsset, EntryCollection $entryCollection, ArrayUtil $arrayUtil, ModelUtil $modelUtil)
+    public function __construct(ContainerInterface $container, FrontendAsset $frontendAsset, EntryCollection $entryCollection, ModelUtil $modelUtil)
     {
         $this->container = $container;
         $this->frontendAsset = $frontendAsset;
         $this->entryCollection = $entryCollection;
-        $this->arrayUtil = $arrayUtil;
         $this->modelUtil = $modelUtil;
     }
 
@@ -63,7 +60,7 @@ class PageEntrypoints
             if (isset($pageEntry['active']) && !$pageEntry['active']) {
                 continue;
             }
-            if (!($entry = $this->arrayUtil->getArrayRowByFieldValue('name', $pageEntry['entry'], $projectEntries))) {
+            if (!($entry = ArrayHelper::getArrayRowByFieldValue('name', $pageEntry['entry'], $projectEntries))) {
                 continue;
             }
             $this->activeEntries[] = $entry['name'];
@@ -175,7 +172,7 @@ class PageEntrypoints
      */
     public function createInstance()
     {
-        return new self($this->container, $this->frontendAsset, $this->entryCollection, $this->arrayUtil, $this->modelUtil);
+        return new self($this->container, $this->frontendAsset, $this->entryCollection, $this->modelUtil);
     }
 
     /**

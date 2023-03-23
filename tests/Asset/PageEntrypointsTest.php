@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
+ * Copyright (c) 2023 Heimrich & Hannot GmbH
  *
  * @license LGPL-3.0-or-later
  */
@@ -15,7 +15,6 @@ use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\PageEntrypoints;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Test\ModelMockTrait;
-use HeimrichHannot\UtilsBundle\Arrays\ArrayUtil;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use PHPUnit\Framework\Error\Warning;
 
@@ -39,14 +38,6 @@ class PageEntrypointsTest extends ContaoTestCase
         } else {
             $modelUtil = $this->createMock(ModelUtil::class);
             $modelUtil->method('findParentsRecursively')->willReturn([]);
-        }
-
-        if (isset($parameter['arrayUtil'])) {
-            $arrayUtil = $parameter['arrayUtil'];
-        } else {
-            $container = $this->getContainerWithContaoConfiguration();
-            $container->set('contao.framework', $this->mockContaoFramework());
-            $arrayUtil = new ArrayUtil($container);
         }
 
         if (isset($parameter['entryCollection'])) {
@@ -73,7 +64,7 @@ class PageEntrypointsTest extends ContaoTestCase
             }
         }
 
-        return new PageEntrypoints($container, $frontendAsset, $entryCollection, $arrayUtil, $modelUtil);
+        return new PageEntrypoints($container, $frontendAsset, $entryCollection, $modelUtil);
     }
 
     public function entryPointProvider()
