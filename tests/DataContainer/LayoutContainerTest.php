@@ -14,10 +14,12 @@ use Contao\DataContainer;
 use Contao\LayoutModel;
 use Contao\Message;
 use Contao\TestCase\ContaoTestCase;
+use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\DataContainer\LayoutContainer;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LayoutContainerTest extends ContaoTestCase
 {
@@ -27,12 +29,16 @@ class LayoutContainerTest extends ContaoTestCase
         $contaoFramework = $parameters['contaoFramework'] ?? $this->mockContaoFramework();
         $requestStack = $parameters['requestStack'] ?? $this->createMock(RequestStack::class);
         $scopeMatcher = $parameters['scopeMatcher'] ?? $this->createMock(ScopeMatcher::class);
+        $entryCollection = $parameters['entryCollection'] ?? $this->createMock(EntryCollection::class);
+        $translator = $parameters['translator'] ?? $this->createMock(TranslatorInterface::class);
 
         return new LayoutContainer(
             $bundleConfig,
             $contaoFramework,
             $requestStack,
-            $scopeMatcher
+            $scopeMatcher,
+            $entryCollection,
+            $translator
         );
     }
 
@@ -40,7 +46,7 @@ class LayoutContainerTest extends ContaoTestCase
     {
         $GLOBALS['TL_LANG']['tl_layout']['INFO']['jquery_order_conflict'] = 'Info';
 
-        $messageAdapter = $this->mockAdapter(['addInfo']);
+        $messageAdapter = $this->mockAdapter(['addError', 'addInfo', 'generateUnwrapped', 'hasMessages']);
         $messageAdapter->expects($this->never())->method('addInfo')->willReturn(null);
 
         /** @var ContaoFramework|MockObject $contaoFramework */
@@ -91,7 +97,7 @@ class LayoutContainerTest extends ContaoTestCase
             'addJQuery' => true,
         ]));
 
-        $messageAdapter = $this->mockAdapter(['addInfo']);
+        $messageAdapter = $this->mockAdapter(['addError', 'addInfo', 'generateUnwrapped', 'hasMessages']);
         $messageAdapter->expects($this->once())->method('addInfo')->willReturn(null);
         /** @var ContaoFramework|MockObject $contaoFramework */
         $contaoFramework = $this->mockContaoFramework([
@@ -107,7 +113,7 @@ class LayoutContainerTest extends ContaoTestCase
         $instance->onLoadCallback($dc);
 
         $bundleConfig['unset_jquery'] = true;
-        $messageAdapter = $this->mockAdapter(['addInfo']);
+        $messageAdapter = $this->mockAdapter(['addError', 'addInfo', 'generateUnwrapped', 'hasMessages']);
         $messageAdapter->expects($this->never())->method('addInfo')->willReturn(null);
         /** @var ContaoFramework|MockObject $contaoFramework */
         $contaoFramework = $this->mockContaoFramework([

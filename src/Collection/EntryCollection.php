@@ -33,6 +33,7 @@ class EntryCollection
 
     /**
      * Return all encore entries (from webpack config and registered via bundle).
+     * @throws NoEntrypointsException
      */
     public function getEntries(): array
     {
@@ -85,6 +86,9 @@ class EntryCollection
         return $bundleConfigEntries;
     }
 
+    /**
+     * @throws NoEntrypointsException
+     */
     private function parseEntrypoints(string $entrypointsJson): array
     {
         $cached = null;
@@ -100,13 +104,13 @@ class EntryCollection
         }
 
         if (!file_exists($entrypointsJson)) {
-            throw new \InvalidArgumentException(sprintf('Could not find the entrypoints.json: the file "%s" does not exist. Maybe you forgot to run encore command?', $entrypointsJson));
+            throw new NoEntrypointsException(sprintf('Could not find the entrypoints.json: the file "%s" does not exist. Maybe you forgot to run encore command?', $entrypointsJson));
         }
 
         $entriesData = json_decode(file_get_contents($entrypointsJson), true);
 
         if (null === $entriesData) {
-            throw new \InvalidArgumentException(sprintf('Could not decode the "%s" file', $entrypointsJson));
+            throw new NoEntrypointsException(sprintf('Could not decode the "%s" file', $entrypointsJson));
         }
 
         if (!isset($entriesData['entrypoints'])) {

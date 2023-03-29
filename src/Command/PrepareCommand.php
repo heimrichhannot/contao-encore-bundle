@@ -184,7 +184,7 @@ class PrepareCommand extends Command
 
             $packageData['dependencies'] = array_merge(
                 ['@hundh/encore-entry-dependencies' => 'file:.'.DIRECTORY_SEPARATOR.$encoreAssetsPath.DIRECTORY_SEPARATOR],
-                $packageData['dependencies']
+                $packageData['dependencies'] ?? []
             );
 
             (new Filesystem())->dumpFile(

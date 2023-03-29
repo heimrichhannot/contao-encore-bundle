@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.20.0] - 2023-03-29
+- Changed: show message in layout when entrypoints not generated
+- Changed: added some english translations
+- Fixed: throw correct exception in EntryCollection
+- Fixed: warning when package.json has no dependencies in prepare command
+- Fixed: add entry button in layout has not function if entrypoints not generated
+
 ## [1.19.0] - 2023-03-23
 - Changed: reduced utils bundle usage ([#28])
 - Deprecated: class `ImportsTemplateChoice`

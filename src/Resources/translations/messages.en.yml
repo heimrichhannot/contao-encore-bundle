@@ -1,0 +1,13 @@
+huh.encore:
+  fields:
+    encoreEntriesSelect:
+      name: "Encore entries"
+      description: "Choose encore entries to include in the template"
+    encoreEntriesSelect_entry:
+      name: "Entry"
+      description: ""
+    encoreEntriesSelect_active:
+      name: "Active"
+      description: ""
+  errors:
+    noEntrypoints: "Could not find encore entrypoints. Got following error message:"

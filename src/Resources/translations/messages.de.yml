@@ -9,3 +9,5 @@ huh.encore:
     encoreEntriesSelect_active:
       name: "Aktiv"
       description: ""
+  errors:
+    noEntrypoints: "Es konnten keine Entrypoints gefunden werden. Folgende Fehlermeldung erhalten:"
