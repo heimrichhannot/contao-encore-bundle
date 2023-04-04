@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.20.1] - 2023-04-04
+- Changed: more errors on prepare command if something went wrong 
+
 ## [1.20.0] - 2023-03-29
 - Changed: show message in layout when entrypoints not generated
 - Changed: added some english translations

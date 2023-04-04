@@ -165,35 +165,36 @@ class PrepareCommand extends Command
 
         $this->io->text(['', ' // Update encore entry dependencies', '']);
 
-        if (file_exists($this->kernel->getProjectDir().DIRECTORY_SEPARATOR.'package.json')) {
-            $this->io->writeln('Collect encore entry dependencies ');
-            $encorePackageData = [
-                'name' => '@hundh/encore-entry-dependencies',
-                'version' => date('Ymd').'.'.date('Hi').'.'.time(),
-                'dependencies' => $extensionDependencies,
-            ];
-            $encoreAssetsPath = 'vendor'.DIRECTORY_SEPARATOR.'heimrichhannot'.DIRECTORY_SEPARATOR.'encore-entry-dependencies';
-
-            (new Filesystem())->dumpFile(
-                $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.$encoreAssetsPath.DIRECTORY_SEPARATOR.'package.json',
-                json_encode($encorePackageData, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES)
-            );
-
-            $this->io->writeln('Register dependencies in project');
-            $packageData = json_decode(file_get_contents($this->kernel->getProjectDir().DIRECTORY_SEPARATOR.'package.json'), true);
-
-            $packageData['dependencies'] = array_merge(
-                ['@hundh/encore-entry-dependencies' => 'file:.'.DIRECTORY_SEPARATOR.$encoreAssetsPath.DIRECTORY_SEPARATOR],
-                $packageData['dependencies'] ?? []
-            );
-
-            (new Filesystem())->dumpFile(
-                $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.'package.json',
-                json_encode($packageData, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES)
-            );
-        } else {
-            $this->io->warning('No package.json could be found in your project. This file must be present for encore to work!');
+        $projectPackageJsonPath = $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.'package.json';
+        if (!file_exists($projectPackageJsonPath)) {
+            throw new \Exception('No package.json could be found in your project. This file must be present for encore to work!');
         }
+
+        $this->io->writeln('Collect encore entry dependencies ');
+        $encorePackageData = [
+            'name' => '@hundh/encore-entry-dependencies',
+            'version' => date('Ymd').'.'.date('Hi').'.'.time(),
+            'dependencies' => $extensionDependencies,
+        ];
+        $encoreAssetsPath = 'vendor'.DIRECTORY_SEPARATOR.'heimrichhannot'.DIRECTORY_SEPARATOR.'encore-entry-dependencies';
+
+        (new Filesystem())->dumpFile(
+            $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.$encoreAssetsPath.DIRECTORY_SEPARATOR.'package.json',
+            json_encode($encorePackageData, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES)
+        );
+
+        $this->io->writeln('Register dependencies in project');
+        $packageData = json_decode(file_get_contents($projectPackageJsonPath), true, 512, \JSON_THROW_ON_ERROR);
+
+        $packageData['dependencies'] = array_merge(
+            ['@hundh/encore-entry-dependencies' => 'file:.'.DIRECTORY_SEPARATOR.$encoreAssetsPath.DIRECTORY_SEPARATOR],
+            $packageData['dependencies'] ?? []
+        );
+
+        (new Filesystem())->dumpFile(
+            $projectPackageJsonPath,
+            json_encode($packageData, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES)
+        );
 
         if (!empty($encoreJsEntries)) {
             $this->io->text(['', ' // Output encore_bundles.js', '']);
