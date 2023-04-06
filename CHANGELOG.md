@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.20.2] - 2023-04-06
+- Fixed: layout not correctly evaluated on some error pages
+
 ## [1.20.1] - 2023-04-04
 - Changed: more errors on prepare command if something went wrong 
 

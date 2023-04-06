@@ -131,7 +131,8 @@ class ConfigurationHelper
             return false;
         }
 
-        $layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($pageModel->layoutId);
+        $pageModel->loadDetails();
+        $layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($pageModel->layoutId ?? $pageModel->layout);
 
         if (!$layout || !$layout->addEncore) {
             return false;
