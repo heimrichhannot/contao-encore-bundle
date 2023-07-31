@@ -12,8 +12,8 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\ServiceAnnotation\Hook;
 use Contao\LayoutModel;
 use Contao\PageModel;
-use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
-use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
+use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAssetInterface;
+use HeimrichHannot\EncoreBundle\Asset\TemplateAssetInterface;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
 use HeimrichHannot\UtilsBundle\Util\Utils;
@@ -28,21 +28,21 @@ class ReplaceDynamicScriptTagsListener
      */
     protected $bundleConfig;
     /**
-     * @var TemplateAsset
+     * @var TemplateAssetInterface
      */
     protected $templateAsset;
     /**
      * @var ConfigurationHelper
      */
     protected $configurationHelper;
-    private GlobalContaoAsset $globalContaoAsset;
+    private GlobalContaoAssetInterface $globalContaoAsset;
     private ContaoFramework   $contaoFramework;
     private Utils             $utils;
 
     /**
      * ReplaceDynamicScriptTagsListener constructor.
      */
-    public function __construct(array $bundleConfig, ContaoFramework $contaoFramework, Utils $utils, TemplateAsset $templateAsset, ConfigurationHelper $configurationHelper, GlobalContaoAsset $globalContaoAsset)
+    public function __construct(array $bundleConfig, ContaoFramework $contaoFramework, Utils $utils, TemplateAssetInterface $templateAsset, ConfigurationHelper $configurationHelper, GlobalContaoAssetInterface $globalContaoAsset)
     {
         $this->bundleConfig = $bundleConfig;
         $this->templateAsset = $templateAsset;

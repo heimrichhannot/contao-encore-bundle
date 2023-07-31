@@ -8,7 +8,7 @@
 
 namespace HeimrichHannot\EncoreBundle\Asset;
 
-class FrontendAsset
+class FrontendAsset implements FrontendAssetInterface
 {
     /**
      * @var array

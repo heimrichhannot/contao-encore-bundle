@@ -11,7 +11,7 @@ namespace HeimrichHannot\EncoreBundle\Asset;
 use HeimrichHannot\EncoreBundle\Collection\ExtensionCollection;
 use HeimrichHannot\EncoreContracts\EncoreEntry;
 
-class GlobalContaoAsset
+class GlobalContaoAsset implements GlobalContaoAssetInterface
 {
     private array               $bundleConfig;
     private ExtensionCollection $extensionCollection;

@@ -14,7 +14,7 @@ use Symfony\WebpackEncoreBundle\Exception\EntrypointNotFoundException;
 use Twig\Environment;
 use Twig\Error\RuntimeError;
 
-class TemplateAsset
+class TemplateAsset implements TemplateAssetInterface
 {
     /**
      * @var Environment
@@ -25,7 +25,7 @@ class TemplateAsset
      */
     private $layout;
     /**
-     * @var PageEntrypoints
+     * @var PageEntrypointsInterface
      */
     private $pageEntrypoints;
     /**
@@ -53,7 +53,7 @@ class TemplateAsset
      */
     private $webDir;
 
-    public function __construct(array $bundleConfig, string $webDir, Environment $twig, PageEntrypoints $pageEntrypoints)
+    public function __construct(array $bundleConfig, string $webDir, Environment $twig, PageEntrypointsInterface $pageEntrypoints)
     {
         $this->twig = $twig;
         $this->pageEntrypoints = $pageEntrypoints;
