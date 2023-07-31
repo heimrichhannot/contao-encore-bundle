@@ -17,7 +17,7 @@ use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class PageEntrypoints
+class PageEntrypoints implements PageEntrypointsInterface
 {
     protected $jsEntries = [];
     protected $cssEntries = [];
@@ -26,15 +26,15 @@ class PageEntrypoints
 
     protected $initialized = false;
 
-    private ContainerInterface $container;
-    private FrontendAsset      $frontendAsset;
-    private EntryCollection    $entryCollection;
-    private ModelUtil          $modelUtil;
+    private ContainerInterface      $container;
+    private FrontendAssetInterface  $frontendAsset;
+    private EntryCollection         $entryCollection;
+    private ModelUtil               $modelUtil;
 
     /**
      * PageEntrypoints constructor.
      */
-    public function __construct(ContainerInterface $container, FrontendAsset $frontendAsset, EntryCollection $entryCollection, ModelUtil $modelUtil)
+    public function __construct(ContainerInterface $container, FrontendAssetInterface $frontendAsset, EntryCollection $entryCollection, ModelUtil $modelUtil)
     {
         $this->container = $container;
         $this->frontendAsset = $frontendAsset;
