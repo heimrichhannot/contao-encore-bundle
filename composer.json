@@ -19,7 +19,7 @@
     "php": "^7.4 || ^8.0",
     "ext-json": "*",
     "composer-runtime-api": "^2.0",
-    "contao/core-bundle": "^4.9",
+    "contao/core-bundle": "^4.9 || ^5.0",
     "heimrichhannot/contao-encore-contracts": "^1.0",
     "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
     "heimrichhannot/contao-utils-bundle": "^2.221.0",

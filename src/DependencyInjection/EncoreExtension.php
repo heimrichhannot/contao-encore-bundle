@@ -26,7 +26,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
 
     private $outputPath = '';
 
-    public function getAlias()
+    public function getAlias(): string
     {
         return 'huh_encore';
     }

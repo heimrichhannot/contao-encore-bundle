@@ -23,21 +23,12 @@ use HeimrichHannot\UtilsBundle\Util\Utils;
  */
 class ReplaceDynamicScriptTagsListener
 {
-    /**
-     * @var array
-     */
-    protected $bundleConfig;
-    /**
-     * @var TemplateAsset
-     */
-    protected $templateAsset;
-    /**
-     * @var ConfigurationHelper
-     */
-    protected $configurationHelper;
-    private GlobalContaoAsset $globalContaoAsset;
-    private ContaoFramework   $contaoFramework;
-    private Utils             $utils;
+    protected array               $bundleConfig;
+    protected TemplateAsset       $templateAsset;
+    protected ConfigurationHelper $configurationHelper;
+    private GlobalContaoAsset     $globalContaoAsset;
+    private ContaoFramework       $contaoFramework;
+    private Utils                 $utils;
 
     /**
      * ReplaceDynamicScriptTagsListener constructor.

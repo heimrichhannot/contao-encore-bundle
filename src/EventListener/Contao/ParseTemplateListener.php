@@ -10,14 +10,13 @@ use HeimrichHannot\UtilsBundle\Util\Utils;
 
 /**
  * @Hook("parseTemplate")
+ *
+ * @deprecated Will be removed in version 2.0.0.
  */
 class ParseTemplateListener
 {
-    /** @var Utils  */
-    private $utils;
-
-    /** @var array  */
-    private $bundleConfig;
+    private Utils $utils;
+    private array $bundleConfig;
 
     public function __construct(Utils $utils, array $bundleConfig)
     {
