@@ -8,13 +8,13 @@
 
 namespace HeimrichHannot\EncoreBundle\Asset;
 
+use Contao\Database;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Exception;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PageEntrypoints
@@ -91,6 +91,7 @@ class PageEntrypoints
             $encoreField = 'encoreEntries';
         }
         $parents = [$layout];
+
         $parentPages = $this->modelUtil->findParentsRecursively('pid', 'tl_page', $currentPage);
         if (\is_array($parentPages)) {
             $parents = array_merge($parents, $parentPages);
