@@ -15,6 +15,7 @@ use Contao\StringUtil;
 use Exception;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
+use HeimrichHannot\UtilsBundle\Util\Utils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PageEntrypoints
@@ -29,17 +30,17 @@ class PageEntrypoints
     private ContainerInterface $container;
     private FrontendAsset      $frontendAsset;
     private EntryCollection    $entryCollection;
-    private ModelUtil          $modelUtil;
+    private Utils              $utils;
 
     /**
      * PageEntrypoints constructor.
      */
-    public function __construct(ContainerInterface $container, FrontendAsset $frontendAsset, EntryCollection $entryCollection, ModelUtil $modelUtil)
+    public function __construct(ContainerInterface $container, FrontendAsset $frontendAsset, EntryCollection $entryCollection, Utils $utils)
     {
         $this->container = $container;
         $this->frontendAsset = $frontendAsset;
         $this->entryCollection = $entryCollection;
-        $this->modelUtil = $modelUtil;
+        $this->utils = $utils;
     }
 
     public function generatePageEntrypoints(PageModel $page, LayoutModel $layout, ?string $encoreField = null): bool
@@ -92,7 +93,7 @@ class PageEntrypoints
         }
         $parents = [$layout];
 
-        $parentPages = $this->modelUtil->findParentsRecursively('pid', 'tl_page', $currentPage);
+        $parentPages = $this->utils->model()->findParentsRecursively($currentPage, 'pid');
         if (\is_array($parentPages)) {
             $parents = array_merge($parents, $parentPages);
         }

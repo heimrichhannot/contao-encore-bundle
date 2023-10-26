@@ -15,7 +15,6 @@ use Contao\PageModel;
 use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
-use HeimrichHannot\EncoreBundle\Helper\EntryHelper;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 
 /**
@@ -103,15 +102,5 @@ class ReplaceDynamicScriptTagsListener
         $replace["[[TL_BODY$nonce]]"] = trim($templateAssets->scriptTags())."[[TL_BODY$nonce]]";
 
         return str_replace(array_keys($replace), $replace, $buffer);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     *
-     * @deprecated
-     */
-    protected function cleanGlobalArrays()
-    {
-        EntryHelper::cleanGlobalArrays($this->bundleConfig);
     }
 }

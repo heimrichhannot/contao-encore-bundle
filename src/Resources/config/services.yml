@@ -9,7 +9,7 @@ services:
 
   HeimrichHannot\EncoreBundle\:
     resource: "../../{Asset,Collection,Command,DataContainer,Dca,EventListener,Helper,Migration}/*"
-    exclude: '../../Asset/{EntrypointCollection.php,EntrypointsJsonLookup.php}'
+    exclude: '../../Asset/{EntrypointCollection.php}'
     public: true
     autoconfigure: true
 
@@ -24,27 +24,6 @@ services:
     alias: HeimrichHannot\EncoreBundle\Asset\FrontendAsset
     public: true
 
-  HeimrichHannot\EncoreBundle\Asset\EntrypointsJsonLookup:
-    bind:
-      Psr\Cache\CacheItemPoolInterface: "@webpack_encore.cache"
-
   huh.encore.asset.template:
     alias: HeimrichHannot\EncoreBundle\Asset\TemplateAsset
     public: true
-
-  huh.encore.choice.entry:
-    class: HeimrichHannot\EncoreBundle\Choice\EntryChoice
-    public: true
-
-  huh.encore.choice.template.imports:
-    class: HeimrichHannot\EncoreBundle\Choice\ImportsTemplateChoice
-    public: true
-    deprecated: 'The "%service_id%" service alias is deprecated since 1.19.0.'
-
-  huh.encore.listener.hooks: '@HeimrichHannot\EncoreBundle\EventListener\HookListener'
-
-#  huh.encore.listener.hooks:
-#    class: HeimrichHannot\EncoreBundle\EventListener\HookListener
-#  HeimrichHannot\EncoreBundle\EventListener\HookListener: '@huh.encore.listener.hooks'
-
-#  HeimrichHannot\EncoreBundle\EventListener\GeneratePageListener: ~
