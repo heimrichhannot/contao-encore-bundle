@@ -46,7 +46,7 @@ class PageEntrypoints
     public function generatePageEntrypoints(PageModel $page, LayoutModel $layout, ?string $encoreField = null): bool
     {
         if ($this->initialized) {
-            trigger_error('PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided. ', \E_USER_WARNING);
+            trigger_error('PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided.', \E_USER_WARNING);
         }
 
         $projectEntries = $this->entryCollection->getEntries();
@@ -83,10 +83,8 @@ class PageEntrypoints
 
     /**
      * Collect all entries for the current page.
-     *
-     * @return array
      */
-    public function collectPageEntries(LayoutModel $layout, PageModel $currentPage, ?string $encoreField = null)
+    public function collectPageEntries(LayoutModel $layout, PageModel $currentPage, ?string $encoreField = null): array
     {
         if (null === $encoreField) {
             $encoreField = 'encoreEntries';
@@ -174,7 +172,7 @@ class PageEntrypoints
      */
     public function createInstance()
     {
-        return new self($this->container, $this->frontendAsset, $this->entryCollection, $this->modelUtil);
+        return new self($this->container, $this->frontendAsset, $this->entryCollection, $this->utils);
     }
 
     /**

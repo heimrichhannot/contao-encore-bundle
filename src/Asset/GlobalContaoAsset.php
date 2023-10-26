@@ -24,10 +24,6 @@ class GlobalContaoAsset
 
     public function cleanGlobalArrayFromConfiguration(): void
     {
-        $this->cleanJsAssets($this->bundleConfig['unset_global_keys']['js'] ?? []);
-        $this->cleanJqueryAssets($this->bundleConfig['unset_global_keys']['jquery'] ?? []);
-        $this->cleanCssAssets($this->bundleConfig['unset_global_keys']['css'] ?? []);
-
         foreach ($this->extensionCollection->getExtensions() as $extension) {
             foreach ($extension->getEntries() as $entry) {
                 foreach ($entry->getReplaceGlobelKeys() as $key => $value) {

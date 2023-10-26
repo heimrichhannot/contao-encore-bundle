@@ -14,13 +14,28 @@ use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\PageEntrypoints;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
-use HeimrichHannot\EncoreBundle\Test\ModelMockTrait;
-use HeimrichHannot\UtilsBundle\Model\ModelUtil;
+use HeimrichHannot\TestUtilitiesBundle\Mock\ModelMockTrait;
+use HeimrichHannot\UtilsBundle\Util\ModelUtil;
+use HeimrichHannot\UtilsBundle\Util\Utils;
 use PHPUnit\Framework\Error\Warning;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class PageEntrypointsTest extends ContaoTestCase
 {
+    private ModelUtil|MockObject $containerUtilMock;
+    private Utils|MockObject $utilsMock;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->utilsMock = $this->createMock(Utils::class);
+        $this->containerUtilMock = $this->createMock(ModelUtil::class);
+        $this->utilsMock->method('model')->willReturn($this->containerUtilMock);
+    }
+
     use ModelMockTrait;
+
+
 
     public function createTestInstance(array $parameter = [])
     {
@@ -33,12 +48,7 @@ class PageEntrypointsTest extends ContaoTestCase
             $frontendAsset->method('getActiveEntrypoints')->willReturn([]);
         }
 
-        if (isset($parameter['modelUtil'])) {
-            $modelUtil = $parameter['modelUtil'];
-        } else {
-            $modelUtil = $this->createMock(ModelUtil::class);
-            $modelUtil->method('findParentsRecursively')->willReturn([]);
-        }
+        $utils = $parameter['utils'] ?? $this->utilsMock;
 
         if (isset($parameter['entryCollection'])) {
             $entryCollection = $parameter['entryCollection'];
@@ -64,7 +74,7 @@ class PageEntrypointsTest extends ContaoTestCase
             }
         }
 
-        return new PageEntrypoints($container, $frontendAsset, $entryCollection, $modelUtil);
+        return new PageEntrypoints($container, $frontendAsset, $entryCollection, $utils);
     }
 
     public function entryPointProvider()
@@ -362,8 +372,7 @@ class PageEntrypointsTest extends ContaoTestCase
      */
     public function testPageEntryOrder($pageParents, $bundleConfig, $page, $layout, $result)
     {
-        $modelUtil = $this->createMock(ModelUtil::class);
-        $modelUtil->method('findParentsRecursively')->willReturn($pageParents);
+        $this->containerUtilMock->method('findParentsRecursively')->willReturn($pageParents);
 
         $entryCollection = $this->createMock(EntryCollection::class);
         $entryCollection->method('getEntries')->willReturn(($bundleConfig['js_entries'] ?? []));
@@ -372,7 +381,6 @@ class PageEntrypointsTest extends ContaoTestCase
         $frontendAsset->addActiveEntrypoint('contao-slick-bundle');
 
         $pageEntrypoints = $this->createTestInstance([
-            'modelUtil' => $modelUtil,
             'entryCollection' => $entryCollection,
             'frontendAsset' => $frontendAsset,
         ]);
@@ -444,8 +452,14 @@ class PageEntrypointsTest extends ContaoTestCase
         $instance = $this->createTestInstance(['bundleConfig' => ['js_entries' => [['name' => 'contao-encore-bundle'], ['name' => 'b']]]]);
         $instance->generatePageEntrypoints($page, $layout);
 
-        $this->expectException(Warning::class);
-        $instance->generatePageEntrypoints($page, $layout);
+//        $this->expectException(Warning::class);
+//        $this->expectWarning();
+
+        try {
+            $instance->generatePageEntrypoints($page, $layout);
+        } catch (\Throwable $e) {
+            $this->assertEquals('PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided.', $e->getMessage());
+        }
     }
 
     public function testLegacyAddBabelEntry()

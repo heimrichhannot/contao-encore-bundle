@@ -60,13 +60,7 @@ class ReplaceDynamicScriptTagsListener
             return $buffer;
         }
         /* @var LayoutModel|null $layout */
-
-        if (!isset($this->bundleConfig['use_contao_template_variables']) || true !== $this->bundleConfig['use_contao_template_variables']) {
-            $buffer = $this->replaceEncoreTags($buffer, $pageModel, $layout);
-        } else {
-            $buffer = $this->replaceContaoTags($buffer, $pageModel, $layout);
-        }
-
+        $buffer = $this->replaceContaoTags($buffer, $pageModel, $layout);
         $this->globalContaoAsset->cleanGlobalArrayFromConfiguration();
 
         return $buffer;

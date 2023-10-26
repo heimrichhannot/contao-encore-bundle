@@ -71,19 +71,8 @@ class LayoutContainerTest extends ContaoTestCase
         $dc = $this->mockClassWithProperties(DataContainer::class, ['id' => 1]);
         $instance->onLoadCallback($dc);
 
-        $bundleConfig['use_contao_template_variables'] = false;
-
         $instance = $this->createTestInstance([
             'contaoFramework' => $contaoFramework,
-            'bundleConfig' => $bundleConfig,
-            'requestStack' => $requestStack,
-        ]);
-        $instance->onLoadCallback($dc);
-
-        $bundleConfig['use_contao_template_variables'] = true;
-        $instance = $this->createTestInstance([
-            'contaoFramework' => $contaoFramework,
-            'bundleConfig' => $bundleConfig,
             'requestStack' => $requestStack,
         ]);
         $instance->onLoadCallback($dc);
@@ -106,7 +95,6 @@ class LayoutContainerTest extends ContaoTestCase
         ]);
         $instance = $this->createTestInstance([
             'contaoFramework' => $contaoFramework,
-            'bundleConfig' => $bundleConfig,
             'scopeMatcher' => $scopeMatcher,
             'requestStack' => $requestStack,
         ]);

@@ -41,28 +41,6 @@ class GlobalContaoAssetTest extends ContaoTestCase
         ]);
 
         //
-        // Clean from yml
-        //
-
-        $GLOBALS['TL_JAVASCRIPT'] = [
-            'test' => 'try',
-            'a' => 'b',
-        ];
-
-        $bundleConfig = ['unset_global_keys' => ['js' => ['a']]];
-
-        $instance = $this->createTestInstance([
-            'bundleConfig' => $bundleConfig,
-        ]);
-        $instance->cleanGlobalArrayFromConfiguration();
-        $this->assertSame($GLOBALS['TL_CSS'], [
-            'foo' => 'bar',
-        ]);
-        $this->assertSame($GLOBALS['TL_JAVASCRIPT'], [
-            'test' => 'try',
-        ]);
-
-        //
         // clean from extension
         //
         $GLOBALS['TL_CSS'] = ['foo' => 'bar', 'hello' => 'world'];

@@ -12,12 +12,10 @@ use HeimrichHannot\EncoreContracts\EncoreEntry;
 
 class ConfigurationCollection
 {
-    private array               $bundleConfig;
     private ExtensionCollection $extensionCollection;
 
-    public function __construct(array $bundleConfig, ExtensionCollection $extensionCollection)
+    public function __construct(ExtensionCollection $extensionCollection)
     {
-        $this->bundleConfig = $bundleConfig;
         $this->extensionCollection = $extensionCollection;
     }
 
@@ -27,6 +25,9 @@ class ConfigurationCollection
      * Options:
      * - array: (bool) Return entrypoints as array[] instead as EncoreEntry[]
      *
+     * @param array{
+     *     array: bool
+     * } $options
      * @return array|EncoreEntry[]|array[]
      */
     public function getJsEntries(array $options = []): array
@@ -48,21 +49,6 @@ class ConfigurationCollection
                 }
             } else {
                 $entrypoints = array_merge($entrypoints, $extension->getEntries());
-            }
-        }
-
-        if ($options['array']) {
-            $entrypoints = array_merge($entrypoints, ($this->bundleConfig['js_entries'] ?? []));
-        } else {
-            foreach (($this->bundleConfig['js_entries'] ?? []) as $key => $value) {
-                $entry = EncoreEntry::create($value['name'], $value['file']);
-                if ($value['requires_css'] ?? false) {
-                    $entry->setRequiresCss(true);
-                }
-                if ($value['head'] ?? false) {
-                    $entry->setIsHeadScript(true);
-                }
-                $entrypoints[] = $entry;
             }
         }
 

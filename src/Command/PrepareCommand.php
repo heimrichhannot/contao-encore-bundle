@@ -81,37 +81,6 @@ class PrepareCommand extends Command
 
         $encoreJsEntries = [];
 
-        // collect entries from yaml
-        if (isset($this->bundleConfig['js_entries']) && \is_array($this->bundleConfig['js_entries'])) {
-            foreach ($this->bundleConfig['js_entries'] as $entry) {
-                $preparedEntry = [
-                    'name' => $entry['name'],
-                ];
-
-                if (!str_starts_with($entry['file'], '@')) {
-                    $preparedEntry['file'] = './'.preg_replace('@^\.?\/@i', '', $entry['file']);
-                } else {
-                    $preparedEntry['file'] = rtrim((new Filesystem())->makePathRelative($this->kernel->locateResource($entry['file']), $this->kernel->getProjectDir()), DIRECTORY_SEPARATOR);
-                }
-                $encoreJsEntries[] = $preparedEntry;
-            }
-        }
-
-        $this->io->newLine();
-        $yamlEntryCount = \count($encoreJsEntries);
-        if ($yamlEntryCount < 1) {
-            $this->io->writeln('Found no encore entry registered through yaml config 👍');
-        } elseif (1 === $yamlEntryCount) {
-            $this->io->writeln('<bg=yellow;fg=black>Found 1 encore entry registered through yaml config. This is deprecated and support will be dropped in a future version.</>');
-        } else {
-            $this->io->writeln("<bg=yellow;fg=black>Found $yamlEntryCount encore entries registered through yaml config. This is deprecated and support will be dropped in a future version.</>");
-        }
-
-        if ($this->io->isVerbose()) {
-            $this->io->text(['', 'Following entries registered through yaml:']);
-            $this->io->table(['name', 'path'], $encoreJsEntries);
-        }
-
         $this->io->writeln(['', '> Collect entries from encore extensions']);
         $extensionDependencies = [];
         $extensionList = [];

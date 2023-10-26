@@ -27,18 +27,7 @@ Setup your project for encore bundle.
     
     1. Call `encoreBundles.addEntries()`
 
-5. Set `huh_encore.use_contao_template_variables` to true
-
-   ```yaml
-   # config/config.yml (Contao >= 4.9)
-   # app/config/config.yml (Contao 4.4)
-   huh_encore:
-     use_contao_template_variables: true
-   ```
-
-   > This option was added to use the default contao fe_page template variables instead of custom variables from this bundle. The old implementation is considered deprecated and will be removed in a future version. If you still want or need to use it, see `src/Resources/contao/templates/fe_page_encore_bundle.html5` for usage.
-
-6. Optional: Add entries.    
+5. Optional: Add entries.    
    You can now add entries from your project, if you maintain your assets in your project code. The easiest way would be to just add them in your webpack.config.js. But you can also add them from configuration, see [Bundle Setup](setup_bundle.md) for more information. 
 
 ## Example Config

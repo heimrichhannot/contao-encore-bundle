@@ -158,20 +158,6 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
             'templateAsset' => $templateAssetMock,
         ]);
 
-        $this->assertSame('<link>', $instance->__invoke('[[HUH_ENCORE_CSS]]'));
-
-        $bundleConfig = [
-            'use_contao_template_variables' => true,
-        ];
-
-        $instance = $this->createTestInstance([
-            'utils' => $utils,
-            'configurationHelper' => $configurationHelper,
-            'contaoFramework' => $framework,
-            'templateAsset' => $templateAssetMock,
-            'bundleConfig' => $bundleConfig,
-        ]);
-
         $nonce = '';
         if (method_exists(ContaoFramework::class, 'getNonce')) {
             $nonce = '_'.ContaoFramework::getNonce();

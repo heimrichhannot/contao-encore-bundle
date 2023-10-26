@@ -8,3 +8,4 @@ All notable changes to this project will be documented in this file.
 - Changed: require at least php 8.1
 - Changed: require at least contao 4.13
 - Deleted: deprecated classes from version 1
+- Deleted: huh.encore config key

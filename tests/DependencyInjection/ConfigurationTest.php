@@ -19,10 +19,9 @@ class ConfigurationTest extends ContaoTestCase
         $configuration = new Configuration();
         $treeBuilder = $configuration->getConfigTreeBuilder();
         $this->assertInstanceOf(TreeBuilder::class, $treeBuilder);
-        $this->assertCount(6, $treeBuilder->getRootNode()->getChildNodeDefinitions());
+        $this->assertCount(2, $treeBuilder->getRootNode()->getChildNodeDefinitions());
 
         $tree = $treeBuilder->buildTree();
         $this->assertSame('huh_encore', $tree->getName());
-        $this->assertTrue($tree->getChildren()['encore']->isDeprecated());
     }
 }

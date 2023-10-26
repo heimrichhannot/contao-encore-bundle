@@ -65,14 +65,8 @@ class LayoutContainer
             }
         }
 
-        if (!isset($this->bundleConfig['use_contao_template_variables'])
-            || true !== $this->bundleConfig['use_contao_template_variables']) {
-            return;
-        }
-
         if ($layout->addEncore && $layout->addJQuery && (!isset($this->bundleConfig['unset_jquery']) || true !== $this->bundleConfig['unset_jquery'])) {
             $messageAdapter->addInfo(($GLOBALS['TL_LANG']['tl_layout']['INFO']['jquery_order_conflict'] ?: ''));
-
         }
     }
 
