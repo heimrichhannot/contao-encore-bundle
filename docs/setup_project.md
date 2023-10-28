@@ -49,7 +49,7 @@ Update/ add your `webpack.config.js` file accordingly:
      encoreBundles = require('./encore.bundles');
  
  Encore
-     .setOutputPath('web/build/')
+     .setOutputPath('public/build/')
      .setPublicPath('/build')
      .cleanupOutputBeforeBuild()
      .enableVersioning()
