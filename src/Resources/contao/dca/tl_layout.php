@@ -14,15 +14,13 @@ $dca = &$GLOBALS['TL_DCA']['tl_layout'];
  * Palettes
  */
 $dca['palettes']['__selector__'][] = 'addEncore';
-$dca['palettes']['__selector__'][] = 'addEncoreBabelPolyfill';
 
 $dca['palettes']['default'] = str_replace('{jquery_legend', '{encore_legend},addEncore;{jquery_legend', $dca['palettes']['default']);
 
 /*
  * Subpalettes
  */
-$dca['subpalettes']['addEncore'] = 'addEncoreBabelPolyfill,encoreEntries,encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
-$dca['subpalettes']['addEncoreBabelPolyfill'] = 'encoreBabelPolyfillEntryName';
+$dca['subpalettes']['addEncore'] = 'encoreEntries,encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
 
 /**
  * Fields.
@@ -34,21 +32,6 @@ $fields = [
         'inputType' => 'checkbox',
         'eval' => ['tl_class' => 'w50', 'submitOnChange' => true],
         'sql' => "char(1) NOT NULL default ''",
-    ],
-    'addEncoreBabelPolyfill' => [
-        'label' => &$GLOBALS['TL_LANG']['tl_layout']['addEncoreBabelPolyfill'],
-        'exclude' => true,
-        'inputType' => 'checkbox',
-        'eval' => ['tl_class' => 'w50', 'submitOnChange' => true],
-        'sql' => "char(1) NOT NULL default ''",
-    ],
-    'encoreBabelPolyfillEntryName' => [
-        'label' => &$GLOBALS['TL_LANG']['tl_layout']['encoreBabelPolyfillEntryName'],
-        'exclude' => true,
-        'search' => true,
-        'inputType' => 'text',
-        'eval' => ['maxlength' => 255, 'tl_class' => 'w50', 'mandatory' => true],
-        'sql' => "varchar(255) NOT NULL default 'babel-polyfill'",
     ],
     'encoreEntries' => [
         'label' => &$GLOBALS['TL_LANG']['tl_layout']['encoreEntries'],

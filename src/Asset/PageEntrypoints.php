@@ -109,10 +109,6 @@ class PageEntrypoints
         });
         $pageEntrypointsList[] = $activeEntrypoints;
 
-        if ($layout->addEncoreBabelPolyfill && !empty($layout->encoreBabelPolyfillEntryName)) {
-            $pageEntrypointsList[] = [['entry' => $layout->encoreBabelPolyfillEntryName]];
-        }
-
         $pageEntrypointsList = array_reverse($pageEntrypointsList);
         $pageEntrypoints = [];
         array_walk($pageEntrypointsList, function ($value, $index) use (&$pageEntrypoints) {

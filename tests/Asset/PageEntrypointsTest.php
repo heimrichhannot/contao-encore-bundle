@@ -461,17 +461,4 @@ class PageEntrypointsTest extends ContaoTestCase
             $this->assertEquals('PageEntrypoints already initialized, this can lead to unexpected results. Multiple initializations should be avoided.', $e->getMessage());
         }
     }
-
-    public function testLegacyAddBabelEntry()
-    {
-        $instance = $this->createTestInstance();
-        $page = $this->mockModelObject(PageModel::class, []);
-        $layout = $this->mockModelObject(LayoutModel::class, [
-            'addEncoreBabelPolyfill' => '1',
-            'encoreBabelPolyfillEntryName' => 'babel-polyfill',
-        ]);
-        $this->assertSame([
-            ['entry' => 'babel-polyfill'],
-        ], $instance->collectPageEntries($layout, $page));
-    }
 }
