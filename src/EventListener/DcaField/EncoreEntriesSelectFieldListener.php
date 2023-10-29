@@ -1,35 +1,31 @@
 <?php
 
-/*
- * Copyright (c) 2022 Heimrich & Hannot GmbH
- *
- * @license LGPL-3.0-or-later
- */
+namespace HeimrichHannot\EncoreBundle\EventListener\DcaField;
 
-namespace HeimrichHannot\EncoreBundle\Dca;
-
+use Contao\CoreBundle\ServiceAnnotation\Hook;
+use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
 use HeimrichHannot\EncoreBundle\EventListener\Callback\EncoreEntryOptionListener;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class DcaGenerator
+class EncoreEntriesSelectFieldListener
 {
-    /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
+    public function __construct(
+        protected TranslatorInterface $translator,
+    ) {}
 
     /**
-     * DcaGenerator constructor.
+     * @Hook("loadDataContainer")
      */
-    public function __construct(TranslatorInterface $translator)
+    public function onLoadDataContainer(string $table): void
     {
-        $this->translator = $translator;
-    }
+        if (!isset(EncoreEntriesSelectField::getRegistrations()[$table])) {
+            return;
+        }
 
-    public function getEncoreEntriesSelect(bool $includeActiveCheckbox = false): array
-    {
+        $options = EncoreEntriesSelectField::getRegistrations()[$table];
+
         $field = [
-            'label' => $this->getLabel('encoreEntriesSelect'),
+            'label' => $options->getFieldLabel() ?? $this->getLabel('encoreEntriesSelect'),
             'exclude' => true,
             'inputType' => 'multiColumnEditor',
             'eval' => [
@@ -39,7 +35,7 @@ class DcaGenerator
                     'sortable' => true,
                     'fields' => [
                         'entry' => [
-                            'label' => $this->getLabel('encoreEntriesSelect_entry'),
+                            'label' => $options->getSelectLabel() ?? $this->getLabel('encoreEntriesSelect_entry'),
                             'exclude' => true,
                             'filter' => true,
                             'inputType' => 'select',
@@ -51,11 +47,11 @@ class DcaGenerator
             ],
             'sql' => 'blob NULL',
         ];
-        if ($includeActiveCheckbox) {
+        if ($options->isIncludeActiveCheckbox()) {
             $field['eval']['multiColumnEditor']['fields'] = array_merge(
                 [
                     'active' => [
-                        'label' => $this->getLabel('encoreEntriesSelect_active'),
+                        'label' => $options->getCheckboxLabel() ?? $this->getLabel('encoreEntriesSelect_active'),
                         'exclude' => true,
                         'default' => true,
                         'inputType' => 'checkbox',
@@ -66,7 +62,7 @@ class DcaGenerator
             );
         }
 
-        return $field;
+        $GLOBALS['TL_DCA'][$table]['fields'][$options->getFieldName()] = $field;
     }
 
     public function getLabel(string $field): array
