@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Added: support for utils bundle v3
 - Changed: require at least php 8.1
 - Changed: require at least contao 4.13
+- Changed: encore entries select options is moved to layout legend in page settings
 - Removed: deprecated classes from version 1
 - Removed: huh.encore config key
 - Removed: DcaGenerator class (use EncoreEntriesSelectField instead)

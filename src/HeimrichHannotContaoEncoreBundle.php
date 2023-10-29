@@ -29,4 +29,11 @@ class HeimrichHannotContaoEncoreBundle extends Bundle
 
         $container->addCompilerPass(new EncoreConfigCompilerPass());
     }
+
+    public function getPath()
+    {
+        return \dirname(__DIR__);
+    }
+
+
 }
