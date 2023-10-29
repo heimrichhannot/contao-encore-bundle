@@ -22,7 +22,7 @@
     "contao/core-bundle": "^4.13 || ^5.0",
     "heimrichhannot/contao-encore-contracts": "^1.0",
     "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
-    "heimrichhannot/contao-utils-bundle": "^2.231.0",
+    "heimrichhannot/contao-utils-bundle": "^2.231.0 || v3.x-dev",
     "symfony/cache": "^5.4 || ^6.0",
     "symfony/config": "^5.4 || ^6.0",
     "symfony/console": "^5.4 || ^6.0",
