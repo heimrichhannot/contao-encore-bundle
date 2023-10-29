@@ -26,8 +26,8 @@ class ConfigurationCollection
      * - array: (bool) Return entrypoints as array[] instead as EncoreEntry[]
      *
      * @param array{
-     *     array: bool
-     * } $options
+     *     array?: bool
+ *     } $options
      * @return array|EncoreEntry[]|array[]
      */
     public function getJsEntries(array $options = []): array

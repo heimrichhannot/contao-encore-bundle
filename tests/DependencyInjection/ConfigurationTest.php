@@ -19,6 +19,7 @@ class ConfigurationTest extends ContaoTestCase
         $configuration = new Configuration();
         $treeBuilder = $configuration->getConfigTreeBuilder();
         $this->assertInstanceOf(TreeBuilder::class, $treeBuilder);
+        /** @phpstan-ignore-next-line  */
         $this->assertCount(2, $treeBuilder->getRootNode()->getChildNodeDefinitions());
 
         $tree = $treeBuilder->buildTree();

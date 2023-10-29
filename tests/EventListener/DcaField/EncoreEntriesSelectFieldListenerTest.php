@@ -25,11 +25,13 @@ class EncoreEntriesSelectFieldListenerTest extends TestCase
 
     public function testDefault()
     {
+        /** @phpstan */
         $GLOBALS['TL_DCA']['tl_test'] = [];
         EncoreEntriesSelectField::register('tl_test');
         $instance = $this->createTestInstance();
         $instance->onLoadDataContainer('tl_test');
 
+        static::assertTrue(isset($GLOBALS['TL_DCA']['tl_test']['fields']));
         static::assertArrayHasKey('fields', $GLOBALS['TL_DCA']['tl_test']);
         static::assertArrayHasKey('encoreEntries', $GLOBALS['TL_DCA']['tl_test']['fields']);
         static::assertArrayHasKey('entry', $GLOBALS['TL_DCA']['tl_test']['fields']['encoreEntries']['eval']['multiColumnEditor']['fields']);
@@ -43,6 +45,7 @@ class EncoreEntriesSelectFieldListenerTest extends TestCase
         $instance = $this->createTestInstance();
         $instance->onLoadDataContainer('tl_test');
 
+        static::assertTrue(isset($GLOBALS['TL_DCA']['tl_test']['fields']));
         static::assertArrayHasKey('fields', $GLOBALS['TL_DCA']['tl_test']);
         static::assertArrayHasKey('encoreEntries', $GLOBALS['TL_DCA']['tl_test']['fields']);
         static::assertArrayHasKey('entry', $GLOBALS['TL_DCA']['tl_test']['fields']['encoreEntries']['eval']['multiColumnEditor']['fields']);
