@@ -1,6 +1,8 @@
 # Project setup
 
-Setup your project for encore bundle.
+This document describes how to setup your project for the encore bundle.
+
+## Setup steps
 
 1. Install Encore bundle via composer 
 
@@ -80,4 +82,5 @@ Update/ add your `webpack.config.js` file accordingly:
  module.exports = config;
 ```
 
-> We recommend adding corejs polyfill (former babel polyfill) into your setup, see [Javascript setup section](setup_javascript.md) for more informations.
+## Further information
+- We recommend adding corejs polyfill (former babel polyfill) into your setup, see [Javascript setup section](setup_javascript.md) for more informations.

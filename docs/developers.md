@@ -46,6 +46,22 @@ There are other ways to add entries from your code, see [dynamic entries](develo
 |--------------------|----------------------------------------------|
 | EncoreEnabledEvent | Add custom logic to enable encore on a page. |
 
+
+## Add encore entry select to your dca 
+
+To add an encore entry select to your dca like in layout or page settings, you can use the `EncoreEntriesSelectField` class.
+
+```php
+# config/dca/tl_example.php
+EncoreEntriesSelectField::register('tl_example')
+    ->setIncludeActiveCheckbox(true);
+
+PaletteManipulator::create()
+    ->addField('encoreEntries', 'layout_legend', PaletteManipulator::POSITION_APPEND)
+    ->applyToPalette('default', 'tl_example');
+```
+
+
 ## Add encore entries to custom template
 
 If you don't want to render assets on page basis, it is possible to generate a custom set of encore entries.

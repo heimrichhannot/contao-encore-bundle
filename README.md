@@ -33,7 +33,7 @@ Setup your project for encore bundle:
 
 1. Run encore prepare command
 
-       php vendor/bin/contao-console huh:encore:prepare [--skip-entries="entry1,entry2"]
+       php vendor/bin/contao-console huh:encore:prepare
 
 1. If (yarn) dependencies have changed, run yan install
 
@@ -67,6 +67,18 @@ The command collect encore entries from all bundle and creates a file  called `e
 This file contains entries for all contao encore compatible bundles that are added by calling `encoreBundles.addEntries();` in your `webpack.config.js`.
 
 It also collects the dependencies from the `package.json` files of bundles have EncoreExtensions registered and adds them to the project dependencies.
+
+```
+Description:
+  Does the necessary preparation for contao encore bundle. Needs to be called after changes to bundle encore entries.
+
+Usage:
+  huh:encore:prepare [options]
+  encore:prepare
+
+Options:
+      --skip-entries[=SKIP-ENTRIES]  Add a comma separated list of entries to skip their generation. [default: false]
+```
 
 ### Run encore
 
