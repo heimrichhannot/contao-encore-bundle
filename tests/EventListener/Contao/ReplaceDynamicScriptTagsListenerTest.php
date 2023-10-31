@@ -18,7 +18,7 @@ use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\EventListener\Contao\ReplaceDynamicScriptTagsListener;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\TestUtilitiesBundle\Mock\ModelMockTrait;
-use HeimrichHannot\UtilsBundle\Util\Request\RequestUtil;
+use HeimrichHannot\UtilsBundle\Util\RequestUtil;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;

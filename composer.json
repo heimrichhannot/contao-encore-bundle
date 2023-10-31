@@ -21,8 +21,8 @@
     "composer-runtime-api": "^2.0",
     "contao/core-bundle": "^4.13 || ^5.0",
     "heimrichhannot/contao-encore-contracts": "^1.0",
-    "heimrichhannot/contao-multi-column-editor-bundle": "^1.0|^2.0",
-    "heimrichhannot/contao-utils-bundle": "^2.231.0 || v3.x-dev",
+    "heimrichhannot/contao-multi-column-editor-bundle": "^1.0 || ^2.0",
+    "heimrichhannot/contao-utils-bundle": "^2.231.0 || 3.0.0-beta",
     "symfony/cache": "^5.4 || ^6.0",
     "symfony/config": "^5.4 || ^6.0",
     "symfony/console": "^5.4 || ^6.0",
@@ -31,7 +31,7 @@
     "symfony/http-foundation": "^5.4 || ^6.0",
     "symfony/http-kernel": "^5.4 || ^6.0",
     "symfony/translation": "^5.4 || ^6.0",
-    "symfony/translation-contracts": "^1.1.6||^2||^3",
+    "symfony/translation-contracts": "^1.1.6 || ^2.0 || ^3.0",
     "symfony/webpack-encore-bundle": "^1.0 || ^2.0",
     "twig/twig": "^1.38.3 || ^2.7 || ^3.0",
     "webmozart/path-util": "^2.3"
@@ -39,7 +39,6 @@
   "require-dev": {
     "contao/test-case": "^4.0",
     "contao/manager-plugin": "^2.0",
-    "contao/contao": "4.13.*",
     "friendsofphp/php-cs-fixer": "^2.2",
     "phpunit/phpunit": "^8.0 || ^9.0",
     "php-coveralls/php-coveralls": "^2.0",
