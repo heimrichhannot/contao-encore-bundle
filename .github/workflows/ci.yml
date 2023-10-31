@@ -26,7 +26,7 @@ jobs:
 
       - name: Install the dependencies
         id: composer-install
-        run: composer require contao/core-bundle:${{ matrix.contao }} --no-interaction
+        run: composer require contao/core-bundle:${{ matrix.contao }} contao/test-case:${{ matrix.contao }} --no-interaction
 
       - name: Run the unit tests
         if: steps.composer-install.conclusion == 'success' && steps.composer-install.outcome == 'success'
