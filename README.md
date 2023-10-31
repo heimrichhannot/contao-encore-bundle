@@ -24,9 +24,9 @@ Use the power and simplicity of symfony webpack encore in contao. This bundle le
 
 Setup your project for encore bundle: 
 
-[Project setup](docs/setup_project.md)
+:arrow_right:	[Project setup](docs/setup_project.md)
 
-[Bundle setup](docs/setup_bundle.md)
+:arrow_right:	[Bundle setup](docs/setup_bundle.md)
 
 
 ### Run Encore

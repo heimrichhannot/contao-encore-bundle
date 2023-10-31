@@ -13,13 +13,6 @@ services:
     public: true
     autoconfigure: true
 
-  HeimrichHannot\EncoreBundle\Command\PrepareCommand:
-    public: false
-    tags:
-      - { name: 'console.command', command: 'huh:encore:prepare' }
-      - { name: 'console.command', command: 'encore:prepare' }
-
-
   huh.encore.asset.frontend:
     alias: HeimrichHannot\EncoreBundle\Asset\FrontendAsset
     public: true

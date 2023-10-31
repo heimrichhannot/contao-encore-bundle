@@ -9,6 +9,7 @@
 namespace HeimrichHannot\EncoreBundle\Command;
 
 use Composer\InstalledVersions;
+use Symfony\Component\Console\Attribute\AsCommand;
 use const DIRECTORY_SEPARATOR;
 use HeimrichHannot\EncoreBundle\Collection\ExtensionCollection;
 use Psr\Cache\CacheItemPoolInterface;
@@ -21,12 +22,15 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Twig\Environment;
 
+#[AsCommand(
+    name: 'huh:encore:prepare',
+    description: "Does the necessary preparation for contao encore bundle. Needs to be called after changes to bundle encore entries.",
+    aliases: ['encore:prepare'],
+    hidden: false
+)]
 class PrepareCommand extends Command
 {
     public const DEPENDENCY_PREFIX = '@huh/encore-bundle--';
-
-    protected static $defaultName = 'huh:encore:prepare';
-    protected static $defaultDescription = 'Does the necessary preparation for contao encore bundle. Needs to be called after changes to bundle encore entries.';
 
     private SymfonyStyle           $io;
 
@@ -45,8 +49,7 @@ class PrepareCommand extends Command
      */
     protected function configure()
     {
-        $this->setAliases(['encore:prepare'])
-            ->setDescription(static::$defaultDescription)
+        $this
             ->addOption('skip-entries', null, InputOption::VALUE_OPTIONAL, 'Add a comma separated list of entries to skip their generation.', false);
     }
 
