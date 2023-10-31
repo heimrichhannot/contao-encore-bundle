@@ -55,7 +55,7 @@ class EncoreEntriesSelectFieldListener
                         'exclude' => true,
                         'default' => true,
                         'inputType' => 'checkbox',
-                        'eval' => ['tl_class' => 'w50', 'groupStyle' => 'width: 65px'],
+                        'eval' => ['tl_class' => 'w50', 'groupStyle' => 'width: 70px;align-self: center;'],
                     ],
                 ],
                 $field['eval']['multiColumnEditor']['fields']

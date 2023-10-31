@@ -168,7 +168,7 @@ class PrepareCommand extends Command
         if (!empty($encoreJsEntries)) {
             $this->io->text(['', ' // Output encore_bundles.js', '']);
 
-            $content = $this->twig->render('@HeimrichHannotContaoEncore/encore_bundles.js.twig', [
+            $content = $this->twig->render('@HeimrichHannotEncore/encore_bundles.js.twig', [
                 'entries' => $encoreJsEntries,
                 'skipEntries' => $skipEntries,
             ]);

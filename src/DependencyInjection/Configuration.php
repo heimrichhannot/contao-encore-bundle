@@ -32,7 +32,7 @@ class Configuration implements ConfigurationInterface
                                         ->cannotBeEmpty()
                                     ->end()
                                     ->scalarNode('template')
-                                        ->info('Full references twig template path. Example: @HeimrichHannotContaoEncore/encore_css_imports.html.twig')
+                                        ->info('Full references twig template path. Example: @HeimrichHannotEncore/encore_css_imports.html.twig')
                                         ->isRequired()
                                         ->cannotBeEmpty()
                                     ->end()

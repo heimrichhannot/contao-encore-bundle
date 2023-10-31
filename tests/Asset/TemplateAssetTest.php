@@ -25,9 +25,9 @@ class TemplateAssetTest extends ContaoTestCase
             $parameters['bundleConfig'] = [
                 'templates' => [
                     'imports' => [
-                        ['name' => 'default_css', 'template' => '@HeimrichHannotContaoEncore/encore_css_imports.html.twig'],
-                        ['name' => 'default_js', 'template' => '@HeimrichHannotContaoEncore/encore_js_imports.html.twig'],
-                        ['name' => 'default_head_js', 'template' => '@HeimrichHannotContaoEncore/encore_head_js_imports.html.twig'],
+                        ['name' => 'default_css', 'template' => '@HeimrichHannotEncore/encore_css_imports.html.twig'],
+                        ['name' => 'default_js', 'template' => '@HeimrichHannotEncore/encore_js_imports.html.twig'],
+                        ['name' => 'default_head_js', 'template' => '@HeimrichHannotEncore/encore_head_js_imports.html.twig'],
                     ],
                 ],
             ];
