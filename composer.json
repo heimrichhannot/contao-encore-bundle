@@ -21,7 +21,7 @@
     "composer-runtime-api": "^2.0",
     "contao/core-bundle": "^4.13 || ^5.0",
     "heimrichhannot/contao-encore-contracts": "^1.0",
-    "heimrichhannot/contao-multi-column-editor-bundle": "^1.0 || ^2.0",
+    "heimrichhannot/contao-multi-column-editor-bundle": "^2.0",
     "heimrichhannot/contao-utils-bundle": "^2.231.0 || 3.0.0-beta",
     "symfony/cache": "^5.4 || ^6.0",
     "symfony/config": "^5.4 || ^6.0",
@@ -33,8 +33,7 @@
     "symfony/translation": "^5.4 || ^6.0",
     "symfony/translation-contracts": "^1.1.6 || ^2.0 || ^3.0",
     "symfony/webpack-encore-bundle": "^1.0 || ^2.0",
-    "twig/twig": "^1.38.3 || ^2.7 || ^3.0",
-    "webmozart/path-util": "^2.3"
+    "twig/twig": "^1.38.3 || ^2.7 || ^3.0"
   },
   "require-dev": {
     "contao/test-case": "^4.0",

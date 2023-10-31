@@ -22,6 +22,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class PageEntrypointsTest extends ContaoTestCase
 {
+    use ModelMockTrait;
+
     private ModelUtil|MockObject $containerUtilMock;
     private Utils|MockObject $utilsMock;
 
@@ -33,14 +35,8 @@ class PageEntrypointsTest extends ContaoTestCase
         $this->utilsMock->method('model')->willReturn($this->containerUtilMock);
     }
 
-    use ModelMockTrait;
-
-
-
     public function createTestInstance(array $parameter = [])
     {
-        $container = $parameter['container'] ?? $this->getContainerWithContaoConfiguration();
-
         if (isset($parameter['frontendAsset'])) {
             $frontendAsset = $parameter['frontendAsset'];
         } else {
@@ -74,7 +70,7 @@ class PageEntrypointsTest extends ContaoTestCase
             }
         }
 
-        return new PageEntrypoints($container, $frontendAsset, $entryCollection, $utils);
+        return new PageEntrypoints($frontendAsset, $entryCollection, $utils);
     }
 
     public function entryPointProvider()

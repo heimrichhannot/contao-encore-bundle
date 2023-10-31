@@ -10,13 +10,12 @@ namespace HeimrichHannot\EncoreBundle\DependencyInjection;
 
 use Composer\InstalledVersions;
 use HeimrichHannot\EncoreBundle\Exception\FeatureNotSupportedException;
-use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 use HeimrichHannot\EncoreContracts\EncoreExtensionInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Webmozart\PathUtil\Path;
 
 class EncoreExtension extends Extension implements PrependExtensionInterface
 {

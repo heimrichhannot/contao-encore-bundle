@@ -14,10 +14,10 @@ use Contao\LayoutModel;
 use Contao\PageModel;
 use HeimrichHannot\EncoreBundle\Event\EncoreEnabledEvent;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Webmozart\PathUtil\Path;
 
 class ConfigurationHelper
 {
