@@ -8,7 +8,6 @@
 
 namespace HeimrichHannot\EncoreBundle\Asset;
 
-use Contao\Database;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
@@ -16,7 +15,6 @@ use Exception;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 use HeimrichHannot\UtilsBundle\Util\Utils;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PageEntrypoints
 {
@@ -27,7 +25,6 @@ class PageEntrypoints
 
     protected $initialized = false;
 
-    private ContainerInterface $container;
     private FrontendAsset      $frontendAsset;
     private EntryCollection    $entryCollection;
     private Utils              $utils;
@@ -35,9 +32,8 @@ class PageEntrypoints
     /**
      * PageEntrypoints constructor.
      */
-    public function __construct(ContainerInterface $container, FrontendAsset $frontendAsset, EntryCollection $entryCollection, Utils $utils)
+    public function __construct(FrontendAsset $frontendAsset, EntryCollection $entryCollection, Utils $utils)
     {
-        $this->container = $container;
         $this->frontendAsset = $frontendAsset;
         $this->entryCollection = $entryCollection;
         $this->utils = $utils;
@@ -168,7 +164,7 @@ class PageEntrypoints
      */
     public function createInstance()
     {
-        return new self($this->container, $this->frontendAsset, $this->entryCollection, $this->utils);
+        return new self($this->frontendAsset, $this->entryCollection, $this->utils);
     }
 
     /**

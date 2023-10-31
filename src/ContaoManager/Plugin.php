@@ -13,7 +13,7 @@ use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
 use Contao\ManagerPlugin\Config\ConfigPluginInterface;
-use HeimrichHannot\EncoreBundle\HeimrichHannotContaoEncoreBundle;
+use HeimrichHannot\EncoreBundle\HeimrichHannotEncoreBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\WebpackEncoreBundle\WebpackEncoreBundle;
 
@@ -26,7 +26,7 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
     {
         return [
             BundleConfig::create(WebpackEncoreBundle::class),
-            BundleConfig::create(HeimrichHannotContaoEncoreBundle::class)->setLoadAfter([ContaoCoreBundle::class]),
+            BundleConfig::create(HeimrichHannotEncoreBundle::class)->setLoadAfter([ContaoCoreBundle::class]),
         ];
     }
 
@@ -35,7 +35,7 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
      */
     public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
     {
-        $loader->load('@HeimrichHannotContaoEncoreBundle/config/config.yml');
-        $loader->load('@HeimrichHannotContaoEncoreBundle/config/services.yml');
+        $loader->load('@HeimrichHannotEncoreBundle/config/config.yml');
+        $loader->load('@HeimrichHannotEncoreBundle/config/services.yml');
     }
 }
