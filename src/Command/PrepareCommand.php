@@ -29,21 +29,15 @@ class PrepareCommand extends Command
     protected static $defaultDescription = 'Does the necessary preparation for contao encore bundle. Needs to be called after changes to bundle encore entries.';
 
     private SymfonyStyle           $io;
-    private CacheItemPoolInterface $encoreCache;
-    private KernelInterface        $kernel;
-    private array                  $bundleConfig;
-    private Environment            $twig;
-    private ExtensionCollection    $extensionCollection;
 
-    public function __construct(CacheItemPoolInterface $encoreCache, KernelInterface $kernel, array $bundleConfig, Environment $twig, ExtensionCollection $extensionCollection)
-    {
+    public function __construct(
+        private CacheItemPoolInterface $encoreCache,
+        private KernelInterface $kernel,
+        private Environment $twig,
+        private ExtensionCollection $extensionCollection
+    ) {
         parent::__construct();
 
-        $this->encoreCache = $encoreCache;
-        $this->kernel = $kernel;
-        $this->bundleConfig = $bundleConfig;
-        $this->twig = $twig;
-        $this->extensionCollection = $extensionCollection;
     }
 
     /**

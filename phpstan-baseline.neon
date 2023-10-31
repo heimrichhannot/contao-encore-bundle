@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Offset 'fields' on array\\{\\} in isset\\(\\) does not exist\\.$#"
+			count: 2
+			path: tests/EventListener/DcaField/EncoreEntriesSelectFieldListenerTest.php

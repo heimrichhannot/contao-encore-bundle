@@ -1,8 +1,9 @@
 parameters:
-  level: 3
+  level: 4
   paths:
     - src
     - tests
+    - contao
   universalObjectCratesClasses:
     - Contao\LayoutModel
     - Contao\Model
@@ -10,3 +11,4 @@ parameters:
     - PHPUnit\Framework\MockObject\MockObject
 includes:
   - vendor/phpstan/phpstan-symfony/extension.neon
+  - phpstan-baseline.neon

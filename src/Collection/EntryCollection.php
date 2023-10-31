@@ -11,6 +11,7 @@ namespace HeimrichHannot\EncoreBundle\Collection;
 use Contao\LayoutModel;
 use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
 
 class EntryCollection
 {
@@ -86,13 +87,10 @@ class EntryCollection
         return $bundleConfigEntries;
     }
 
-    /**
-     * @throws NoEntrypointsException
-     */
     private function parseEntrypoints(string $entrypointsJson): array
     {
         $cached = null;
-        if ($this->cache && $this->useCache) {
+        if ($this->useCache) {
             // '_default' is the default cache key for single encore builds
             $cached = $this->cache->getItem('_default');
 
@@ -117,7 +115,7 @@ class EntryCollection
             throw new NoEntrypointsException(sprintf('There is no "entrypoints" key in "%s"', $entrypointsJson));
         }
 
-        if ($this->useCache && null !== $cached && !$cached->isHit()) {
+        if ($this->useCache) {
             $this->cache->save($cached->set($entriesData));
         }
 

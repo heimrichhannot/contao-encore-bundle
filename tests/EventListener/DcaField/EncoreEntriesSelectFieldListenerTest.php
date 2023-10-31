@@ -25,7 +25,6 @@ class EncoreEntriesSelectFieldListenerTest extends TestCase
 
     public function testDefault()
     {
-        /** @phpstan */
         $GLOBALS['TL_DCA']['tl_test'] = [];
         EncoreEntriesSelectField::register('tl_test');
         $instance = $this->createTestInstance();

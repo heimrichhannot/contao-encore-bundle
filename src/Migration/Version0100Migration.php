@@ -85,7 +85,7 @@ class Version0100Migration implements MigrationInterface
                 continue;
             }
 
-            if (!'root' === $page->type) {
+            if ('root' !== $page->type) {
                 $rootPage = PageModel::findByPk($page->rootId);
                 if (!$rootPage) {
                     continue;
