@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2024-02-19
+- Changed: utils bundle dependency version
+
 ## [2.0.0-beta2] - 2023-10-31
 - Fixed: command registration error
 

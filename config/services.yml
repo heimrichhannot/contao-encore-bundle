@@ -8,7 +8,7 @@ services:
       Psr\Cache\CacheItemPoolInterface: "@webpack_encore.cache"
 
   HeimrichHannot\EncoreBundle\:
-    resource: "../src/{Asset,Collection,Command,DataContainer,EventListener,Helper,Migration}/*"
+    resource: "../src/{Asset,Collection,Command,DataContainer,EventListener,Helper}/*"
     exclude: '../src/Asset/{EntrypointCollection.php}'
     public: true
     autoconfigure: true

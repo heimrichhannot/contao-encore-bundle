@@ -15,7 +15,7 @@ class ArrayHelper
      *
      * @param $array
      * @param $key
-     *
+     * @param bool $flipOrder
      * @return array
      */
     public static function arrayUniqueMultidimensional($array, $key, bool $flipOrder = false)

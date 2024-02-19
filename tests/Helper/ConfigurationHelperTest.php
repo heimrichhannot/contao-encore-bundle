@@ -236,12 +236,10 @@ class ConfigurationHelperTest extends ContaoTestCase
 
         $pageModelAdapter = $this->mockAdapter(['findByPk']);
         $pageModelAdapter->method('findByPk')->willReturnCallback(function ($id) {
-            switch ($id) {
-                case '3':
-                    return $this->mockClassWithProperties(PageModel::class, ['layoutId' => 3]);
-            }
-
-            return null;
+            return match ($id) {
+                '3' => $this->mockClassWithProperties(PageModel::class, ['layoutId' => 3]),
+                default => null,
+            };
         });
 
         $contaoFramework = $this->mockContaoFramework([

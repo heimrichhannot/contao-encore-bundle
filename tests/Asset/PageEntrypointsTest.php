@@ -363,7 +363,10 @@ class PageEntrypointsTest extends ContaoTestCase
      * @dataProvider entryPointOrderProvider
      *
      * @param $pageParents
-     *
+     * @param $bundleConfig
+     * @param $page
+     * @param $layout
+     * @param $result
      * @throws \Exception
      */
     public function testPageEntryOrder($pageParents, $bundleConfig, $page, $layout, $result)
