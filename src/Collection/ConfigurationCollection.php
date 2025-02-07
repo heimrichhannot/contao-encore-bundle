@@ -12,8 +12,9 @@ use HeimrichHannot\EncoreContracts\EncoreEntry;
 
 class ConfigurationCollection
 {
-    public function __construct(private readonly ExtensionCollection $extensionCollection)
-    {
+    public function __construct(
+        private readonly ExtensionCollection $extensionCollection,
+    ) {
     }
 
     /**
@@ -24,7 +25,8 @@ class ConfigurationCollection
      *
      * @param array{
      *     array?: bool
- *     } $options
+     *     } $options
+     *
      * @return array|EncoreEntry[]|array[]
      */
     public function getJsEntries(array $options = []): array

@@ -21,15 +21,18 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LayoutContainer
 {
-    /**
-     * LayoutContainer constructor.
-     */
-    public function __construct(protected array $bundleConfig, protected ContaoFramework $contaoFramework, private readonly RequestStack $requestStack, private readonly ScopeMatcher $scopeMatcher, private readonly EntryCollection $entryCollection, private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        protected array $bundleConfig,
+        protected ContaoFramework $contaoFramework,
+        private readonly RequestStack $requestStack,
+        private readonly ScopeMatcher $scopeMatcher,
+        private readonly EntryCollection $entryCollection,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
 
     #[AsCallback(table: 'tl_layout', target: 'config.onload')]
-    public function onLoadCallback(DataContainer $dc = null): void
+    public function onLoadCallback(?DataContainer $dc = null): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -45,13 +48,13 @@ class LayoutContainer
                 try {
                     $this->entryCollection->getEntries();
                 } catch (NoEntrypointsException $e) {
-                    $messageAdapter->addError('[Encore Bundle] '.$this->translator->trans('huh.encore.errors.noEntrypoints').' '.$e->getMessage());
+                    $messageAdapter->addError('[Encore Bundle] ' . $this->translator->trans('huh.encore.errors.noEntrypoints') . ' ' . $e->getMessage());
                 }
             }
         }
 
         if ($layout->addEncore && $layout->addJQuery && (!isset($this->bundleConfig['unset_jquery']) || true !== $this->bundleConfig['unset_jquery'])) {
-            $messageAdapter->addInfo(($GLOBALS['TL_LANG']['tl_layout']['INFO']['jquery_order_conflict'] ?: ''));
+            $messageAdapter->addInfo($GLOBALS['TL_LANG']['tl_layout']['INFO']['jquery_order_conflict'] ?: '');
         }
     }
 

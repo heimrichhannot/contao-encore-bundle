@@ -20,11 +20,14 @@ use HeimrichHannot\UtilsBundle\Util\Utils;
 #[AsHook('replaceDynamicScriptTags')]
 class ReplaceDynamicScriptTagsListener
 {
-    /**
-     * ReplaceDynamicScriptTagsListener constructor.
-     */
-    public function __construct(protected array $bundleConfig, private readonly ContaoFramework $contaoFramework, private readonly Utils $utils, protected TemplateAsset $templateAsset, protected ConfigurationHelper $configurationHelper, private readonly GlobalContaoAsset $globalContaoAsset)
-    {
+    public function __construct(
+        protected array $bundleConfig,
+        private readonly ContaoFramework $contaoFramework,
+        private readonly Utils $utils,
+        protected TemplateAsset $templateAsset,
+        protected ConfigurationHelper $configurationHelper,
+        private readonly GlobalContaoAsset $globalContaoAsset,
+    ) {
     }
 
     public function __invoke(string $buffer): string
@@ -41,7 +44,7 @@ class ReplaceDynamicScriptTagsListener
 
         $pageModel->loadDetails();
 
-        if (!($layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk(($pageModel->layoutId ?? $pageModel->layout)))) {
+        if (!($layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($pageModel->layoutId ?? $pageModel->layout))) {
             return $buffer;
         }
         /* @var LayoutModel|null $layout */
@@ -70,15 +73,15 @@ class ReplaceDynamicScriptTagsListener
 
         $nonce = '';
         if (method_exists(ContaoFramework::class, 'getNonce')) {
-            $nonce = '_'.ContaoFramework::getNonce();
+            $nonce = '_' . ContaoFramework::getNonce();
         }
 
         $replace = [];
-        $replace["[[TL_CSS$nonce]]"] = "[[TL_CSS$nonce]]".trim($templateAssets->linkTags());
+        $replace["[[TL_CSS$nonce]]"] = "[[TL_CSS$nonce]]" . trim($templateAssets->linkTags());
 
         // caution: always render head first because of global dependencies like jQuery
-        $replace["[[TL_HEAD$nonce]]"] = trim($templateAssets->headScriptTags())."[[TL_HEAD$nonce]]";
-        $replace["[[TL_BODY$nonce]]"] = trim($templateAssets->scriptTags())."[[TL_BODY$nonce]]";
+        $replace["[[TL_HEAD$nonce]]"] = trim($templateAssets->headScriptTags()) . "[[TL_HEAD$nonce]]";
+        $replace["[[TL_BODY$nonce]]"] = trim($templateAssets->scriptTags()) . "[[TL_BODY$nonce]]";
 
         return str_replace(array_keys($replace), $replace, $buffer);
     }

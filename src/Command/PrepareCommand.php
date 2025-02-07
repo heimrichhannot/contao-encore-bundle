@@ -9,10 +9,9 @@
 namespace HeimrichHannot\EncoreBundle\Command;
 
 use Composer\InstalledVersions;
-use Symfony\Component\Console\Attribute\AsCommand;
-use const DIRECTORY_SEPARATOR;
 use HeimrichHannot\EncoreBundle\Collection\ExtensionCollection;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,7 +23,7 @@ use Twig\Environment;
 
 #[AsCommand(
     name: 'huh:encore:prepare',
-    description: "Does the necessary preparation for contao encore bundle. Needs to be called after changes to bundle encore entries.",
+    description: 'Does the necessary preparation for contao encore bundle. Needs to be called after changes to bundle encore entries.',
     aliases: ['encore:prepare'],
     hidden: false
 )]
@@ -32,41 +31,34 @@ class PrepareCommand extends Command
 {
     public const DEPENDENCY_PREFIX = '@huh/encore-bundle--';
 
-    private SymfonyStyle           $io;
+    private SymfonyStyle $io;
 
     public function __construct(
         private readonly CacheItemPoolInterface $encoreCache,
         private readonly KernelInterface $kernel,
         private readonly Environment $twig,
-        private readonly ExtensionCollection $extensionCollection
+        private readonly ExtensionCollection $extensionCollection,
     ) {
         parent::__construct();
-
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure()
     {
         $this
             ->addOption('skip-entries', null, InputOption::VALUE_OPTIONAL, 'Add a comma separated list of entries to skip their generation.', false);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
 
         $this->io->title('Update project encore data');
 
-        $resultFile = $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.'encore.bundles.js';
+        $resultFile = $this->kernel->getProjectDir() . \DIRECTORY_SEPARATOR . 'encore.bundles.js';
 
         $skipEntries = $input->getOption('skip-entries') ? explode(',', (string) $input->getOption('skip-entries')) : [];
 
-        $this->io->writeln('Using <fg=green>'.$this->kernel->getEnvironment().'</> environment. (Use --env=[ENV] to change environment. See --help for more information!)');
+        $this->io->writeln('Using <fg=green>' . $this->kernel->getEnvironment() . '</> environment. (Use --env=[ENV] to change environment. See --help for more information!)');
 
         @unlink($resultFile);
 
@@ -86,44 +78,44 @@ class PrepareCommand extends Command
             $reflection = new \ReflectionClass($extension->getBundle());
             $bundle = $this->kernel->getBundles()[$reflection->getShortName()];
             $bundlePath = $bundle->getPath();
-            if (!file_exists($bundlePath.DIRECTORY_SEPARATOR.'composer.json')) {
-                $bundlePath = $bundlePath.DIRECTORY_SEPARATOR.'..';
+            if (!file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'composer.json')) {
+                $bundlePath = $bundlePath . \DIRECTORY_SEPARATOR . '..';
             }
-            if (!file_exists($bundlePath.DIRECTORY_SEPARATOR.'composer.json')) {
+            if (!file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'composer.json')) {
                 trigger_error(
-                    '[Encore Bundle] Could not find composer.json file for '.$bundle->getName().'.'
-                    .' Skipping EncoreExtension '.$extension::class.'.'
+                    '[Encore Bundle] Could not find composer.json file for ' . $bundle->getName() . '.'
+                    . ' Skipping EncoreExtension ' . $extension::class . '.'
                 );
                 continue;
             }
 
             try {
-                $composerData = json_decode(file_get_contents($bundlePath.'/composer.json'), null, 512, \JSON_THROW_ON_ERROR);
+                $composerData = json_decode(file_get_contents($bundlePath . '/composer.json'), null, 512, \JSON_THROW_ON_ERROR);
             } catch (\JsonException) {
-                throw new \JsonException('composer.json of '.$reflection->getShortName().' has a syntax error.');
+                throw new \JsonException('composer.json of ' . $reflection->getShortName() . ' has a syntax error.');
             }
 
             $bundlePath = InstalledVersions::getInstallPath($composerData->name);
 
-            $bundlePath = rtrim((new Filesystem())->makePathRelative($bundlePath, $this->kernel->getProjectDir()), DIRECTORY_SEPARATOR);
+            $bundlePath = rtrim((new Filesystem())->makePathRelative($bundlePath, $this->kernel->getProjectDir()), \DIRECTORY_SEPARATOR);
 
             $preparedEntry = [];
             foreach ($extension->getEntries() as $entry) {
                 $preparedEntry['name'] = $entry->getName();
-                $preparedEntry['file'] = '.'.DIRECTORY_SEPARATOR.$bundlePath.DIRECTORY_SEPARATOR.ltrim($entry->getPath(), DIRECTORY_SEPARATOR);
+                $preparedEntry['file'] = '.' . \DIRECTORY_SEPARATOR . $bundlePath . \DIRECTORY_SEPARATOR . ltrim($entry->getPath(), \DIRECTORY_SEPARATOR);
                 $encoreJsEntries[] = $preparedEntry;
             }
 
-            if (file_exists($bundlePath.DIRECTORY_SEPARATOR.'package.json')) {
-                $packageData = json_decode(file_get_contents($bundlePath.DIRECTORY_SEPARATOR.'package.json'), true);
-                $extensionDependencies = array_merge($extensionDependencies, ($packageData['dependencies'] ?? []));
+            if (file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'package.json')) {
+                $packageData = json_decode(file_get_contents($bundlePath . \DIRECTORY_SEPARATOR . 'package.json'), true);
+                $extensionDependencies = array_merge($extensionDependencies, $packageData['dependencies'] ?? []);
             }
 
             $extensionList[] = [$reflection->getShortName(), $extension::class, $bundlePath];
         }
 
         $this->io->newLine();
-        $this->io->writeln('Found <fg=green>'.\count($this->extensionCollection->getExtensions()).'</> registered encore extensions.');
+        $this->io->writeln('Found <fg=green>' . \count($this->extensionCollection->getExtensions()) . '</> registered encore extensions.');
 
         if ($this->io->isVerbose()) {
             $this->io->table(['Bundle', 'Extension', 'Bundle path'], $extensionList);
@@ -131,7 +123,7 @@ class PrepareCommand extends Command
 
         $this->io->text(['', ' // Update encore entry dependencies', '']);
 
-        $projectPackageJsonPath = $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.'package.json';
+        $projectPackageJsonPath = $this->kernel->getProjectDir() . \DIRECTORY_SEPARATOR . 'package.json';
         if (!file_exists($projectPackageJsonPath)) {
             throw new \Exception('No package.json could be found in your project. This file must be present for encore to work!');
         }
@@ -139,13 +131,13 @@ class PrepareCommand extends Command
         $this->io->writeln('Collect encore entry dependencies ');
         $encorePackageData = [
             'name' => '@hundh/encore-entry-dependencies',
-            'version' => date('Ymd').'.'.date('Hi').'.'.time(),
+            'version' => date('Ymd') . '.' . date('Hi') . '.' . time(),
             'dependencies' => $extensionDependencies,
         ];
-        $encoreAssetsPath = 'vendor'.DIRECTORY_SEPARATOR.'heimrichhannot'.DIRECTORY_SEPARATOR.'encore-entry-dependencies';
+        $encoreAssetsPath = 'vendor' . \DIRECTORY_SEPARATOR . 'heimrichhannot' . \DIRECTORY_SEPARATOR . 'encore-entry-dependencies';
 
         (new Filesystem())->dumpFile(
-            $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.$encoreAssetsPath.DIRECTORY_SEPARATOR.'package.json',
+            $this->kernel->getProjectDir() . \DIRECTORY_SEPARATOR . $encoreAssetsPath . \DIRECTORY_SEPARATOR . 'package.json',
             json_encode($encorePackageData, \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES)
         );
 
@@ -153,7 +145,9 @@ class PrepareCommand extends Command
         $packageData = json_decode(file_get_contents($projectPackageJsonPath), true, 512, \JSON_THROW_ON_ERROR);
 
         $packageData['dependencies'] = array_merge(
-            ['@hundh/encore-entry-dependencies' => 'file:.'.DIRECTORY_SEPARATOR.$encoreAssetsPath.DIRECTORY_SEPARATOR],
+            [
+                '@hundh/encore-entry-dependencies' => 'file:.' . \DIRECTORY_SEPARATOR . $encoreAssetsPath . \DIRECTORY_SEPARATOR,
+            ],
             $packageData['dependencies'] ?? []
         );
 

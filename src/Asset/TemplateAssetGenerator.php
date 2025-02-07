@@ -29,9 +29,6 @@ class TemplateAssetGenerator
      */
     protected $webDir;
 
-    /**
-     * TemplateAssetGenerator constructor.
-     */
     public function __construct(Environment $twig, array $bundleConfig, string $webDir)
     {
         $this->twig = $twig;
@@ -89,7 +86,7 @@ class TemplateAssetGenerator
         preg_match_all('@<link rel="stylesheet" href="([^"]+)">@i', $styleTags, $matches);
 
         if (!empty($matches[1])) {
-            $inlineCss = implode("\n", array_map(fn($path) => file_get_contents($this->webDir.preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path)), $matches[1]));
+            $inlineCss = implode("\n", array_map(fn ($path) => file_get_contents($this->webDir . preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path)), $matches[1]));
 
             return $inlineCss;
         }
@@ -110,9 +107,9 @@ class TemplateAssetGenerator
         try {
             return $this->twig->render($template, $templateData);
         } catch (RuntimeError $e) {
-            if (($previous = $e->getPrevious())) {
+            if ($previous = $e->getPrevious()) {
                 if ($previous instanceof EntrypointNotFoundException) {
-                    throw new EntrypointNotFoundException($previous->getMessage().' Maybe you forgot to run prepare or encore command?', $previous->getCode());
+                    throw new EntrypointNotFoundException($previous->getMessage() . ' Maybe you forgot to run prepare or encore command?', $previous->getCode());
                 }
             }
             throw $e;

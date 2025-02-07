@@ -13,11 +13,9 @@ use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 
 class EntrypointCollectionFactory
 {
-    /**
-     * EntrypointCollectionFactory constructor.
-     */
-    public function __construct(private readonly EntryCollection $entryCollection)
-    {
+    public function __construct(
+        private readonly EntryCollection $entryCollection,
+    ) {
     }
 
     public function createCollection(array $entrypoints): EntrypointCollection

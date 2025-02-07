@@ -39,9 +39,8 @@ class TemplateAsset
         private array $bundleConfig,
         private readonly string $webDir,
         private readonly Environment $twig,
-        private PageEntrypoints $pageEntrypoints
-    )
-    {
+        private PageEntrypoints $pageEntrypoints,
+    ) {
     }
 
     public function createInstance(PageModel $pageModel, LayoutModel $layoutModel, ?string $entriesField = null): self
@@ -95,9 +94,9 @@ class TemplateAsset
     /**
      * Return the css link tags that should be included in the header region.
      *
-     * @throws \Exception
-     *
      * @return string
+     *
+     * @throws \Exception
      */
     public function linkTags()
     {
@@ -107,9 +106,9 @@ class TemplateAsset
     /**
      * Return a link tag with inline css.
      *
-     * @throws \Exception
-     *
      * @return bool|string
+     *
+     * @throws \Exception
      */
     public function inlineCssLinkTag()
     {
@@ -118,7 +117,7 @@ class TemplateAsset
         preg_match_all('@<link rel="stylesheet" href="([^"]+)">@i', $styleTags, $matches);
 
         if (!empty($matches[1])) {
-            $inlineCss = implode("\n", array_map(fn($path) => file_get_contents($this->webDir.preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path)), $matches[1]));
+            $inlineCss = implode("\n", array_map(fn ($path) => file_get_contents($this->webDir . preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path)), $matches[1]));
 
             return $inlineCss;
         }
@@ -154,9 +153,9 @@ class TemplateAsset
                 $this->getItemTemplateByName($this->layout->{$layoutField} ?: $defaultTemplate), $this->templateData
             );
         } catch (RuntimeError $e) {
-            if (($previous = $e->getPrevious())) {
+            if ($previous = $e->getPrevious()) {
                 if ($previous instanceof EntrypointNotFoundException) {
-                    throw new EntrypointNotFoundException($previous->getMessage().' Maybe you forgot to run prepare or encore command?', $previous->getCode());
+                    throw new EntrypointNotFoundException($previous->getMessage() . ' Maybe you forgot to run prepare or encore command?', $previous->getCode());
                 }
             }
             throw $e;

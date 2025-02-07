@@ -15,8 +15,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EncoreEntryOptionListener
 {
-    public function __construct(private readonly EntryCollection $entryCollection, private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        private readonly EntryCollection $entryCollection,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
 
     public function getEntriesAsOptions(): array
@@ -27,7 +29,7 @@ class EncoreEntryOptionListener
             $projectEntries = $this->entryCollection->getEntries();
         } catch (NoEntrypointsException $e) {
             $projectEntries = [];
-            Message::addError('[Encore Bundle] '.$this->translator->trans('huh.encore.errors.noEntrypoints').' '.$e->getMessage(), 'huh.encore.error.noEntryPoints');
+            Message::addError('[Encore Bundle] ' . $this->translator->trans('huh.encore.errors.noEntrypoints') . ' ' . $e->getMessage(), 'huh.encore.error.noEntryPoints');
         }
 
         if (empty($projectEntries)) {
@@ -35,7 +37,7 @@ class EncoreEntryOptionListener
         }
 
         foreach ($projectEntries as $entry) {
-            $choices[$entry['name']] = $entry['name'].(isset($entry['file']) ? ' ['.$entry['file'].']' : '');
+            $choices[$entry['name']] = $entry['name'] . (isset($entry['file']) ? ' [' . $entry['file'] . ']' : '');
         }
 
         asort($choices);

@@ -14,8 +14,11 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class EncoreEnabledEvent extends Event
 {
-    public function __construct(private bool $enabled, private readonly Request $request, private readonly ?PageModel $pageModel)
-    {
+    public function __construct(
+        private bool $enabled,
+        private readonly Request $request,
+        private readonly ?PageModel $pageModel,
+    ) {
     }
 
     public function isEnabled(): bool

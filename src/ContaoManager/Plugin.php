@@ -19,9 +19,6 @@ use Symfony\WebpackEncoreBundle\WebpackEncoreBundle;
 
 class Plugin implements BundlePluginInterface, ConfigPluginInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getBundles(ParserInterface $parser): array
     {
         return [

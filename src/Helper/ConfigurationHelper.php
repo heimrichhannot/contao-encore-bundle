@@ -34,8 +34,13 @@ class ConfigurationHelper
      */
     protected $webDir;
 
-    public function __construct(RequestStack $requestStack, ParameterBagInterface $parameterBag, private readonly ScopeMatcher $scopeMatcher, private readonly ContaoFramework $contaoFramework, private readonly EventDispatcherInterface $eventDispatcher)
-    {
+    public function __construct(
+        RequestStack $requestStack,
+        ParameterBagInterface $parameterBag,
+        private readonly ScopeMatcher $scopeMatcher,
+        private readonly ContaoFramework $contaoFramework,
+        private readonly EventDispatcherInterface $eventDispatcher,
+    ) {
         $this->requestStack = $requestStack;
         $this->bundleConfig = $parameterBag->has('huh_encore') ? $parameterBag->get('huh_encore') : [];
         $this->webDir = $parameterBag->has('contao.web_dir') ? $parameterBag->get('contao.web_dir') : '';

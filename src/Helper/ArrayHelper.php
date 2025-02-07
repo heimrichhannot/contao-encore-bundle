@@ -13,9 +13,6 @@ class ArrayHelper
     /**
      * Remove duplicate values from multi-dimensional arrays based on a given key.
      *
-     * @param $array
-     * @param $key
-     * @param bool $flipOrder
      * @return array
      */
     public static function arrayUniqueMultidimensional($array, $key, bool $flipOrder = false)
@@ -47,6 +44,7 @@ class ArrayHelper
      *
      * @param string|int $key      The array key (field name)
      * @param array      $haystack a multidimensional array
+     *
      * @return array|false
      */
     public static function getArrayRowByFieldValue($key, mixed $value, array $haystack)

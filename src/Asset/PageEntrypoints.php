@@ -25,11 +25,11 @@ class PageEntrypoints
 
     protected $initialized = false;
 
-    /**
-     * PageEntrypoints constructor.
-     */
-    public function __construct(private readonly FrontendAsset $frontendAsset, private readonly EntryCollection $entryCollection, private readonly Utils $utils)
-    {
+    public function __construct(
+        private readonly FrontendAsset $frontendAsset,
+        private readonly EntryCollection $entryCollection,
+        private readonly Utils $utils,
+    ) {
     }
 
     public function generatePageEntrypoints(PageModel $page, LayoutModel $layout, ?string $encoreField = null): bool
@@ -94,7 +94,9 @@ class PageEntrypoints
 
         $activeEntrypoints = $this->frontendAsset->getActiveEntrypoints();
         array_walk($activeEntrypoints, function (&$value, $key) {
-            $value = ['entry' => $value];
+            $value = [
+                'entry' => $value,
+            ];
         });
         $pageEntrypointsList[] = $activeEntrypoints;
 
@@ -109,7 +111,7 @@ class PageEntrypoints
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function getJsEntries(): array
     {
@@ -119,7 +121,7 @@ class PageEntrypoints
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function getCssEntries(): array
     {
@@ -129,7 +131,7 @@ class PageEntrypoints
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function getJsHeadEntries(): array
     {
@@ -141,7 +143,7 @@ class PageEntrypoints
     /**
      * Return all active entrypoints.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function getActiveEntries(): array
     {
@@ -163,12 +165,12 @@ class PageEntrypoints
     /**
      * Check if initialized and throws exception, if not.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     protected function isInitalized(): void
     {
         if (!$this->initialized) {
-            throw new Exception('Page entrypoints are not initialized!');
+            throw new \Exception('Page entrypoints are not initialized!');
         }
     }
 }

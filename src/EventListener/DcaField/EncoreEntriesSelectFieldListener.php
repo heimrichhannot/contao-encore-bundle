@@ -11,7 +11,8 @@ class EncoreEntriesSelectFieldListener
 {
     public function __construct(
         protected TranslatorInterface $translator,
-    ) {}
+    ) {
+    }
 
     #[AsHook('loadDataContainer')]
     public function onLoadDataContainer(string $table): void
@@ -38,7 +39,13 @@ class EncoreEntriesSelectFieldListener
                             'filter' => true,
                             'inputType' => 'select',
                             'options_callback' => [EncoreEntryOptionListener::class, 'getEntriesAsOptions'],
-                            'eval' => ['tl_class' => 'w50', 'mandatory' => true, 'includeBlankOption' => true, 'groupStyle' => 'width: 710px', 'chosen' => true],
+                            'eval' => [
+                                'tl_class' => 'w50',
+                                'mandatory' => true,
+                                'includeBlankOption' => true,
+                                'groupStyle' => 'width: 710px',
+                                'chosen' => true,
+                            ],
                         ],
                     ],
                 ],
@@ -53,7 +60,10 @@ class EncoreEntriesSelectFieldListener
                         'exclude' => true,
                         'default' => true,
                         'inputType' => 'checkbox',
-                        'eval' => ['tl_class' => 'w50', 'groupStyle' => 'width: 70px;align-self: center;'],
+                        'eval' => [
+                            'tl_class' => 'w50',
+                            'groupStyle' => 'width: 70px;align-self: center;',
+                        ],
                     ],
                 ],
                 $field['eval']['multiColumnEditor']['fields']
@@ -66,8 +76,8 @@ class EncoreEntriesSelectFieldListener
     public function getLabel(string $field): array
     {
         return [
-            $this->translator->trans('huh.encore.fields.'.$field.'.name'),
-            $this->translator->trans('huh.encore.fields.'.$field.'.description'),
+            $this->translator->trans('huh.encore.fields.' . $field . '.name'),
+            $this->translator->trans('huh.encore.fields.' . $field . '.description'),
         ];
     }
 }
