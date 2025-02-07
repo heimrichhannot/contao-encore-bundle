@@ -28,16 +28,19 @@ class TemplateAsset
      * @var string|null
      */
     private $entriesField;
-    /**
-     * @var bool
-     */
-    private $initialized = false;
+
+    private bool $initialized = false;
     /**
      * @var array
      */
     private $templateData;
 
-    public function __construct(private array $bundleConfig, private readonly string $webDir, private readonly Environment $twig, private PageEntrypoints $pageEntrypoints)
+    public function __construct(
+        private array $bundleConfig,
+        private readonly string $webDir,
+        private readonly Environment $twig,
+        private PageEntrypoints $pageEntrypoints
+    )
     {
     }
 
@@ -114,7 +117,7 @@ class TemplateAsset
 
         preg_match_all('@<link rel="stylesheet" href="([^"]+)">@i', $styleTags, $matches);
 
-        if (isset($matches[1]) && !empty($matches[1])) {
+        if (!empty($matches[1])) {
             $inlineCss = implode("\n", array_map(fn($path) => file_get_contents($this->webDir.preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path)), $matches[1]));
 
             return $inlineCss;
