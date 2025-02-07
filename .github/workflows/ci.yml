@@ -9,8 +9,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [ 8.1, 8.2 ]
-        contao: [ 4.13.*, 5.2.* ]
+        php: [ 8.1, 8.2, 8.3, 8.4 ]
+        contao: [ 4.13.*, 5.3.*, 5.4.* ]
 
     steps:
       - name: Setup PHP
@@ -22,7 +22,7 @@ jobs:
           coverage: none
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install the dependencies
         id: composer-install
@@ -44,7 +44,7 @@ jobs:
           tools: php-cs-fixer, phpunit
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install the dependencies
         run: composer install --no-interaction
@@ -68,10 +68,32 @@ jobs:
           php-version: 8.2
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@4
 
       - name: Install the dependencies
         run: composer install --no-interaction
 
       - name: PHPStan
         run: vendor/bin/phpstan analyse -c phpstan.neon
+
+  ecs:
+    name: ECS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: dom, fileinfo, filter, gd, hash, intl, json, mbstring, mysqli, pcre, pdo_mysql, zlib
+          coverage: none
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Install the dependencies
+        run: composer install --no-interaction
+
+      - name: Run ECS
+        run: vendor/bin/ecs check --no-progress-bar

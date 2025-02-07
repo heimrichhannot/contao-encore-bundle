@@ -37,19 +37,28 @@ $fields = [
         'label' => &$GLOBALS['TL_LANG']['tl_layout']['addEncore'],
         'exclude' => true,
         'inputType' => 'checkbox',
-        'eval' => ['tl_class' => 'w50', 'submitOnChange' => true],
+        'eval' => [
+            'tl_class' => 'w50',
+            'submitOnChange' => true,
+        ],
         'sql' => "char(1) NOT NULL default ''",
     ],
     'encoreStylesheetsImportsTemplate' => [
         'exclude' => true,
         'inputType' => 'select',
-        'eval' => ['tl_class' => 'w50 clr', 'includeBlankOption' => true],
+        'eval' => [
+            'tl_class' => 'w50 clr',
+            'includeBlankOption' => true,
+        ],
         'sql' => "varchar(128) NOT NULL default ''",
     ],
     'encoreScriptsImportsTemplate' => [
         'exclude' => true,
         'inputType' => 'select',
-        'eval' => ['tl_class' => 'w50', 'includeBlankOption' => true],
+        'eval' => [
+            'tl_class' => 'w50',
+            'includeBlankOption' => true,
+        ],
         'sql' => "varchar(128) NOT NULL default ''",
     ],
 ];
