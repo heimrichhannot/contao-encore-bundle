@@ -13,13 +13,10 @@ use HeimrichHannot\EncoreContracts\EncoreEntry;
 
 class GlobalContaoAsset
 {
-    private array               $bundleConfig;
-    private ExtensionCollection $extensionCollection;
-
-    public function __construct(array $bundleConfig, ExtensionCollection $extensionCollection)
-    {
-        $this->bundleConfig = $bundleConfig;
-        $this->extensionCollection = $extensionCollection;
+    public function __construct(
+        private array $bundleConfig,
+        private readonly ExtensionCollection $extensionCollection,
+    ) {
     }
 
     public function cleanGlobalArrayFromConfiguration(): void

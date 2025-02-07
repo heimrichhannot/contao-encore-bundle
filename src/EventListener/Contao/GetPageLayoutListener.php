@@ -8,29 +8,22 @@
 
 namespace HeimrichHannot\EncoreBundle\EventListener\Contao;
 
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\PageRegular;
-use Symfony\WebpackEncoreBundle\Asset\EntrypointLookupCollection;
 use Symfony\WebpackEncoreBundle\Asset\EntrypointLookupCollectionInterface;
 
 class GetPageLayoutListener
 {
-    protected EntrypointLookupCollectionInterface $entrypointLookupCollection;
-    protected array                               $encoreBuildNames;
+    protected array $encoreBuildNames;
 
-    /**
-     * GetPageLayoutListener constructor.
-     */
-    public function __construct(EntrypointLookupCollectionInterface $entrypointLookupCollection)
-    {
-        $this->entrypointLookupCollection = $entrypointLookupCollection;
+    public function __construct(
+        protected EntrypointLookupCollectionInterface $entrypointLookupCollection,
+    ) {
     }
 
-    /**
-     * @Hook("getPageLayout")
-     */
+    #[AsHook('getPageLayout')]
     public function __invoke(PageModel $pageModel, LayoutModel $layout, PageRegular $pageRegular): void
     {
         if ('error_404' === $pageModel->type) {

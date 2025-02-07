@@ -16,9 +16,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class HeimrichHannotEncoreBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getContainerExtension(): ?ExtensionInterface
     {
         return new EncoreExtension();
@@ -35,6 +32,4 @@ class HeimrichHannotEncoreBundle extends Bundle
     {
         return \dirname(__DIR__);
     }
-
-
 }

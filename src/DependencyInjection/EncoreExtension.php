@@ -30,10 +30,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
         return 'huh_encore';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         // Load current configuration of the webpack encore bundle
         $configs = $container->getExtensionConfig('webpack_encore');
@@ -52,14 +49,14 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
                 if (\is_string($projectDir = $container->getParameter('kernel.project_dir'))) {
                     $publicPath = $this->getComposerPublicDir($projectDir);
                     if (null !== $publicPath) {
-                        $outputPath = $publicPath.\DIRECTORY_SEPARATOR.'build';
+                        $outputPath = $publicPath . \DIRECTORY_SEPARATOR . 'build';
                     }
                 }
                 $container->prependExtensionConfig('webpack_encore', [
                     'output_path' => $outputPath,
                 ]);
             }
-            $this->entrypointsJsons[] = $outputPath.'/entrypoints.json';
+            $this->entrypointsJsons[] = $outputPath . '/entrypoints.json';
             $this->outputPath = $outputPath;
         } else {
             // TODO: multiple builds are not supported yet
@@ -67,10 +64,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $processedConfig = $this->processConfiguration($configuration, $configs);

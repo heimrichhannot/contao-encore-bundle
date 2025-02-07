@@ -8,7 +8,6 @@
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
-use HeimrichHannot\EncoreBundle\EventListener\Callback\EncoreEntryOptionListener;
 
 $dca = &$GLOBALS['TL_DCA']['tl_page'];
 

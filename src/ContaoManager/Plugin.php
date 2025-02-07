@@ -19,9 +19,6 @@ use Symfony\WebpackEncoreBundle\WebpackEncoreBundle;
 
 class Plugin implements BundlePluginInterface, ConfigPluginInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getBundles(ParserInterface $parser): array
     {
         return [
@@ -33,7 +30,7 @@ class Plugin implements BundlePluginInterface, ConfigPluginInterface
     /**
      * Allows a plugin to load container configuration.
      */
-    public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig)
+    public function registerContainerConfiguration(LoaderInterface $loader, array $managerConfig): void
     {
         $loader->load('@HeimrichHannotEncoreBundle/config/config.yml');
         $loader->load('@HeimrichHannotEncoreBundle/config/services.yml');

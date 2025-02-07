@@ -17,17 +17,9 @@ use Twig\Error\RuntimeError;
 class TemplateAsset
 {
     /**
-     * @var Environment
-     */
-    private $twig;
-    /**
      * @var LayoutModel
      */
     private $layout;
-    /**
-     * @var PageEntrypoints
-     */
-    private $pageEntrypoints;
     /**
      * @var PageModel
      */
@@ -36,29 +28,19 @@ class TemplateAsset
      * @var string|null
      */
     private $entriesField;
-    /**
-     * @var bool
-     */
-    private $initialized = false;
+
+    private bool $initialized = false;
     /**
      * @var array
      */
     private $templateData;
-    /**
-     * @var array
-     */
-    private $bundleConfig;
-    /**
-     * @var string
-     */
-    private $webDir;
 
-    public function __construct(array $bundleConfig, string $webDir, Environment $twig, PageEntrypoints $pageEntrypoints)
-    {
-        $this->twig = $twig;
-        $this->pageEntrypoints = $pageEntrypoints;
-        $this->bundleConfig = $bundleConfig;
-        $this->webDir = $webDir;
+    public function __construct(
+        private array $bundleConfig,
+        private readonly string $webDir,
+        private readonly Environment $twig,
+        private PageEntrypoints $pageEntrypoints,
+    ) {
     }
 
     public function createInstance(PageModel $pageModel, LayoutModel $layoutModel, ?string $entriesField = null): self
@@ -69,7 +51,7 @@ class TemplateAsset
         return $instance;
     }
 
-    public function initialize(PageModel $pageModel, LayoutModel $layoutModel, ?string $entriesField = null)
+    public function initialize(PageModel $pageModel, LayoutModel $layoutModel, ?string $entriesField = null): void
     {
         $this->page = $pageModel;
         $this->layout = $layoutModel;
@@ -112,9 +94,9 @@ class TemplateAsset
     /**
      * Return the css link tags that should be included in the header region.
      *
-     * @throws \Exception
-     *
      * @return string
+     *
+     * @throws \Exception
      */
     public function linkTags()
     {
@@ -124,9 +106,9 @@ class TemplateAsset
     /**
      * Return a link tag with inline css.
      *
-     * @throws \Exception
-     *
      * @return bool|string
+     *
+     * @throws \Exception
      */
     public function inlineCssLinkTag()
     {
@@ -134,10 +116,8 @@ class TemplateAsset
 
         preg_match_all('@<link rel="stylesheet" href="([^"]+)">@i', $styleTags, $matches);
 
-        if (isset($matches[1]) && !empty($matches[1])) {
-            $inlineCss = implode("\n", array_map(function ($path) {
-                return file_get_contents($this->webDir.preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path));
-            }, $matches[1]));
+        if (!empty($matches[1])) {
+            $inlineCss = implode("\n", array_map(fn ($path) => file_get_contents($this->webDir . preg_replace('@<link rel="stylesheet" href="([^"]+)">@i', '$1', $path)), $matches[1]));
 
             return $inlineCss;
         }
@@ -173,9 +153,9 @@ class TemplateAsset
                 $this->getItemTemplateByName($this->layout->{$layoutField} ?: $defaultTemplate), $this->templateData
             );
         } catch (RuntimeError $e) {
-            if (($previous = $e->getPrevious())) {
+            if ($previous = $e->getPrevious()) {
                 if ($previous instanceof EntrypointNotFoundException) {
-                    throw new EntrypointNotFoundException($previous->getMessage().' Maybe you forgot to run prepare or encore command?', $previous->getCode());
+                    throw new EntrypointNotFoundException($previous->getMessage() . ' Maybe you forgot to run prepare or encore command?', $previous->getCode());
                 }
             }
             throw $e;

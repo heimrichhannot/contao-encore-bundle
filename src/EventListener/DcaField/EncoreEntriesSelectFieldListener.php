@@ -2,7 +2,7 @@
 
 namespace HeimrichHannot\EncoreBundle\EventListener\DcaField;
 
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
 use HeimrichHannot\EncoreBundle\EventListener\Callback\EncoreEntryOptionListener;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -11,11 +11,10 @@ class EncoreEntriesSelectFieldListener
 {
     public function __construct(
         protected TranslatorInterface $translator,
-    ) {}
+    ) {
+    }
 
-    /**
-     * @Hook("loadDataContainer")
-     */
+    #[AsHook('loadDataContainer')]
     public function onLoadDataContainer(string $table): void
     {
         if (!isset(EncoreEntriesSelectField::getRegistrations()[$table])) {
@@ -40,7 +39,13 @@ class EncoreEntriesSelectFieldListener
                             'filter' => true,
                             'inputType' => 'select',
                             'options_callback' => [EncoreEntryOptionListener::class, 'getEntriesAsOptions'],
-                            'eval' => ['tl_class' => 'w50', 'mandatory' => true, 'includeBlankOption' => true, 'groupStyle' => 'width: 710px', 'chosen' => true],
+                            'eval' => [
+                                'tl_class' => 'w50',
+                                'mandatory' => true,
+                                'includeBlankOption' => true,
+                                'groupStyle' => 'width: 710px',
+                                'chosen' => true,
+                            ],
                         ],
                     ],
                 ],
@@ -55,7 +60,10 @@ class EncoreEntriesSelectFieldListener
                         'exclude' => true,
                         'default' => true,
                         'inputType' => 'checkbox',
-                        'eval' => ['tl_class' => 'w50', 'groupStyle' => 'width: 70px;align-self: center;'],
+                        'eval' => [
+                            'tl_class' => 'w50',
+                            'groupStyle' => 'width: 70px;align-self: center;',
+                        ],
                     ],
                 ],
                 $field['eval']['multiColumnEditor']['fields']
@@ -68,8 +76,8 @@ class EncoreEntriesSelectFieldListener
     public function getLabel(string $field): array
     {
         return [
-            $this->translator->trans('huh.encore.fields.'.$field.'.name'),
-            $this->translator->trans('huh.encore.fields.'.$field.'.description'),
+            $this->translator->trans('huh.encore.fields.' . $field . '.name'),
+            $this->translator->trans('huh.encore.fields.' . $field . '.description'),
         ];
     }
 }

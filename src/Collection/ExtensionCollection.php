@@ -12,7 +12,9 @@ use HeimrichHannot\EncoreContracts\EncoreExtensionInterface;
 
 class ExtensionCollection
 {
-    /** @var array|EncoreExtensionInterface[] */
+    /**
+     * @var array|EncoreExtensionInterface[]
+     */
     protected array $extensions = [];
 
     /**
