@@ -68,7 +68,7 @@ jobs:
           php-version: 8.2
 
       - name: Checkout
-        uses: actions/checkout@4
+        uses: actions/checkout@v4
 
       - name: Install the dependencies
         run: composer install --no-interaction
