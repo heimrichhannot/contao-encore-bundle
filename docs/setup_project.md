@@ -39,7 +39,7 @@ This is a working webpack config with SCSS/SASS file compilation.
 First add following additional yarn dependencies to your project:
 
 ```
-yarn add postcss-loader sass-loader@^13.0.0 sass --dev
+yarn add postcss-loader sass-loader sass --dev
 ```
 
 Update/ add your `webpack.config.js` file accordingly:
@@ -51,6 +51,10 @@ Update/ add your `webpack.config.js` file accordingly:
      encoreBundles = require('./encore.bundles');
  
  Encore
+     // project entries
+     // .addEntry('app', './resources/js/app.js')
+         
+     //build config
      .setOutputPath('public/build/')
      .setPublicPath('/build')
      .cleanupOutputBeforeBuild()
