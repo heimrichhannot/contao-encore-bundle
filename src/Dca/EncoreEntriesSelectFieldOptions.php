@@ -4,16 +4,14 @@ namespace HeimrichHannot\EncoreBundle\Dca;
 
 class EncoreEntriesSelectFieldOptions
 {
-    protected string $table;
     protected string $fieldName = 'encoreEntries';
     protected bool   $includeActiveCheckbox = false;
     protected ?array $fieldLabel = null;
     protected ?array $selectLabel = null;
     protected ?array $checkboxLabel = null;
 
-    public function __construct(string $table)
+    public function __construct(protected string $table)
     {
-        $this->table = $table;
     }
 
     public function getTable(): string

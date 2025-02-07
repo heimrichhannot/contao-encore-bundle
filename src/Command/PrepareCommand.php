@@ -35,10 +35,10 @@ class PrepareCommand extends Command
     private SymfonyStyle           $io;
 
     public function __construct(
-        private CacheItemPoolInterface $encoreCache,
-        private KernelInterface $kernel,
-        private Environment $twig,
-        private ExtensionCollection $extensionCollection
+        private readonly CacheItemPoolInterface $encoreCache,
+        private readonly KernelInterface $kernel,
+        private readonly Environment $twig,
+        private readonly ExtensionCollection $extensionCollection
     ) {
         parent::__construct();
 
@@ -56,7 +56,7 @@ class PrepareCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
 
@@ -64,7 +64,7 @@ class PrepareCommand extends Command
 
         $resultFile = $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.'encore.bundles.js';
 
-        $skipEntries = $input->getOption('skip-entries') ? explode(',', $input->getOption('skip-entries')) : [];
+        $skipEntries = $input->getOption('skip-entries') ? explode(',', (string) $input->getOption('skip-entries')) : [];
 
         $this->io->writeln('Using <fg=green>'.$this->kernel->getEnvironment().'</> environment. (Use --env=[ENV] to change environment. See --help for more information!)');
 
@@ -92,14 +92,14 @@ class PrepareCommand extends Command
             if (!file_exists($bundlePath.DIRECTORY_SEPARATOR.'composer.json')) {
                 trigger_error(
                     '[Encore Bundle] Could not find composer.json file for '.$bundle->getName().'.'
-                    .' Skipping EncoreExtension '.\get_class($extension).'.'
+                    .' Skipping EncoreExtension '.$extension::class.'.'
                 );
                 continue;
             }
 
             try {
                 $composerData = json_decode(file_get_contents($bundlePath.'/composer.json'), null, 512, \JSON_THROW_ON_ERROR);
-            } catch (\JsonException $e) {
+            } catch (\JsonException) {
                 throw new \JsonException('composer.json of '.$reflection->getShortName().' has a syntax error.');
             }
 
@@ -119,7 +119,7 @@ class PrepareCommand extends Command
                 $extensionDependencies = array_merge($extensionDependencies, ($packageData['dependencies'] ?? []));
             }
 
-            $extensionList[] = [$reflection->getShortName(), \get_class($extension), $bundlePath];
+            $extensionList[] = [$reflection->getShortName(), $extension::class, $bundlePath];
         }
 
         $this->io->newLine();
@@ -186,6 +186,6 @@ class PrepareCommand extends Command
             '',
         ]);
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

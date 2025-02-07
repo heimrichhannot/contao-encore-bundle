@@ -15,13 +15,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EncoreEntryOptionListener
 {
-    private EntryCollection     $entryCollection;
-    private TranslatorInterface $translator;
-
-    public function __construct(EntryCollection $entryCollection, TranslatorInterface $translator)
+    public function __construct(private readonly EntryCollection $entryCollection, private readonly TranslatorInterface $translator)
     {
-        $this->entryCollection = $entryCollection;
-        $this->translator = $translator;
     }
 
     public function getEntriesAsOptions(): array

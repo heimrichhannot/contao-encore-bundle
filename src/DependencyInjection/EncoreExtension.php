@@ -33,7 +33,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         // Load current configuration of the webpack encore bundle
         $configs = $container->getExtensionConfig('webpack_encore');
@@ -70,7 +70,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $processedConfig = $this->processConfiguration($configuration, $configs);

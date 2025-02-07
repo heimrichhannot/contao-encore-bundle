@@ -18,7 +18,7 @@ class FrontendAsset
     /**
      * Add an active entrypoint.
      */
-    public function addActiveEntrypoint(string $entrypoint)
+    public function addActiveEntrypoint(string $entrypoint): void
     {
         $this->activeEntrypoints[] = $entrypoint;
     }

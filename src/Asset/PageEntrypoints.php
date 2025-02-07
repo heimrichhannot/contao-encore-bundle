@@ -25,18 +25,11 @@ class PageEntrypoints
 
     protected $initialized = false;
 
-    private FrontendAsset      $frontendAsset;
-    private EntryCollection    $entryCollection;
-    private Utils              $utils;
-
     /**
      * PageEntrypoints constructor.
      */
-    public function __construct(FrontendAsset $frontendAsset, EntryCollection $entryCollection, Utils $utils)
+    public function __construct(private readonly FrontendAsset $frontendAsset, private readonly EntryCollection $entryCollection, private readonly Utils $utils)
     {
-        $this->frontendAsset = $frontendAsset;
-        $this->entryCollection = $entryCollection;
-        $this->utils = $utils;
     }
 
     public function generatePageEntrypoints(PageModel $page, LayoutModel $layout, ?string $encoreField = null): bool

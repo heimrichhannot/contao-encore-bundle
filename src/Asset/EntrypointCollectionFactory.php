@@ -13,14 +13,11 @@ use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 
 class EntrypointCollectionFactory
 {
-    private EntryCollection $entryCollection;
-
     /**
      * EntrypointCollectionFactory constructor.
      */
-    public function __construct(EntryCollection $entryCollection)
+    public function __construct(private readonly EntryCollection $entryCollection)
     {
-        $this->entryCollection = $entryCollection;
     }
 
     public function createCollection(array $entrypoints): EntrypointCollection

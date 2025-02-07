@@ -13,21 +13,22 @@ use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRect
 return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/src',
+        __DIR__ . '/contao',
     ])
     ->withRules([
         AddVoidReturnTypeWhereNoReturnRector::class,
         # In Vorbereitung für PHP 8.4:
-        // ExplicitNullableParamTypeRector::class
+         ExplicitNullableParamTypeRector::class
     ])
 
     ->withImportNames(importShortClasses: false, removeUnusedImports: true)
     ->withSets([
-        LevelSetList::UP_TO_PHP_74,
-        SymfonySetList::SYMFONY_44,
+        LevelSetList::UP_TO_PHP_81,
+        SymfonySetList::SYMFONY_54,
         SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION,
         # Erst mit Symfony 6 (Contao 5) nutzen:
         // SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES,
-        ContaoLevelSetList::UP_TO_CONTAO_49,
+        ContaoLevelSetList::UP_TO_CONTAO_413,
         ContaoSetList::FQCN,
         ContaoSetList::ANNOTATIONS_TO_ATTRIBUTES,
     ]);

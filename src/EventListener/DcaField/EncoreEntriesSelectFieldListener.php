@@ -2,7 +2,7 @@
 
 namespace HeimrichHannot\EncoreBundle\EventListener\DcaField;
 
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
 use HeimrichHannot\EncoreBundle\EventListener\Callback\EncoreEntryOptionListener;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -13,9 +13,7 @@ class EncoreEntriesSelectFieldListener
         protected TranslatorInterface $translator,
     ) {}
 
-    /**
-     * @Hook("loadDataContainer")
-     */
+    #[AsHook('loadDataContainer')]
     public function onLoadDataContainer(string $table): void
     {
         if (!isset(EncoreEntriesSelectField::getRegistrations()[$table])) {

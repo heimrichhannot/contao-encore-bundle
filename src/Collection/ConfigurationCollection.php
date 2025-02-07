@@ -12,11 +12,8 @@ use HeimrichHannot\EncoreContracts\EncoreEntry;
 
 class ConfigurationCollection
 {
-    private ExtensionCollection $extensionCollection;
-
-    public function __construct(ExtensionCollection $extensionCollection)
+    public function __construct(private readonly ExtensionCollection $extensionCollection)
     {
-        $this->extensionCollection = $extensionCollection;
     }
 
     /**

@@ -11,25 +11,17 @@ namespace HeimrichHannot\EncoreBundle\Collection;
 use Contao\LayoutModel;
 use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\Cache\InvalidArgumentException;
 
 class EntryCollection
 {
-    private ConfigurationCollection $configurationCollection;
-    private array                   $bundleConfig;
     private bool                    $useCache = false;
     private array                   $entries;
-    private CacheItemPoolInterface $cache;
 
-    public function __construct(ConfigurationCollection $configurationCollection, array $bundleConfig, CacheItemPoolInterface $cache)
+    public function __construct(private readonly ConfigurationCollection $configurationCollection, private array $bundleConfig, private readonly CacheItemPoolInterface $cache)
     {
-        $this->configurationCollection = $configurationCollection;
-        $this->bundleConfig = $bundleConfig;
-
-        if ($bundleConfig['encore_cache_enabled'] ?? false) {
+        if ($this->bundleConfig['encore_cache_enabled'] ?? false) {
             $this->useCache = true;
         }
-        $this->cache = $cache;
     }
 
     /**

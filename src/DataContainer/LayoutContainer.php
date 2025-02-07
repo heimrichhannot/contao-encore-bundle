@@ -8,9 +8,9 @@
 
 namespace HeimrichHannot\EncoreBundle\DataContainer;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
-use Contao\CoreBundle\ServiceAnnotation\Callback;
 use Contao\DataContainer;
 use Contao\LayoutModel;
 use Contao\Message;
@@ -21,29 +21,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LayoutContainer
 {
-    protected array             $bundleConfig;
-    protected ContaoFramework   $contaoFramework;
-    private RequestStack        $requestStack;
-    private ScopeMatcher        $scopeMatcher;
-    private EntryCollection     $entryCollection;
-    private TranslatorInterface $translator;
-
     /**
      * LayoutContainer constructor.
      */
-    public function __construct(array $bundleConfig, ContaoFramework $contaoFramework, RequestStack $requestStack, ScopeMatcher $scopeMatcher, EntryCollection $entryCollection, TranslatorInterface $translator)
+    public function __construct(protected array $bundleConfig, protected ContaoFramework $contaoFramework, private readonly RequestStack $requestStack, private readonly ScopeMatcher $scopeMatcher, private readonly EntryCollection $entryCollection, private readonly TranslatorInterface $translator)
     {
-        $this->bundleConfig = $bundleConfig;
-        $this->contaoFramework = $contaoFramework;
-        $this->requestStack = $requestStack;
-        $this->scopeMatcher = $scopeMatcher;
-        $this->entryCollection = $entryCollection;
-        $this->translator = $translator;
     }
 
-    /**
-     * @Callback(table="tl_layout", target="config.onload")
-     */
+    #[AsCallback(table: 'tl_layout', target: 'config.onload')]
     public function onLoadCallback(DataContainer $dc = null): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -70,10 +55,8 @@ class LayoutContainer
         }
     }
 
-    /**
-     * @Callback(table="tl_layout", target="fields.encoreStylesheetsImportsTemplate.options")
-     * @Callback(table="tl_layout", target="fields.encoreScriptsImportsTemplate.options")
-     */
+    #[AsCallback(table: 'tl_layout', target: 'fields.encoreStylesheetsImportsTemplate.options')]
+    #[AsCallback(table: 'tl_layout', target: 'fields.encoreScriptsImportsTemplate.options')]
     public function onImportTemplateOptionsCallback(): array
     {
         $options = [];

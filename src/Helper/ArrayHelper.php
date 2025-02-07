@@ -46,12 +46,10 @@ class ArrayHelper
      * Returns a row of a multidimensional array by field value. Returns false, if no row found.
      *
      * @param string|int $key      The array key (field name)
-     * @param mixed      $value
      * @param array      $haystack a multidimensional array
-     *
      * @return array|false
      */
-    public static function getArrayRowByFieldValue($key, $value, array $haystack)
+    public static function getArrayRowByFieldValue($key, mixed $value, array $haystack)
     {
         foreach ($haystack as $row) {
             if (!\is_array($row)) {
