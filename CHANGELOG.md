@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2025-02-07
+- Changed: allow symfony 7 for better compatibility with contao 5.3 and 5.4
+- Changed: some enhancements to code quality
+
 ## [2.0.0] - 2024-02-19
 - Changed: utils bundle dependency version
 
