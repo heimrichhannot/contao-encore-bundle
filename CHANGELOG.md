@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2026-03-30
+- Fixed: compatibility issue with symfony 7
+
 ## [2.1.0] - 2025-02-07
 - Changed: allow symfony 7 for better compatibility with contao 5.3 and 5.4
 - Changed: some enhancements to code quality
