@@ -6,6 +6,7 @@ use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
+use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 
@@ -15,10 +16,12 @@ class EntrypointsBuilder
     private string $pageField = '';
     private ?LayoutModel $layout = null;
     private string $layoutField = '';
+    private array $available = [];
 
     public function __construct(
         private readonly Utils $utils,
         private readonly FrontendAsset $frontendAsset,
+        private readonly EntryCollection $entryCollection,
     ) {}
 
     public function setPage(PageModel $page, string $field = EncoreEntriesSelectField::NAME_DEFAULT): self
@@ -38,9 +41,15 @@ class EntrypointsBuilder
     public function build(): Entrypoints
     {
         $entrypoints = new Entrypoints();
+        $available = $this->entryCollection->getEntries();
+        $available = array_combine(array_column($available, 'name'), $available);
+        $this->available = $available;
 
         foreach ($this->frontendAsset->getActiveEntrypoints() as $entrypoint) {
-            $entrypoints->add(Entrypoint::fromString($entrypoint));
+            $this->addEntrypoint(
+                entrypoints: $entrypoints,
+                name: $entrypoint,
+            );
         }
 
         if ($this->pageModel && !$this->layout) {
@@ -53,7 +62,11 @@ class EntrypointsBuilder
 
         if ($this->layout) {
             foreach (StringUtil::deserialize($this->layout->{$this->layoutField}, true) as $entrypoint) {
-                $entrypoints->add(Entrypoint::fromArray($entrypoint));
+                $this->addEntrypoint(
+                    entrypoints: $entrypoints,
+                    name: $entrypoint['name'] ?? '',
+                    active: (bool)($entrypoint['active'] ?? true)
+                );
             }
         }
 
@@ -63,14 +76,28 @@ class EntrypointsBuilder
 
             foreach ($pages as $page) {
                 foreach (StringUtil::deserialize($page->{$this->pageField}, true) as $entrypoint) {
-                    if (!isset($entrypoint['name'])) {
-                        continue;
-                    }
-                    $entrypoints->add(Entrypoint::fromArray($entrypoint));
+                    $this->addEntrypoint(
+                        entrypoints: $entrypoints,
+                        name: $entrypoint['name'] ?? '',
+                        active: (bool)($entrypoint['active'] ?? true)
+                    );
                 }
             }
         }
 
         return $entrypoints;
+    }
+
+    private function addEntrypoint(Entrypoints $entrypoints, string $name, bool $active = true): void
+    {
+        if ('' === $name) {
+            return;
+        }
+
+        if (!isset($this->available[$name])) {
+            return;
+        }
+
+        $entrypoints->add(Entrypoint::fromArray($this->available[$name], $active));
     }
 }

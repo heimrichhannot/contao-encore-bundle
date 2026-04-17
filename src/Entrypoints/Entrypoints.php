@@ -4,8 +4,14 @@ namespace HeimrichHannot\EncoreBundle\Entrypoints;
 
 class Entrypoints
 {
+    /**
+     * @var Entrypoint[]
+     */
     private array $entrypoints = [];
-    private array $active;
+    /**
+     * @var Entrypoint[]
+     */
+    private array $active = [];
 
     public function add(Entrypoint $entrypoint)
     {
@@ -17,11 +23,17 @@ class Entrypoints
         }
     }
 
+    /**
+     * @return Entrypoint[]
+     */
     public function all(): array
     {
         return $this->entrypoints;
     }
 
+    /**
+     * @return Entrypoint[]
+     */
     public function allActive(): array
     {
         return $this->active;

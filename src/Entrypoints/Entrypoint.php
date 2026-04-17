@@ -11,18 +11,13 @@ class Entrypoint
         public readonly bool   $requiresCss = false,
     ) {}
 
-    public static function fromArray(array $config): Entrypoint
+    public static function fromArray(array $config, bool $active = true): Entrypoint
     {
         return new self(
             name: $config['name'],
-            active: (bool)$config['active'] ?? true,
+            active: $active,
             head: (bool)$config['head'] ?? true,
             requiresCss: (bool)$config['requiresCss'] ?? true,
         );
-    }
-
-    public static function fromString(string $name): Entrypoint
-    {
-        return new self(name: $name);
     }
 }
