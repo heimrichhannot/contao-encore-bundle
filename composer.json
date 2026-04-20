@@ -27,6 +27,7 @@
     "symfony/config": "^5.4 || ^6.0 || ^7.0",
     "symfony/console": "^5.4 || ^6.0 || ^7.0",
     "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.0",
+    "symfony/deprecation-contracts": "^1.0 || ^2.0 || ^3.0",
     "symfony/filesystem": "^5.4 || ^6.0 || ^7.0",
     "symfony/http-foundation": "^5.4 || ^6.0 || ^7.0",
     "symfony/http-kernel": "^5.4 || ^6.0 || ^7.0",
@@ -36,15 +37,16 @@
     "twig/twig": "^1.38.3 || ^2.7 || ^3.0"
   },
   "require-dev": {
-    "contao/test-case": "^4.0 || ^5.0",
+    "contao/core-bundle": "^4.13",
+    "contao/test-case": "^4.0",
     "contao/manager-plugin": "^2.13",
     "phpunit/phpunit": "^8.0 || ^9.0",
     "php-coveralls/php-coveralls": "^2.0",
     "symfony/phpunit-bridge": "^3.2 || ^4.0 || ^5.0 || ^6.0",
     "heimrichhannot/contao-test-utilities-bundle": "^0.1.4",
-    "phpstan/phpstan": "^1.12",
-    "phpstan/phpstan-symfony": "^1.4",
-    "rector/rector": "^1.2",
+    "phpstan/phpstan": "^1.12 || ^2.0",
+    "phpstan/phpstan-symfony": "^1.4 || ^2.0",
+    "rector/rector": "^1.2 || ^2.0",
     "contao/contao-rector": "dev-main",
     "symplify/easy-coding-standard": "^12.5"
   },

@@ -1,6 +1,19 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Offset 'fields' on array\\{\\} in isset\\(\\) does not exist\\.$#"
+			message: '#^Call to method getLayout\(\) on an unknown class Contao\\CoreBundle\\Event\\LayoutEvent\.$#'
+			identifier: class.notFound
 			count: 2
-			path: tests/EventListener/DcaField/EncoreEntriesSelectFieldListenerTest.php
+			path: src/EventListener/InjectPageEntriesListener.php
+
+		-
+			message: '#^Call to method getPage\(\) on an unknown class Contao\\CoreBundle\\Event\\LayoutEvent\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/EventListener/InjectPageEntriesListener.php
+
+		-
+			message: '#^Parameter \$event of method HeimrichHannot\\EncoreBundle\\EventListener\\InjectPageEntriesListener\:\:onLayoutEvent\(\) has invalid type Contao\\CoreBundle\\Event\\LayoutEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/EventListener/InjectPageEntriesListener.php

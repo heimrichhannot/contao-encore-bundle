@@ -21,49 +21,81 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ConfigurationHelper
 {
-    /**
-     * @var RequestStack
-     */
-    protected $requestStack;
-    /**
-     * @var array
-     */
-    protected $bundleConfig;
-    /**
-     * @var string
-     */
-    protected $webDir;
+    protected array $bundleConfig;
+    protected string $webDir;
 
     public function __construct(
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
         ParameterBagInterface $parameterBag,
         private readonly ScopeMatcher $scopeMatcher,
         private readonly ContaoFramework $contaoFramework,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {
-        $this->requestStack = $requestStack;
         $this->bundleConfig = $parameterBag->has('huh_encore') ? $parameterBag->get('huh_encore') : [];
         $this->webDir = $parameterBag->has('contao.web_dir') ? $parameterBag->get('contao.web_dir') : '';
     }
 
     /**
      * Check if encore is enabled on the current page.
+     *
+     * @deprecated
      */
-    public function isEnabledOnCurrentPage(?PageModel $pageModel = null): bool
+    public function isEnabledOnCurrentPage(?PageModel $pageModel = null, ?LayoutModel $layout = null): bool
+    {
+        trigger_deprecation(
+            'heimrichhannot/contao-encore-bundle',
+            '2.2.0',
+            'The method "isEnabledOnCurrentPage" is deprecated since version 2.2.0 and will be removed in version 3.0.0. Please use "isEnabledOnPage" instead.'
+        );
+
+        $pageModel ??= $this->getPageModel();
+
+        if (null === $pageModel) {
+            return false;
+        }
+
+        return $this->isEnabledOnPage($pageModel, $layout);
+    }
+
+    public function isEnabledOnPage(PageModel $page, ?LayoutModel $layout = null): bool
     {
         $request = $this->requestStack->getCurrentRequest();
+        if (!$request || !$this->scopeMatcher->isFrontendRequest($request)) {
+            return $this->dispatchEvent(false, $request);
+        }
+
+        if (!$layout) {
+            $page->loadDetails();
+            $layout = $this->contaoFramework
+                ->getAdapter(LayoutModel::class)
+                ->findByPk($page->layoutId ?? $page->layout);
+        }
+
+        if (!$layout?->addEncore) {
+            return $this->dispatchEvent(false, $request, $page, $layout);
+        }
+
+        if ('modern' !== $layout->type) {
+            if (false === $this->evaluateIsEnabled($page)) {
+                return $this->dispatchEvent(false, $request, $page, $layout);
+            }
+        }
+
+        return $this->dispatchEvent(true, $request, $page, $layout);
+    }
+
+    private function dispatchEvent(bool $result, ?Request $request = null, ?PageModel $page = null, ?LayoutModel $layout = null): bool
+    {
+        // ToDo: allow request = null in event
         if (!$request) {
             return false;
         }
 
-        $result = $this->evaluateIsEnabled($pageModel, $request);
-
-        /** @var EncoreEnabledEvent $event */
         $event = $this->eventDispatcher->dispatch(
-            new EncoreEnabledEvent($result, $request, $pageModel)
+            new EncoreEnabledEvent($result, $request, $page, $layout)
         );
 
-        return $event->isEnabled();
+        return $event->enabled;
     }
 
     /**
@@ -107,12 +139,8 @@ class ConfigurationHelper
         return $this->contaoFramework->getAdapter(PageModel::class)->findByPk((int) $pageModel);
     }
 
-    private function evaluateIsEnabled(?PageModel $pageModel, Request $request): bool
+    private function evaluateIsEnabled(?PageModel $pageModel): bool
     {
-        if (!$this->scopeMatcher->isFrontendRequest($request)) {
-            return false;
-        }
-
         $parentPageModel = $this->getPageModel();
 
         // Check if error page
@@ -127,13 +155,6 @@ class ConfigurationHelper
         }
 
         if (!$pageModel) {
-            return false;
-        }
-
-        $pageModel->loadDetails();
-        $layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($pageModel->layoutId ?? $pageModel->layout);
-
-        if (!$layout || !$layout->addEncore) {
             return false;
         }
 

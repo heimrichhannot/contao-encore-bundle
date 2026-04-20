@@ -16,6 +16,9 @@ use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 
+/**
+ * @deprecated Since version 2.2
+ */
 class PageEntrypoints
 {
     protected $jsEntries = [];
@@ -81,9 +84,7 @@ class PageEntrypoints
         $parents = [$layout];
 
         $parentPages = $this->utils->model()->findParentsRecursively($currentPage, 'pid');
-        if (\is_array($parentPages)) {
-            $parents = array_merge($parents, $parentPages);
-        }
+        $parents = array_merge($parents, $parentPages);
         $parents = array_merge($parents, [$currentPage]);
         $parents = array_reverse($parents);
 

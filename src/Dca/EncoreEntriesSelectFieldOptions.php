@@ -4,7 +4,7 @@ namespace HeimrichHannot\EncoreBundle\Dca;
 
 class EncoreEntriesSelectFieldOptions
 {
-    protected string $fieldName = 'encoreEntries';
+    protected string $fieldName = EncoreEntriesSelectField::NAME_DEFAULT;
     protected bool $includeActiveCheckbox = false;
     protected ?array $fieldLabel = null;
     protected ?array $selectLabel = null;

@@ -4,6 +4,8 @@ namespace HeimrichHannot\EncoreBundle\Dca;
 
 class EncoreEntriesSelectField
 {
+    public const NAME_DEFAULT = 'encoreEntries';
+
     protected static array $tables = [];
 
     /**
