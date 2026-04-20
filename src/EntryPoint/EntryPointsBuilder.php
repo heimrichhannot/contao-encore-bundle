@@ -93,6 +93,7 @@ class EntryPointsBuilder
                         name: $entrypoint['entry'] ?? '',
                         active: (bool)($entrypoint['active'] ?? true),
                         origin: 'tl_page.'.$page->id,
+                        extension: 'App',
                     );
                 }
             }
