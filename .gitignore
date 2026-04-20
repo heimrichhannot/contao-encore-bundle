@@ -9,3 +9,4 @@ composer.phar
 .ddev/
 .phpunit.result.cache
 phpunit.xml.dist.bak
+.codex

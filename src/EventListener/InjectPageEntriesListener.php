@@ -3,8 +3,8 @@
 namespace HeimrichHannot\EncoreBundle\EventListener;
 
 use Contao\CoreBundle\Event\LayoutEvent;
-use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
+use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
@@ -12,10 +12,10 @@ use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
 class InjectPageEntriesListener
 {
     public function __construct(
-        private readonly ResponseContextAccessor  $responseContextAccessor,
         private readonly TagRenderer              $tagRenderer,
         private readonly EntryPointBuilderFactory $entrypointBuilderFactory,
         private readonly FrontendAsset            $frontendAsset,
+        private readonly GlobalContaoAsset $globalContaoAsset,
     ) {}
 
     #[AsEventListener]
@@ -24,6 +24,8 @@ class InjectPageEntriesListener
         if (!$event->getLayout()?->addEncore) {
             return;
         }
+
+        $this->globalContaoAsset->cleanGlobalArrayFromConfiguration();
 
         $entryPoints = $this->entrypointBuilderFactory->create()
             ->setPage($event->getPage())

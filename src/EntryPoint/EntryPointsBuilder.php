@@ -74,9 +74,9 @@ class EntryPointsBuilder
             foreach (StringUtil::deserialize($this->layout->{$this->layoutField}, true) as $entrypoint) {
                 $this->addEntryPoint(
                     entryPoints: $entryPoints,
-                    name: $entrypoint['name'] ?? '',
+                    name: $entrypoint['entry'] ?? '',
                     active: (bool)($entrypoint['active'] ?? true),
-                    origin: 'tl_layout.'.$layout->id,
+                    origin: 'tl_layout.'.$this->layout->id,
                     extension: 'App',
                 );
             }
@@ -90,7 +90,7 @@ class EntryPointsBuilder
                 foreach (StringUtil::deserialize($page->{$this->pageField}, true) as $entrypoint) {
                     $this->addEntryPoint(
                         entryPoints: $entryPoints,
-                        name: $entrypoint['name'] ?? '',
+                        name: $entrypoint['entry'] ?? '',
                         active: (bool)($entrypoint['active'] ?? true),
                         origin: 'tl_page.'.$page->id,
                     );
@@ -115,7 +115,7 @@ class EntryPointsBuilder
             name: $name,
             active: $active,
             head: $this->available[$name]['head'] ?? false,
-            requiresCss: (bool)$this->available[$name]['requiresCss'] ?? true,
+            requiresCss: (bool)($this->available[$name]['requires_css'] ?? true),
             origin: $origin,
             extension: $extension,
         ));
