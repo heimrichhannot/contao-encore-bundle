@@ -1,24 +1,21 @@
 <?php
 
-namespace HeimrichHannot\EncoreBundle\Entrypoints;
+namespace HeimrichHannot\EncoreBundle\EntryPoint;
 
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 
-class EntrypointBuilderFactory
+class EntryPointBuilderFactory
 {
     public function __construct(
         private readonly Utils $utils,
-        private readonly FrontendAsset $frontendAsset,
         private readonly EntryCollection $entryCollection,
     ) {}
 
-    public function create(): EntrypointsBuilder
+    public function create(): EntryPointsBuilder
     {
-        return new EntrypointsBuilder(
+        return new EntryPointsBuilder(
             $this->utils,
-            $this->frontendAsset,
             $this->entryCollection,
         );
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace HeimrichHannot\EncoreBundle\Entrypoints;
+namespace HeimrichHannot\EncoreBundle\EntryPoint;
 
 use Contao\LayoutModel;
 use Contao\PageModel;
@@ -10,46 +10,56 @@ use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 
-class EntrypointsBuilder
+class EntryPointsBuilder
 {
     private ?PageModel $pageModel = null;
     private string $pageField = '';
     private ?LayoutModel $layout = null;
     private string $layoutField = '';
+    private ?FrontendAsset $frontendAsset = null;
+
     private array $available = [];
 
     public function __construct(
         private readonly Utils $utils,
-        private readonly FrontendAsset $frontendAsset,
         private readonly EntryCollection $entryCollection,
     ) {}
 
-    public function setPage(PageModel $page, string $field = EncoreEntriesSelectField::NAME_DEFAULT): self
+    public function setPage(?PageModel $page, string $field = EncoreEntriesSelectField::NAME_DEFAULT): self
     {
         $this->pageModel = $page;
         $this->pageField = $field;
         return $this;
     }
 
-    public function setLayout(LayoutModel $layout, string $field = EncoreEntriesSelectField::NAME_DEFAULT): self
+    public function setLayout(?LayoutModel $layout, string $field = EncoreEntriesSelectField::NAME_DEFAULT): self
     {
         $this->layout = $layout;
         $this->layoutField = $field;
         return $this;
     }
 
-    public function build(): Entrypoints
+    public function setFrontendAsset(?FrontendAsset $frontendAsset): self
     {
-        $entrypoints = new Entrypoints();
+        $this->frontendAsset = $frontendAsset;
+        return $this;
+    }
+
+    public function build(): EntryPoints
+    {
+        $entryPoints = new EntryPoints();
         $available = $this->entryCollection->getEntries();
         $available = array_combine(array_column($available, 'name'), $available);
         $this->available = $available;
 
-        foreach ($this->frontendAsset->getActiveEntrypoints() as $entrypoint) {
-            $this->addEntrypoint(
-                entrypoints: $entrypoints,
-                name: $entrypoint,
-            );
+        if ($this->frontendAsset) {
+            foreach ($this->frontendAsset->getActiveEntrypoints() as $entryPoint) {
+                $this->addEntryPoint(
+                    entryPoints: $entryPoints,
+                    name: $entryPoint,
+                    origin: FrontendAsset::class,
+                );
+            }
         }
 
         if ($this->pageModel && !$this->layout) {
@@ -62,10 +72,12 @@ class EntrypointsBuilder
 
         if ($this->layout) {
             foreach (StringUtil::deserialize($this->layout->{$this->layoutField}, true) as $entrypoint) {
-                $this->addEntrypoint(
-                    entrypoints: $entrypoints,
+                $this->addEntryPoint(
+                    entryPoints: $entryPoints,
                     name: $entrypoint['name'] ?? '',
-                    active: (bool)($entrypoint['active'] ?? true)
+                    active: (bool)($entrypoint['active'] ?? true),
+                    origin: 'tl_layout.'.$layout->id,
+                    extension: 'App',
                 );
             }
         }
@@ -76,19 +88,20 @@ class EntrypointsBuilder
 
             foreach ($pages as $page) {
                 foreach (StringUtil::deserialize($page->{$this->pageField}, true) as $entrypoint) {
-                    $this->addEntrypoint(
-                        entrypoints: $entrypoints,
+                    $this->addEntryPoint(
+                        entryPoints: $entryPoints,
                         name: $entrypoint['name'] ?? '',
-                        active: (bool)($entrypoint['active'] ?? true)
+                        active: (bool)($entrypoint['active'] ?? true),
+                        origin: 'tl_page.'.$page->id,
                     );
                 }
             }
         }
 
-        return $entrypoints;
+        return $entryPoints;
     }
 
-    private function addEntrypoint(Entrypoints $entrypoints, string $name, bool $active = true): void
+    private function addEntryPoint(EntryPoints $entryPoints, string $name, bool $active = true, string $origin = '', string $extension = ''): void
     {
         if ('' === $name) {
             return;
@@ -98,6 +111,13 @@ class EntrypointsBuilder
             return;
         }
 
-        $entrypoints->add(Entrypoint::fromArray($this->available[$name], $active));
+        $entryPoints->add(new EntryPoint(
+            name: $name,
+            active: $active,
+            head: $this->available[$name]['head'] ?? false,
+            requiresCss: (bool)$this->available[$name]['requiresCss'] ?? true,
+            origin: $origin,
+            extension: $extension,
+        ));
     }
 }

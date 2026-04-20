@@ -14,7 +14,7 @@ services:
     public: true
     autoconfigure: true
 
-  HeimrichHannot\EncoreBundle\Entrypoints\EntrypointBuilderFactory: ~
+  HeimrichHannot\EncoreBundle\Asset\EntrypointCollectionFactory: ~
 
   huh.encore.asset.frontend:
     alias: HeimrichHannot\EncoreBundle\Asset\FrontendAsset
