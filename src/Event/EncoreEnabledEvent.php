@@ -31,7 +31,7 @@ class EncoreEnabledEvent extends Event
         trigger_deprecation(
             'heimrichhannot/contao-encore-bundle',
             '2.2.0',
-            'Use class instead.'
+            'Use class properties instead.'
         );
 
         return $this->enabled;
@@ -52,7 +52,7 @@ class EncoreEnabledEvent extends Event
         trigger_deprecation(
             'heimrichhannot/contao-encore-bundle',
             '2.2.0',
-            'Use class instead.'
+            'Use class properties instead.'
         );
 
         return $this->request;
@@ -66,7 +66,7 @@ class EncoreEnabledEvent extends Event
         trigger_deprecation(
             'heimrichhannot/contao-encore-bundle',
             '2.2.0',
-            'Use class instead.'
+            'Use class properties instead.'
         );
 
         return $this->pageModel;

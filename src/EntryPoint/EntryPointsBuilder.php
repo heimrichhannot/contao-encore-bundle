@@ -53,7 +53,9 @@ class EntryPointsBuilder
     {
         $entryPoints = new EntryPoints();
         $available = $this->entryCollection->getEntries();
-        $available = array_combine(array_column($available, 'name'), $available);
+        if ([] !== $available) {
+            $available = array_combine(array_column($available, 'name'), $available);
+        }
         $this->available = $available;
 
         if ($this->frontendAsset) {
@@ -68,7 +70,7 @@ class EntryPointsBuilder
 
         if ($this->pageModel && !$this->layout) {
             $this->pageModel->loadDetails();
-            $layout = LayoutModel::findByPk($this->pageModel->layout);
+            $layout = LayoutModel::findByPk($this->pageModel->layoutId ?? $this->pageModel->layout);
             if ($layout) {
                 $this->setLayout($layout);
             }

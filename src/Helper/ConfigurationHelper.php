@@ -76,7 +76,7 @@ class ConfigurationHelper
         }
 
         if ('modern' !== $layout->type) {
-            if (false === $this->evaluateIsEnabled($page, $request)) {
+            if (false === $this->evaluateIsEnabled($page)) {
                 return $this->dispatchEvent(false, $request, $page, $layout);
             }
         }
@@ -139,7 +139,7 @@ class ConfigurationHelper
         return $this->contaoFramework->getAdapter(PageModel::class)->findByPk((int) $pageModel);
     }
 
-    private function evaluateIsEnabled(?PageModel $pageModel, Request $request): bool
+    private function evaluateIsEnabled(?PageModel $pageModel): bool
     {
         $parentPageModel = $this->getPageModel();
 
