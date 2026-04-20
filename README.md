@@ -1,4 +1,4 @@
-# Contao Encore Bundle
+# ![waypoints.svg](docs/img/waypoints.svg) Contao Encore Bundle
 [![Latest Stable Version](https://img.shields.io/packagist/v/heimrichhannot/contao-encore-bundle.svg)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
 [![Total Downloads](https://img.shields.io/packagist/dt/heimrichhannot/contao-encore-bundle.svg)](https://packagist.org/packages/heimrichhannot/contao-encore-bundle)
 ![CI](https://github.com/heimrichhannot/contao-encore-bundle/workflows/CI/badge.svg)
