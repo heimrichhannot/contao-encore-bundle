@@ -1,12 +1,20 @@
 name: CI
 
-on: [ push ]
+on:
+  push:
+    branches:
+      - main
+      - v2
+  pull_request:
+    types: [ opened, reopened, synchronize, ready_for_review ]
+    branches:
+      - '**'
 
 jobs:
   tests:
     name: PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.draft }}
+    if: github.event.pull_request.draft == false
     strategy:
       fail-fast: false
       matrix:
@@ -35,7 +43,7 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.draft }}
+    if: github.event.pull_request.draft == false
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -63,7 +71,7 @@ jobs:
 
   phpstan:
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.draft }}
+    if: github.event.pull_request.draft == false
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -82,7 +90,7 @@ jobs:
   ecs:
     name: ECS
     runs-on: ubuntu-latest
-    if: ${{ !github.event.pull_request.draft }}
+    if: github.event.pull_request.draft == false
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
