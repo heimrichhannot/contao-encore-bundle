@@ -22,6 +22,7 @@ use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\TestUtilitiesBundle\Mock\ModelMockTrait;
 use HeimrichHannot\UtilsBundle\Util\RequestUtil;
 use HeimrichHannot\UtilsBundle\Util\Utils;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
 
 class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
@@ -36,6 +37,7 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $parameter['entryPointBuilderFactory'] = $parameter['entryPointBuilderFactory'] ?? $this->createMock(EntryPointBuilderFactory::class);
         $parameter['frontendAsset'] = $parameter['frontendAsset'] ?? $this->createMock(FrontendAsset::class);
         $parameter['tagRenderer'] = $parameter['tagRenderer'] ?? $this->createMock(TagRenderer::class);
+        $parameter['requestStack'] = $parameter['requestStack'] ?? $this->createMock(RequestStack::class);
 
         return new ReplaceDynamicScriptTagsListener(
             $parameter['utils'],
@@ -44,6 +46,7 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
             entryPointBuilderFactory: $parameter['entryPointBuilderFactory'],
             frontendAsset: $parameter['frontendAsset'],
             tagRenderer: $parameter['tagRenderer'],
+            requestStack: $parameter['requestStack']
         );
     }
 
