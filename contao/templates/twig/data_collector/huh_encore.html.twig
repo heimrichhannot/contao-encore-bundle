@@ -21,12 +21,12 @@
 
         <div class="sf-toolbar-info-piece">
             <b>Encore Entries</b>
-            <span>{{ collector.entries|length }}</span>
+            <span class="sf-toolbar-status">{{ collector.entries|length }}</span>
         </div>
 
         <div class="sf-toolbar-info-piece">
             <b>Encore Extensions</b>
-            <span>{{ collector.entries|length }}</span>
+            <span class="sf-toolbar-status">{{ collector.entries|length }}</span>
         </div>
     {% endset %}
 
@@ -77,6 +77,7 @@
     <h2>Page entry points</h2>
 
     <table>
+        <thead>
         <tr>
             <th>Name</th>
             <th>Active</th>
@@ -85,6 +86,9 @@
             <th>Origin</th>
             <th>Extension</th>
         </tr>
+        </thead>
+        <tbody>
+
         {% for entry in collector.entries %}
             <tr>
                 <td>{{ entry.name }}</td>
@@ -95,15 +99,19 @@
                 <td>{{ entry.extension }}</td>
             </tr>
         {% endfor %}
+        </tbody>
     </table>
 
     <h2>Registered extensions</h2>
 
     <table>
+        <thead>
         <tr>
             <th>Extension class</th>
             <th>Entry Points</th>
         </tr>
+        </thead>
+        <tbody>
         {% for extension in collector.extensions %}
             <tr>
                 <td>{{ extension.name }}</td>
@@ -116,5 +124,6 @@
                 </td>
             </tr>
         {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

@@ -41,7 +41,6 @@ class InjectPageEntriesListener
         if ($request = $this->requestStack->getCurrentRequest()) {
             $request->attributes->add([
                 'encore_entries' => $entryPoints,
-
             ]);
         }
 
