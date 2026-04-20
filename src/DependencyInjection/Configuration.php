@@ -20,6 +20,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder->getRootNode()
             ->children()
                 ->arrayNode('templates')
+                    ->setDeprecated('heimrichhannot/contao-encore-bundle', '2.2.0',)
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->arrayNode('imports')

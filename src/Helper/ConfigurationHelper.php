@@ -59,7 +59,13 @@ class ConfigurationHelper
             'The method "isEnabledOnCurrentPage" is deprecated since version 2.2.0 and will be removed in version 3.0.0. Please use "isEnabledOnPage" instead.'
         );
 
-        return $this->isEnabledOnPage($pageModel ?? $this->getPageModel(), $layout);
+        $pageModel ??= $this->getPageModel();
+
+        if (null === $pageModel) {
+            return false;
+        }
+
+        return $this->isEnabledOnPage($pageModel, $layout);
     }
 
     public function isEnabledOnPage(PageModel $page, ?LayoutModel $layout = null): bool
@@ -71,7 +77,9 @@ class ConfigurationHelper
 
         if (!$layout) {
             $page->loadDetails();
-            $layout = LayoutModel::findByPk($page->layoutId ?? $page->layout);
+            $layout = $this->contaoFramework
+                ->getAdapter(LayoutModel::class)
+                ->findByPk($page->layoutId ?? $page->layout);
         }
 
         if (!$layout?->addEncore) {

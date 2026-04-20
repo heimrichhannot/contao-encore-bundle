@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2026-04-20
+- Added: support for modern twig layouts of contao 5.7
+- Added: EntrypointsBuilder concept for retriving current page entrypoints
+- Changed: add constant for default field name ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
+- Fixed: removed dead or unnecessary code and checks
+- Deprecated: `src/Asset/PageEntrypoints.php`, `src/Asset/TemplateAsset.php` and `src/Asset/TemplateAssetGenerator.php`
+
+
 ## [2.1.1] - 2026-03-30
 - Fixed: compatibility issue with symfony 7
 
