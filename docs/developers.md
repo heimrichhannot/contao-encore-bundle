@@ -4,8 +4,6 @@ This document contains additional information for developers working with encore
 
 ## Add entries from your code (frontend module, content element,...)
 
-Since version 1.3 it is possible to add encore entries from your code. So for example the slider assets are automatically included, if the slider module is added to the page. 
-
 The most simple method is to use the `PageAssetsTrait` of [Contao Encore Contracts](https://github.com/heimrichhannot/contao-encore-contracts).
 Use this trait in your class in combination with `ServiceSubscriberInterface` and make sure your class is registered as service with autoconfigure activated.
 Now you have a new method `addPageEntrypoint()` available.
@@ -64,41 +62,58 @@ PaletteManipulator::create()
 
 ## Add encore entries to custom template
 
-If you don't want to render assets on page basis, it is possible to generate a custom set of encore entries.
-
-1. Create an `EntrypointCollection` with the `EntrypointCollectionFactory` service
-1. Get your assets with `TemplateAssetGenerator` service. 
-1. Optional: If you want an input field in the contao backend to select entries, you can use the `DcaGenerator` service to generate an input like on layout or page settings.
+To collect or render assets in custom templates or abstinent from the normal page rendering, use the `EntryPointsBuilder`.
 
 ```php
-use Contao\FrontendTemplate;
-use HeimrichHannot\EncoreBundle\Asset\EntrypointCollectionFactory;
-use HeimrichHannot\EncoreBundle\Asset\TemplateAssetGenerator;
+<?php
 
-function renderTemplateWithEncore(array $entrypoints, EntrypointCollectionFactory $entrypointCollectionFactory, TemplateAssetGenerator $templateAssetGenerator)
+namespace App\CustomController;
+
+use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
+use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\WebpackEncoreBundle\Asset\TagRenderer;use Twig\Environment;
+
+class CustomController
 {
-    $template = new FrontendTemplate();
-    $collection = $entrypointCollectionFactory->createCollection($entrypoints);
-    $template->stylesheets = $templateAssetGenerator->linkTags($collection);
-    $template->headJavaScript = $templateAssetGenerator->headScriptTags($collection);
-    $template->javaScript = $templateAssetGenerator->scriptTags($collection);
-    return $template->getResponse();
-}
-```
+    private readonly TagRenderer $tagRenderer;
+    private readonly EntryPointBuilderFactory $entrypointBuilderFactory;
+    private readonly Environment $twig;
+    private readonly FrontendAsset $frontendAsset;
 
-It is also possible to get the stylesheets inline:
+    public function __invoke(): Response
+    {
+        // collect entry points from the different sources
+        $entryPoints = $this->entrypointBuilderFactory->create()
+            // add the sources you want: 
+            ->setPage($event->getPage())
+            ->setLayout($event->getLayout())
+            ->setFrontendAsset($this->frontendAsset)
+            // build the collection:
+            ->build();
 
-```php
-use Contao\FrontendTemplate;
-use HeimrichHannot\EncoreBundle\Asset\EntrypointCollectionFactory;
-use HeimrichHannot\EncoreBundle\Asset\TemplateAssetGenerator;
-
-function renderTemplateWithEncore(array $entrypoints, EntrypointCollectionFactory $entrypointCollectionFactory, TemplateAssetGenerator $templateAssetGenerator)
-{
-    $template = new FrontendTemplate();
-    $collection = $entrypointCollectionFactory->createCollection($entrypoints);
-    $template->inlineCss = $templateAssetGenerator->inlineCssLinkTag($collection);
-    return $template->getResponse();
+        // render the tags, for example with the tag renderer of webpack encore bundle
+        $this->tagRenderer->reset();
+        $css = $head = $body = [];
+        foreach ($entryPoints->allActive() as $entrypoint) {
+            if ($entrypoint->requiresCss) {
+                $css[] = $this->tagRenderer->renderWebpackLinkTags($entrypoint->name);
+            }
+            if ($entrypoint->head) {
+                $head[] = $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
+            } else {
+                $body[] = $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
+            }
+        }
+        
+        // render the template
+        return new Response($this->twig->render('custom_template.html.twig', [
+            'css' => $css,
+            'head' => $head,
+            'body' => $body,
+        ]));
+    }
 }
 ```
 
@@ -106,23 +121,8 @@ function renderTemplateWithEncore(array $entrypoints, EntrypointCollectionFactor
 
 The `ConfigurationHelper` service can be used to obtain some configuration information. Following methods are available:
 
-`isEnabledOnCurrentPage(?PageModel $pageModel = null): bool` - Return if encore is enabled for the current frontend page. You can pass a page object to check for a custom page, otherweise `global $objPage` is used.
+`isEnabledOnPage(PageModel $page, ?LayoutModel $layout = null): bool` - Return if encore is enabled for the current frontend page.
 
 `getRelativeOutputPath(): string` - Return the relative output path configured by webpack encore bundle. Typical this is `build`.
 
-`getAbsoluteOutputPath(): string` - Return the absolute output path configured by webpack encore bundle. For example `/var/www/html/project/web/build`
-
-## Custom import templates
-
-If you need custom templates for the import of javascript and stylesheet assets files, Encore Bundle provide support for this. 
-Create a twig template (see `src/Resources/views` for examples) and register them in your (project) bundle config.
-
-Example:
-
-```yaml
-huh_encore:
-  templates:
-      imports:
-      - { name: default_css, template: "@HeimrichHannotEncore/encore_css_imports.html.twig" }
-      - { name: default_js, template: "@HeimrichHannotEncore/encore_js_imports.html.twig" }
-```
+`getAbsoluteOutputPath(): string` - Return the absolute output path configured by webpack encore bundle. For example `/var/www/html/project/public/build`

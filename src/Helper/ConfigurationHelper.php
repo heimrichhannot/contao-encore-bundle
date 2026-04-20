@@ -21,27 +21,16 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ConfigurationHelper
 {
-    /**
-     * @var RequestStack
-     */
-    protected $requestStack;
-    /**
-     * @var array
-     */
-    protected $bundleConfig;
-    /**
-     * @var string
-     */
-    protected $webDir;
+    protected array $bundleConfig;
+    protected string $webDir;
 
     public function __construct(
-        RequestStack $requestStack,
+        private readonly RequestStack $requestStack,
         ParameterBagInterface $parameterBag,
         private readonly ScopeMatcher $scopeMatcher,
         private readonly ContaoFramework $contaoFramework,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {
-        $this->requestStack = $requestStack;
         $this->bundleConfig = $parameterBag->has('huh_encore') ? $parameterBag->get('huh_encore') : [];
         $this->webDir = $parameterBag->has('contao.web_dir') ? $parameterBag->get('contao.web_dir') : '';
     }
@@ -72,7 +61,7 @@ class ConfigurationHelper
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request || !$this->scopeMatcher->isFrontendRequest($request)) {
-            return false;
+            return $this->dispatchEvent(false, $request);
         }
 
         if (!$layout) {
@@ -83,18 +72,27 @@ class ConfigurationHelper
         }
 
         if (!$layout?->addEncore) {
-            return false;
+            return $this->dispatchEvent(false, $request, $page, $layout);
         }
 
         if ('modern' !== $layout->type) {
             if (false === $this->evaluateIsEnabled($page, $request)) {
-                return false;
+                return $this->dispatchEvent(false, $request, $page, $layout);
             }
         }
 
-        /** @var EncoreEnabledEvent $event */
+        return $this->dispatchEvent(true, $request, $page, $layout);
+    }
+
+    private function dispatchEvent(bool $result, ?Request $request = null, ?PageModel $page = null, ?LayoutModel $layout = null): bool
+    {
+        // ToDo: allow request = null in event
+        if (!$request) {
+            return false;
+        }
+
         $event = $this->eventDispatcher->dispatch(
-            new EncoreEnabledEvent(true, $request, $page, $layout)
+            new EncoreEnabledEvent($result, $request, $page, $layout)
         );
 
         return $event->enabled;
