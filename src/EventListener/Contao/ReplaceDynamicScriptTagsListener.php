@@ -54,19 +54,6 @@ class ReplaceDynamicScriptTagsListener
         return $buffer;
     }
 
-    protected function replaceEncoreTags(string $buffer, PageModel $page, LayoutModel $layout): string
-    {
-        $templateAssets = $this->templateAsset->createInstance($page, $layout, 'encoreEntries');
-
-        $replace = [];
-        $replace['[[HUH_ENCORE_CSS]]'] = trim($templateAssets->linkTags());
-        // caution: always render head first because of global dependencies like jQuery
-        $replace['[[HUH_ENCORE_HEAD_JS]]'] = trim($templateAssets->headScriptTags());
-        $replace['[[HUH_ENCORE_JS]]'] = trim($templateAssets->scriptTags());
-
-        return str_replace(array_keys($replace), $replace, $buffer);
-    }
-
     protected function replaceContaoTags(string $buffer, PageModel $page, LayoutModel $layout): string
     {
         $templateAssets = $this->templateAsset->createInstance($page, $layout, 'encoreEntries');
