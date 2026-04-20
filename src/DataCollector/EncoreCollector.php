@@ -13,14 +13,16 @@ class EncoreCollector extends AbstractDataCollector
 {
     public function __construct(
         private readonly ExtensionCollection $extensionCollection,
-    ) {}
+    ) {
+    }
 
     public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {
         if ($request->attributes->has('encore_entries')) {
             $entryPoints = $request->attributes->get('encore_entries');
-            if  (!($entryPoints instanceof EntryPoints)) {
+            if (!($entryPoints instanceof EntryPoints)) {
                 $this->data['enabled'] = false;
+
                 return;
             }
 
