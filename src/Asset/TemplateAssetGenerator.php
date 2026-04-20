@@ -14,6 +14,9 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
+/**
+ * @deprecated Since 2.2
+ */
 class TemplateAssetGenerator
 {
     /**

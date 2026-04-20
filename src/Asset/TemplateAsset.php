@@ -14,6 +14,9 @@ use Symfony\WebpackEncoreBundle\Exception\EntrypointNotFoundException;
 use Twig\Environment;
 use Twig\Error\RuntimeError;
 
+/**
+ * @deprecated Since version 2.2
+ */
 class TemplateAsset
 {
     /**

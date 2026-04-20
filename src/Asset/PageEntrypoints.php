@@ -16,6 +16,9 @@ use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Helper\ArrayHelper;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 
+/**
+ * @deprecated Since version 2.2
+ */
 class PageEntrypoints
 {
     protected $jsEntries = [];

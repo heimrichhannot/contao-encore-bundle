@@ -48,22 +48,49 @@ class ConfigurationHelper
 
     /**
      * Check if encore is enabled on the current page.
+     *
+     * @deprecated
+     *
      */
-    public function isEnabledOnCurrentPage(?PageModel $pageModel = null): bool
+    public function isEnabledOnCurrentPage(?PageModel $pageModel = null, ?LayoutModel $layout = null,): bool
+    {
+        trigger_deprecation(
+            'heimrichhannot/contao-encore-bundle',
+            '2.2.0',
+            'The method "isEnabledOnCurrentPage" is deprecated since version 2.2.0 and will be removed in version 3.0.0. Please use "isEnabledOnPage" instead.'
+        );
+
+        return $this->isEnabledOnPage($pageModel ?? $this->getPageModel(), $layout);
+    }
+
+    public function isEnabledOnPage(PageModel $page, ?LayoutModel $layout = null): bool
     {
         $request = $this->requestStack->getCurrentRequest();
-        if (!$request) {
+        if (!$request || !$this->scopeMatcher->isFrontendRequest($request)) {
             return false;
         }
 
-        $result = $this->evaluateIsEnabled($pageModel, $request);
+        if (!$layout) {
+            $page->loadDetails();
+            $layout = LayoutModel::findByPk($page->layoutId ?? $page->layout);
+        }
+
+        if (!$layout?->addEncore) {
+            return false;
+        }
+
+        if ('modern' !== $layout->type) {
+            if (false === $this->evaluateIsEnabled($page, $request)) {
+                return false;
+            }
+        }
 
         /** @var EncoreEnabledEvent $event */
         $event = $this->eventDispatcher->dispatch(
-            new EncoreEnabledEvent($result, $request, $pageModel)
+            new EncoreEnabledEvent(true, $request, $page, $layout)
         );
 
-        return $event->isEnabled();
+        return $event->enabled;
     }
 
     /**
@@ -109,10 +136,6 @@ class ConfigurationHelper
 
     private function evaluateIsEnabled(?PageModel $pageModel, Request $request): bool
     {
-        if (!$this->scopeMatcher->isFrontendRequest($request)) {
-            return false;
-        }
-
         $parentPageModel = $this->getPageModel();
 
         // Check if error page
@@ -127,13 +150,6 @@ class ConfigurationHelper
         }
 
         if (!$pageModel) {
-            return false;
-        }
-
-        $pageModel->loadDetails();
-        $layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($pageModel->layoutId ?? $pageModel->layout);
-
-        if (!$layout || !$layout->addEncore) {
             return false;
         }
 

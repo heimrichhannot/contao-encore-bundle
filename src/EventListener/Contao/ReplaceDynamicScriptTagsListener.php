@@ -10,53 +10,58 @@ namespace HeimrichHannot\EncoreBundle\EventListener\Contao;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Framework\ContaoFramework;
-use Contao\LayoutModel;
-use Contao\PageModel;
+use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
-use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
+use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\UtilsBundle\Util\Utils;
+use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
 
 #[AsHook('replaceDynamicScriptTags')]
 class ReplaceDynamicScriptTagsListener
 {
     public function __construct(
-        protected array $bundleConfig,
-        private readonly ContaoFramework $contaoFramework,
         private readonly Utils $utils,
-        protected TemplateAsset $templateAsset,
         protected ConfigurationHelper $configurationHelper,
         private readonly GlobalContaoAsset $globalContaoAsset,
+        private readonly EntryPointBuilderFactory $entryPointBuilderFactory,
+        private readonly FrontendAsset $frontendAsset,
+        private readonly TagRenderer              $tagRenderer,
     ) {
     }
 
     public function __invoke(string $buffer): string
     {
-        if (!$this->configurationHelper->isEnabledOnCurrentPage()) {
-            return $buffer;
-        }
-
         $pageModel = $this->utils->request()->getCurrentPageModel();
 
         if (!$pageModel) {
             return $buffer;
         }
 
-        $pageModel->loadDetails();
-
-        if (!($layout = $this->contaoFramework->getAdapter(LayoutModel::class)->findByPk($pageModel->layoutId ?? $pageModel->layout))) {
+        if (!$this->configurationHelper->isEnabledOnPage($pageModel)) {
             return $buffer;
         }
-        /* @var LayoutModel|null $layout */
-        $buffer = $this->replaceContaoTags($buffer, $pageModel, $layout);
+
+        $entryPoints = $this->entryPointBuilderFactory->create()
+            ->setFrontendAsset($this->frontendAsset)
+            ->setPage($pageModel)
+            ->build();
+
+        $css = '';
+        $headJs = '';
+        $bodyJs = '';
+        foreach ($entryPoints->allActive() as $entrypoint) {
+            if ($entrypoint->requiresCss) {
+                $css .= $this->tagRenderer->renderWebpackLinkTags($entrypoint->name);
+            }
+            if ($entrypoint->head) {
+                $headJs .= $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
+            } else {
+                $bodyJs .= $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
+            }
+        }
+
         $this->globalContaoAsset->cleanGlobalArrayFromConfiguration();
-
-        return $buffer;
-    }
-
-    protected function replaceContaoTags(string $buffer, PageModel $page, LayoutModel $layout): string
-    {
-        $templateAssets = $this->templateAsset->createInstance($page, $layout, 'encoreEntries');
 
         $nonce = '';
         if (method_exists(ContaoFramework::class, 'getNonce')) {
@@ -64,11 +69,9 @@ class ReplaceDynamicScriptTagsListener
         }
 
         $replace = [];
-        $replace["[[TL_CSS$nonce]]"] = "[[TL_CSS$nonce]]" . trim($templateAssets->linkTags());
-
-        // caution: always render head first because of global dependencies like jQuery
-        $replace["[[TL_HEAD$nonce]]"] = trim($templateAssets->headScriptTags()) . "[[TL_HEAD$nonce]]";
-        $replace["[[TL_BODY$nonce]]"] = trim($templateAssets->scriptTags()) . "[[TL_BODY$nonce]]";
+        $replace["[[TL_CSS$nonce]]"] = "[[TL_CSS$nonce]]" . trim($css);
+        $replace["[[TL_HEAD$nonce]]"] = trim($headJs) . "[[TL_HEAD$nonce]]";
+        $replace["[[TL_BODY$nonce]]"] = trim($bodyJs) . "[[TL_BODY$nonce]]";
 
         return str_replace(array_keys($replace), $replace, $buffer);
     }
