@@ -63,11 +63,7 @@ class ReplaceDynamicScriptTagsListener
 
         $this->globalContaoAsset->cleanGlobalArrayFromConfiguration();
 
-        $nonce = '';
-        if (method_exists(ContaoFramework::class, 'getNonce')) {
-            $nonce = '_' . ContaoFramework::getNonce();
-        }
-
+        $nonce = '_' . ContaoFramework::getNonce();
         $replace = [];
         $replace["[[TL_CSS$nonce]]"] = "[[TL_CSS$nonce]]" . trim($css);
         $replace["[[TL_HEAD$nonce]]"] = trim($headJs) . "[[TL_HEAD$nonce]]";

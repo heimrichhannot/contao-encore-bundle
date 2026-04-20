@@ -13,7 +13,7 @@ class EntryPoints
      */
     private array $active = [];
 
-    public function add(EntryPoint $entryPoint)
+    public function add(EntryPoint $entryPoint): void
     {
         $this->entryPoints[$entryPoint->name] = $entryPoint;
         if ($entryPoint->active) {

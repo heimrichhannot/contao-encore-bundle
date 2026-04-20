@@ -37,15 +37,16 @@
     "twig/twig": "^1.38.3 || ^2.7 || ^3.0"
   },
   "require-dev": {
+    "contao/core-bundle": "^4.13",
     "contao/test-case": "^4.0 || ^5.0",
     "contao/manager-plugin": "^2.13",
     "phpunit/phpunit": "^8.0 || ^9.0",
     "php-coveralls/php-coveralls": "^2.0",
     "symfony/phpunit-bridge": "^3.2 || ^4.0 || ^5.0 || ^6.0",
     "heimrichhannot/contao-test-utilities-bundle": "^0.1.4",
-    "phpstan/phpstan": "^1.12",
-    "phpstan/phpstan-symfony": "^1.4",
-    "rector/rector": "^1.2",
+    "phpstan/phpstan": "^1.12 || ^2.0",
+    "phpstan/phpstan-symfony": "^1.4 || ^2.0",
+    "rector/rector": "^1.2 || ^2.0",
     "contao/contao-rector": "dev-main",
     "symplify/easy-coding-standard": "^12.5"
   },

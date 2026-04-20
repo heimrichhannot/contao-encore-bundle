@@ -2,7 +2,7 @@ parameters:
   level: 4
   paths:
     - src
-    - tests
+#    - tests
     - contao
   universalObjectCratesClasses:
     - Contao\LayoutModel

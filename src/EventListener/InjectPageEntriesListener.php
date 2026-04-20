@@ -8,6 +8,7 @@ use Contao\PageModel;
 use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
+use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
@@ -19,13 +20,13 @@ class InjectPageEntriesListener
         private readonly EntryPointBuilderFactory $entrypointBuilderFactory,
         private readonly FrontendAsset            $frontendAsset,
         private readonly GlobalContaoAsset $globalContaoAsset,
-        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly ConfigurationHelper $configurationHelper,
     ) {}
 
     #[AsEventListener]
     public function onLayoutEvent(LayoutEvent $event): void
     {
-        if (!$this->isEnabled($event->getPage(), $event->getLayout())) {
+        if (!$this->configurationHelper->isEnabledOnPage($event->getPage(), $event->getLayout())) {
             return;
         }
 
@@ -48,18 +49,6 @@ class InjectPageEntriesListener
             } else {
                 $GLOBALS['TL_BODY'][] = $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
             }
-        }
-    }
-
-    private function isEnabled(PageModel $page, ?LayoutModel $layout): bool
-    {
-        if (!$layout) {
-            $page->loadDetails();
-            $layout = LayoutModel::findByPk($page->layout);
-        }
-
-        if (!$layout?->addEncore) {
-            return false;
         }
     }
 }

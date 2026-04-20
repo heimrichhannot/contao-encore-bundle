@@ -84,9 +84,7 @@ class PageEntrypoints
         $parents = [$layout];
 
         $parentPages = $this->utils->model()->findParentsRecursively($currentPage, 'pid');
-        if (\is_array($parentPages)) {
-            $parents = array_merge($parents, $parentPages);
-        }
+        $parents = array_merge($parents, $parentPages);
         $parents = array_merge($parents, [$currentPage]);
         $parents = array_reverse($parents);
 
