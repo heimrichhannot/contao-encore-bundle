@@ -27,7 +27,7 @@ PaletteManipulator::create()
 /*
  * Subpalettes
  */
-$dca['subpalettes']['addEncore'] = EncoreEntriesSelectField::NAME_DEFAULT.',encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
+$dca['subpalettes']['addEncore'] = EncoreEntriesSelectField::NAME_DEFAULT . ',encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
 
 /**
  * Fields.

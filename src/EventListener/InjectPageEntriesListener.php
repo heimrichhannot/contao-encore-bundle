@@ -13,12 +13,13 @@ use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
 class InjectPageEntriesListener
 {
     public function __construct(
-        private readonly TagRenderer              $tagRenderer,
+        private readonly TagRenderer $tagRenderer,
         private readonly EntryPointBuilderFactory $entrypointBuilderFactory,
-        private readonly FrontendAsset            $frontendAsset,
+        private readonly FrontendAsset $frontendAsset,
         private readonly GlobalContaoAsset $globalContaoAsset,
         private readonly ConfigurationHelper $configurationHelper,
-    ) {}
+    ) {
+    }
 
     #[AsEventListener]
     public function onLayoutEvent(LayoutEvent $event): void

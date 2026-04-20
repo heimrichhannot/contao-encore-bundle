@@ -50,9 +50,8 @@ class ConfigurationHelper
      * Check if encore is enabled on the current page.
      *
      * @deprecated
-     *
      */
-    public function isEnabledOnCurrentPage(?PageModel $pageModel = null, ?LayoutModel $layout = null,): bool
+    public function isEnabledOnCurrentPage(?PageModel $pageModel = null, ?LayoutModel $layout = null): bool
     {
         trigger_deprecation(
             'heimrichhannot/contao-encore-bundle',

@@ -23,12 +23,14 @@ class EntryPointsBuilder
     public function __construct(
         private readonly Utils $utils,
         private readonly EntryCollection $entryCollection,
-    ) {}
+    ) {
+    }
 
     public function setPage(?PageModel $page, string $field = EncoreEntriesSelectField::NAME_DEFAULT): self
     {
         $this->pageModel = $page;
         $this->pageField = $field;
+
         return $this;
     }
 
@@ -36,12 +38,14 @@ class EntryPointsBuilder
     {
         $this->layout = $layout;
         $this->layoutField = $field;
+
         return $this;
     }
 
     public function setFrontendAsset(?FrontendAsset $frontendAsset): self
     {
         $this->frontendAsset = $frontendAsset;
+
         return $this;
     }
 
@@ -75,8 +79,8 @@ class EntryPointsBuilder
                 $this->addEntryPoint(
                     entryPoints: $entryPoints,
                     name: $entrypoint['entry'] ?? '',
-                    active: (bool)($entrypoint['active'] ?? true),
-                    origin: 'tl_layout.'.$this->layout->id,
+                    active: (bool) ($entrypoint['active'] ?? true),
+                    origin: 'tl_layout.' . $this->layout->id,
                     extension: 'App',
                 );
             }
@@ -91,8 +95,8 @@ class EntryPointsBuilder
                     $this->addEntryPoint(
                         entryPoints: $entryPoints,
                         name: $entrypoint['entry'] ?? '',
-                        active: (bool)($entrypoint['active'] ?? true),
-                        origin: 'tl_page.'.$page->id,
+                        active: (bool) ($entrypoint['active'] ?? true),
+                        origin: 'tl_page.' . $page->id,
                         extension: 'App',
                     );
                 }
@@ -116,7 +120,7 @@ class EntryPointsBuilder
             name: $name,
             active: $active,
             head: $this->available[$name]['head'] ?? false,
-            requiresCss: (bool)($this->available[$name]['requires_css'] ?? true),
+            requiresCss: (bool) ($this->available[$name]['requires_css'] ?? true),
             origin: $origin,
             extension: $extension,
         ));

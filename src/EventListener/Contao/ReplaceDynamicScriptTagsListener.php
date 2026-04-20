@@ -26,7 +26,7 @@ class ReplaceDynamicScriptTagsListener
         private readonly GlobalContaoAsset $globalContaoAsset,
         private readonly EntryPointBuilderFactory $entryPointBuilderFactory,
         private readonly FrontendAsset $frontendAsset,
-        private readonly TagRenderer              $tagRenderer,
+        private readonly TagRenderer $tagRenderer,
     ) {
     }
 

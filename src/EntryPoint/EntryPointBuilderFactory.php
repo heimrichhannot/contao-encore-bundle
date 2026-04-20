@@ -10,7 +10,8 @@ class EntryPointBuilderFactory
     public function __construct(
         private readonly Utils $utils,
         private readonly EntryCollection $entryCollection,
-    ) {}
+    ) {
+    }
 
     public function create(): EntryPointsBuilder
     {
