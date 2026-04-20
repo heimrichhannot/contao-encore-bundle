@@ -3,14 +3,11 @@
 namespace HeimrichHannot\EncoreBundle\EventListener;
 
 use Contao\CoreBundle\Event\LayoutEvent;
-use Contao\LayoutModel;
-use Contao\PageModel;
 use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
 
 class InjectPageEntriesListener
