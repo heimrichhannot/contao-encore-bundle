@@ -2,6 +2,8 @@
 
 namespace HeimrichHannot\EncoreBundle\Test\EntryPoint;
 
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContext;
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
@@ -14,10 +16,23 @@ use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointsBuilder;
 use HeimrichHannot\TestUtilitiesBundle\Mock\ModelMockTrait;
 use HeimrichHannot\UtilsBundle\Util\ModelUtil;
 use HeimrichHannot\UtilsBundle\Util\Utils;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class EntryPointsBuilderTest extends ContaoTestCase
 {
     use ModelMockTrait;
+
+    private function createFrontendAsset(): FrontendAsset
+    {
+        $requestStack = new RequestStack();
+        $requestStack->push(new Request());
+
+        $responseContextAccessor = new ResponseContextAccessor($requestStack);
+        $responseContextAccessor->setResponseContext(new ResponseContext());
+
+        return new FrontendAsset($responseContextAccessor);
+    }
 
     public function testFactoryCreatesFreshBuilderInstances(): void
     {
@@ -118,7 +133,7 @@ class EntryPointsBuilderTest extends ContaoTestCase
             ->method('model')
             ->willReturn($modelUtil);
 
-        $frontendAsset = new FrontendAsset();
+        $frontendAsset = $this->createFrontendAsset();
         $frontendAsset->addActiveEntrypoint('frontend-entry');
         $frontendAsset->addActiveEntrypoint('missing-frontend-entry');
 
