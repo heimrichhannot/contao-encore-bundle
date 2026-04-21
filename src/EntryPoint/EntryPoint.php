@@ -2,8 +2,6 @@
 
 namespace HeimrichHannot\EncoreBundle\EntryPoint;
 
-use HeimrichHannot\EncoreBundle\Request\ResponseContext\Entry;
-
 class EntryPoint
 {
     public function __construct(

@@ -54,6 +54,7 @@ class EntryPointsBuilder
     public function setCustomBag(?EntryBag $entryBag): self
     {
         $this->entryBag = $entryBag;
+
         return $this;
     }
 
@@ -67,10 +68,7 @@ class EntryPointsBuilder
         $this->available = $available;
 
         if ($this->responseContext && $this->responseContext->has(EntryBag::class)) {
-            $bag = $this->responseContext->get(EntryBag::class);
-            if ($bag instanceof EntryBag) {
-                $this->addFromBag($entryPoints, $bag);
-            }
+            $this->addFromBag($entryPoints, $this->responseContext->get(EntryBag::class));
         }
 
         if ($this->pageModel && !$this->layout) {
