@@ -6,11 +6,13 @@ All notable changes to this project will be documented in this file.
 - Added: support for modern twig layouts of contao 5.7 ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
 - Added: EntrypointsBuilder concept for retriving current page entrypoints ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
 - Added: support for symfony debug bar ([#35](https://github.com/heimrichhannot/contao-encore-bundle/pull/35))
+- Added: ResponseContext bag for entries ([#36](https://github.com/heimrichhannot/contao-encore-bundle/pull/36))
 - Changed: add constant for default field name ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
 - Fixed: removed dead or unnecessary code and checks ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
 - Deprecated: `src/Asset/PageEntrypoints.php`, `src/Asset/TemplateAsset.php` and `src/Asset/TemplateAssetGenerator.php` ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
 - Deprecated: `ConfigurationHelper::isEnabledOnPage()` ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
 - Deprecated: getter-Methods in `EncoreEnabledEvent` ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
+
 
 ## [2.1.1] - 2026-03-30
 - Fixed: compatibility issue with symfony 7

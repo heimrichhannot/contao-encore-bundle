@@ -9,9 +9,10 @@
 namespace HeimrichHannot\EncoreBundle\Test\EventListener\Contao;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContext;
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPoint;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
@@ -30,24 +31,38 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
 {
     use ModelMockTrait;
 
+    private function createResponseContextAccessor(?ResponseContext $responseContext = null): ResponseContextAccessor
+    {
+        $requestStack = new RequestStack();
+        $requestStack->push(new Request());
+
+        $accessor = new ResponseContextAccessor($requestStack);
+
+        if (null !== $responseContext) {
+            $accessor->setResponseContext($responseContext);
+        }
+
+        return $accessor;
+    }
+
     public function createTestInstance(array $parameter = []): ReplaceDynamicScriptTagsListener
     {
         $parameter['utils'] = $parameter['utils'] ?? $this->createMock(Utils::class);
         $parameter['configurationHelper'] = $parameter['configurationHelper'] ?? $this->createMock(ConfigurationHelper::class);
         $parameter['globalContaoAsset'] = $parameter['globalContaoAsset'] ?? $this->createMock(GlobalContaoAsset::class);
         $parameter['entryPointBuilderFactory'] = $parameter['entryPointBuilderFactory'] ?? $this->createMock(EntryPointBuilderFactory::class);
-        $parameter['frontendAsset'] = $parameter['frontendAsset'] ?? $this->createMock(FrontendAsset::class);
         $parameter['tagRenderer'] = $parameter['tagRenderer'] ?? $this->createMock(TagRenderer::class);
         $parameter['requestStack'] = $parameter['requestStack'] ?? $this->createMock(RequestStack::class);
+        $parameter['responseContextAccessor'] = $parameter['responseContextAccessor'] ?? $this->createResponseContextAccessor();
 
         return new ReplaceDynamicScriptTagsListener(
             $parameter['utils'],
             $parameter['configurationHelper'],
             $parameter['globalContaoAsset'],
-            entryPointBuilderFactory: $parameter['entryPointBuilderFactory'],
-            frontendAsset: $parameter['frontendAsset'],
-            tagRenderer: $parameter['tagRenderer'],
-            requestStack: $parameter['requestStack']
+            $parameter['entryPointBuilderFactory'],
+            $parameter['tagRenderer'],
+            $parameter['requestStack'],
+            $parameter['responseContextAccessor'],
         );
     }
 
@@ -113,8 +128,10 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $entryPoints->add(new EntryPoint('deferred', head: false, requiresCss: false));
         $entryPoints->add(new EntryPoint('inactive', active: false, head: true, requiresCss: true));
 
+        $responseContext = new ResponseContext();
+
         $builder = $this->createMock(EntryPointsBuilder::class);
-        $builder->expects($this->once())->method('setFrontendAsset')->with($this->isInstanceOf(FrontendAsset::class))->willReturnSelf();
+        $builder->expects($this->once())->method('setResponseContext')->with($responseContext)->willReturnSelf();
         $builder->expects($this->once())->method('setPage')->with($pageModel)->willReturnSelf();
         $builder->expects($this->once())->method('build')->willReturn($entryPoints);
 
@@ -156,6 +173,7 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
             'entryPointBuilderFactory' => $entryPointBuilderFactory,
             'tagRenderer' => $tagRenderer,
             'requestStack' => $requestStack,
+            'responseContextAccessor' => $this->createResponseContextAccessor($responseContext),
         ]);
 
         $nonce = '_' . ContaoFramework::getNonce();

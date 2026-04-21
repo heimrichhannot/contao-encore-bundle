@@ -8,6 +8,8 @@
 
 namespace HeimrichHannot\EncoreBundle\Test\Asset;
 
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContext;
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
@@ -19,6 +21,8 @@ use HeimrichHannot\UtilsBundle\Util\ModelUtil;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class PageEntrypointsTest extends ContaoTestCase
 {
@@ -71,6 +75,17 @@ class PageEntrypointsTest extends ContaoTestCase
         }
 
         return new PageEntrypoints($frontendAsset, $entryCollection, $utils);
+    }
+
+    private function createFrontendAsset(): FrontendAsset
+    {
+        $requestStack = new RequestStack();
+        $requestStack->push(new Request());
+
+        $responseContextAccessor = new ResponseContextAccessor($requestStack);
+        $responseContextAccessor->setResponseContext(new ResponseContext());
+
+        return new FrontendAsset($responseContextAccessor);
     }
 
     public function entryPointProvider()
@@ -270,7 +285,7 @@ class PageEntrypointsTest extends ContaoTestCase
             array_merge(($bundleConfig['js_entries'] ?? []), ($bundleConfig['entrypoints_jsons'] ?? []))
         );
 
-        $frontendAsset = new FrontendAsset();
+        $frontendAsset = $this->createFrontendAsset();
         $frontendAsset->addActiveEntrypoint('contao-slick-bundle');
 
         $pageEntrypoints = $this->createTestInstance([
@@ -376,7 +391,7 @@ class PageEntrypointsTest extends ContaoTestCase
         $entryCollection = $this->createMock(EntryCollection::class);
         $entryCollection->method('getEntries')->willReturn(($bundleConfig['js_entries'] ?? []));
 
-        $frontendAsset = new FrontendAsset();
+        $frontendAsset = $this->createFrontendAsset();
         $frontendAsset->addActiveEntrypoint('contao-slick-bundle');
 
         $pageEntrypoints = $this->createTestInstance([
@@ -420,7 +435,7 @@ class PageEntrypointsTest extends ContaoTestCase
             ],
         ];
 
-        $frontendAsset = new FrontendAsset();
+        $frontendAsset = $this->createFrontendAsset();
         $frontendAsset->addActiveEntrypoint('contao-slick-bundle');
 
         $pageEntrypoints = $this->createTestInstance([
