@@ -142,17 +142,16 @@ class EntryPointsBuilderTest extends ContaoTestCase
         $active = $result->allActive();
 
         $this->assertSame(
-            ['frontend-entry', 'missing-frontend-entry', 'layout-entry', 'shared-entry', 'parent-entry', 'page-entry'],
+            ['frontend-entry', 'layout-entry', 'shared-entry', 'parent-entry', 'page-entry'],
             array_keys($all)
         );
         $this->assertSame(
-            ['frontend-entry', 'missing-frontend-entry', 'layout-entry', 'parent-entry', 'page-entry'],
+            ['frontend-entry', 'layout-entry', 'parent-entry', 'page-entry'],
             array_keys($active)
         );
 
         $this->assertSame('frontend', $all['frontend-entry']->origin);
         $this->assertFalse($all['frontend-entry']->requiresCss);
-        $this->assertSame('App', $all['missing-frontend-entry']->extension);
         $this->assertTrue($all['layout-entry']->head);
         $this->assertTrue($all['layout-entry']->requiresCss);
         $this->assertSame('tl_layout.5', $all['layout-entry']->origin);

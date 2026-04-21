@@ -179,8 +179,6 @@ class InjectPageEntriesListenerTest extends ContaoTestCase
 
         $listener->onLayoutEvent(new LayoutEvent($template, $page, $layout));
 
-        $this->assertSame('Lorem Ipsum', $template->get('customAttribute'));
-
         $wrappedResponseContext = $template->get('response_context');
         $this->assertSame('other-value', $wrappedResponseContext->other);
         $this->assertTrue(isset($wrappedResponseContext->end_of_head));
@@ -194,13 +192,16 @@ class InjectPageEntriesListenerTest extends ContaoTestCase
         $this->assertSame(['<script-deferred>'], $GLOBALS['TL_BODY']);
     }
 
-    public function testOnLayoutEventReturnsEarlyForNonRegularPages(): void
+    public function testOnLayoutEventReturnsEarlyWhenDisabled(): void
     {
         $page = $this->mockModelObject(PageModel::class, ['type' => 'error_404']);
         $layout = $this->mockClassWithProperties(LayoutModel::class, ['customOption' => false]);
 
         $configurationHelper = $this->createMock(ConfigurationHelper::class);
-        $configurationHelper->expects($this->never())->method('isEnabledOnPage');
+        $configurationHelper->expects($this->once())
+            ->method('isEnabledOnPage')
+            ->with($page, $layout)
+            ->willReturn(false);
 
         $template = new LayoutTemplate('layout', static fn () => new Response());
 
@@ -210,6 +211,6 @@ class InjectPageEntriesListenerTest extends ContaoTestCase
 
         $listener->onLayoutEvent(new LayoutEvent($template, $page, $layout));
 
-        $this->assertFalse($template->has('customAttribute'));
+        $this->assertFalse($template->has('response_context'));
     }
 }

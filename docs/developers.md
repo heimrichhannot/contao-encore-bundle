@@ -69,6 +69,7 @@ To collect or render assets in custom templates or abstinent from the normal pag
 
 namespace App\CustomController;
 
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContext;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
 use HeimrichHannot\EncoreBundle\Request\ResponseContext\Entry;
 use HeimrichHannot\EncoreBundle\Request\ResponseContext\EntryBag;
