@@ -3,13 +3,19 @@ parameters:
 		-
 			message: '#^Call to method getLayout\(\) on an unknown class Contao\\CoreBundle\\Event\\LayoutEvent\.$#'
 			identifier: class.notFound
-			count: 2
+			count: 3
 			path: src/EventListener/InjectPageEntriesListener.php
 
 		-
 			message: '#^Call to method getPage\(\) on an unknown class Contao\\CoreBundle\\Event\\LayoutEvent\.$#'
 			identifier: class.notFound
-			count: 2
+			count: 3
+			path: src/EventListener/InjectPageEntriesListener.php
+
+		-
+			message: '#^Call to method getTemplate\(\) on an unknown class Contao\\CoreBundle\\Event\\LayoutEvent\.$#'
+			identifier: class.notFound
+			count: 3
 			path: src/EventListener/InjectPageEntriesListener.php
 
 		-

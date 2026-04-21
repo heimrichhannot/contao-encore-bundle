@@ -26,35 +26,86 @@ class InjectPageEntriesListener
     #[AsEventListener]
     public function onLayoutEvent(LayoutEvent $event): void
     {
+        if ('regular' !== $event->getPage()->type) {
+            return;
+        }
+
+        if ($event->getLayout()->customOption) {
+            $event->getTemplate()->set('customAttribute', 'Lorem Ipsum');
+        }
+
         if (!$this->configurationHelper->isEnabledOnPage($event->getPage(), $event->getLayout())) {
             return;
         }
 
-        $this->globalContaoAsset->cleanGlobalArrayFromConfiguration();
+        $loader = function () use ($event): string {
+            $this->globalContaoAsset->cleanGlobalArrayFromConfiguration();
 
-        $entryPoints = $this->entrypointBuilderFactory->create()
-            ->setPage($event->getPage())
-            ->setLayout($event->getLayout())
-            ->setFrontendAsset($this->frontendAsset)
-            ->build();
+            $entryPoints = $this->entrypointBuilderFactory->create()
+                ->setPage($event->getPage())
+                ->setLayout($event->getLayout())
+                ->setFrontendAsset($this->frontendAsset)
+                ->build();
 
-        if ($request = $this->requestStack->getCurrentRequest()) {
-            $request->attributes->add([
-                'encore_entries' => $entryPoints,
-            ]);
+            if ($request = $this->requestStack->getCurrentRequest()) {
+                $request->attributes->add([
+                    'encore_entries' => $entryPoints,
+                ]);
+            }
+
+            $this->tagRenderer->reset();
+
+            foreach ($entryPoints->allActive() as $entrypoint) {
+                if ($entrypoint->requiresCss) {
+                    $GLOBALS['TL_HEAD'][] = $this->tagRenderer->renderWebpackLinkTags($entrypoint->name);
+                }
+                if ($entrypoint->head) {
+                    $GLOBALS['TL_HEAD'][] = $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
+                } else {
+                    $GLOBALS['TL_BODY'][] = $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
+                }
+            }
+
+            return '';
+        };
+
+        $responseContext = $event->getTemplate()->get('response_context');
+        if (!is_object($responseContext)) {
+            $loader();
+
+            return;
         }
 
-        $this->tagRenderer->reset();
+        $responseContext = new class($responseContext, $loader) {
+            public function __construct(
+                private $responseContext,
+                private readonly \Closure $loader,
+            ) {
+            }
 
-        foreach ($entryPoints->allActive() as $entrypoint) {
-            if ($entrypoint->requiresCss) {
-                $GLOBALS['TL_HEAD'][] = $this->tagRenderer->renderWebpackLinkTags($entrypoint->name);
+            public function __get(string $key): mixed
+            {
+                if ('end_of_head' === $key) {
+                    ($this->loader)();
+                }
+
+                return $this->responseContext->{$key};
             }
-            if ($entrypoint->head) {
-                $GLOBALS['TL_HEAD'][] = $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
-            } else {
-                $GLOBALS['TL_BODY'][] = $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
+
+            public function __isset(string $key): bool
+            {
+                if ('end_of_head' === $key) {
+                    return true;
+                }
+
+                return isset($this->responseContext->{$key});
             }
-        }
+
+            public function __call(string $name, array $arguments): mixed
+            {
+                return $this->responseContext->{$name}(...$arguments);
+            }
+        };
+        $event->getTemplate()->set('response_context', $responseContext);
     }
 }
