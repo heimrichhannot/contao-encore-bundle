@@ -20,7 +20,7 @@ class EntryPointsBuilder
 
     private array $available = [];
     private ?ResponseContext $responseContext = null;
-    private ?EntryBag $entryBag;
+    private ?EntryBag $entryBag = null;
 
     public function __construct(
         private readonly Utils $utils,
@@ -66,7 +66,7 @@ class EntryPointsBuilder
         }
         $this->available = $available;
 
-        if ($this->responseContext) {
+        if ($this->responseContext && $this->responseContext->has(EntryBag::class)) {
             $bag = $this->responseContext->get(EntryBag::class);
             if ($bag instanceof EntryBag) {
                 $this->addFromBag($entryPoints, $bag);
@@ -120,7 +120,12 @@ class EntryPointsBuilder
     private function addFromBag(EntryPoints $entryPoints, EntryBag $bag): void
     {
         foreach ($bag->all() as $entry) {
-            $entryPoints->add(EntryPoint::fromEntry($entry));
+            $this->addEntryPoint(
+                entryPoints: $entryPoints,
+                name: $entry->name,
+                origin: $entry->origin,
+                extension: $entry->extension,
+            );
         }
     }
 

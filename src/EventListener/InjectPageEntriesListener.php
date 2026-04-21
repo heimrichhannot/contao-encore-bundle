@@ -26,14 +26,6 @@ class InjectPageEntriesListener
     #[AsEventListener]
     public function onLayoutEvent(LayoutEvent $event): void
     {
-        if ('regular' !== $event->getPage()->type) {
-            return;
-        }
-
-        if ($event->getLayout()->customOption) {
-            $event->getTemplate()->set('customAttribute', 'Lorem Ipsum');
-        }
-
         if (!$this->configurationHelper->isEnabledOnPage($event->getPage(), $event->getLayout())) {
             return;
         }

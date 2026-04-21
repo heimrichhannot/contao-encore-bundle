@@ -15,13 +15,4 @@ class EntryPoint
         public readonly string $extension = '',
     ) {
     }
-
-    public static function fromEntry(Entry $entry): self
-    {
-        return new self(
-            name: $entry->name,
-            origin: $entry->origin,
-            extension: $entry->extension,
-        );
-    }
 }

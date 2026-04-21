@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 - Deprecated: `ConfigurationHelper::isEnabledOnPage()` ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
 - Deprecated: getter-Methods in `EncoreEnabledEvent` ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
 
+- Added: ResponseContext bag for entries ([#36](https://github.com/heimrichhannot/contao-encore-bundle/pull/36))
+
 ## [2.1.1] - 2026-03-30
 - Fixed: compatibility issue with symfony 7
 
