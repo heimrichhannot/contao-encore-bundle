@@ -22,6 +22,7 @@ use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\TestUtilitiesBundle\Mock\ModelMockTrait;
 use HeimrichHannot\UtilsBundle\Util\RequestUtil;
 use HeimrichHannot\UtilsBundle\Util\Utils;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
 
@@ -142,12 +143,19 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
                 default => throw new \InvalidArgumentException(sprintf('Unexpected entry "%s".', $entryName)),
             });
 
+        $request = new Request();
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->expects($this->once())
+            ->method('getCurrentRequest')
+            ->willReturn($request);
+
         $instance = $this->createTestInstance([
             'utils' => $utils,
             'configurationHelper' => $configurationHelper,
             'globalContaoAsset' => $globalContaoAsset,
             'entryPointBuilderFactory' => $entryPointBuilderFactory,
             'tagRenderer' => $tagRenderer,
+            'requestStack' => $requestStack,
         ]);
 
         $nonce = '_' . ContaoFramework::getNonce();
@@ -155,5 +163,6 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $expected = "[[TL_CSS$nonce]]<link-app> <script-app>[[TL_HEAD$nonce]] <script-deferred>[[TL_BODY$nonce]]";
 
         $this->assertSame($expected, $instance->__invoke($buffer));
+        $this->assertSame($entryPoints, $request->attributes->get('encore_entries'));
     }
 }
