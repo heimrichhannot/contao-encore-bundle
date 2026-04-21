@@ -7,32 +7,20 @@ use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPoint;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPoints;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointsBuilder;
+use HeimrichHannot\EncoreBundle\Request\ResponseContext\Entry;
+use HeimrichHannot\EncoreBundle\Request\ResponseContext\EntryBag;
 use HeimrichHannot\TestUtilitiesBundle\Mock\ModelMockTrait;
 use HeimrichHannot\UtilsBundle\Util\ModelUtil;
 use HeimrichHannot\UtilsBundle\Util\Utils;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class EntryPointsBuilderTest extends ContaoTestCase
 {
     use ModelMockTrait;
-
-    private function createFrontendAsset(): FrontendAsset
-    {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
-
-        $responseContextAccessor = new ResponseContextAccessor($requestStack);
-        $responseContextAccessor->setResponseContext(new ResponseContext());
-
-        return new FrontendAsset($responseContextAccessor);
-    }
 
     public function testFactoryCreatesFreshBuilderInstances(): void
     {
@@ -133,13 +121,17 @@ class EntryPointsBuilderTest extends ContaoTestCase
             ->method('model')
             ->willReturn($modelUtil);
 
-        $frontendAsset = $this->createFrontendAsset();
-        $frontendAsset->addActiveEntrypoint('frontend-entry');
-        $frontendAsset->addActiveEntrypoint('missing-frontend-entry');
+        $responseContext = new ResponseContext();
+        $responseContext->add(
+            (new EntryBag())
+                ->addEntry(new Entry('frontend-entry', 'frontend', 'App'))
+                ->addEntry(new Entry('missing-frontend-entry', 'frontend', 'App'))
+        );
 
         $builder = new EntryPointsBuilder($utils, $entryCollection);
         $result = $builder
-            ->setFrontendAsset($frontendAsset)
+            ->setResponseContext($responseContext)
+            ->setCustomBag(null)
             ->setLayout($layout, 'layoutEntries')
             ->setPage($page, 'customEntries')
             ->build();
@@ -150,16 +142,17 @@ class EntryPointsBuilderTest extends ContaoTestCase
         $active = $result->allActive();
 
         $this->assertSame(
-            ['frontend-entry', 'layout-entry', 'shared-entry', 'parent-entry', 'page-entry'],
+            ['frontend-entry', 'missing-frontend-entry', 'layout-entry', 'shared-entry', 'parent-entry', 'page-entry'],
             array_keys($all)
         );
         $this->assertSame(
-            ['frontend-entry', 'layout-entry', 'parent-entry', 'page-entry'],
+            ['frontend-entry', 'missing-frontend-entry', 'layout-entry', 'parent-entry', 'page-entry'],
             array_keys($active)
         );
 
-        $this->assertSame(FrontendAsset::class, $all['frontend-entry']->origin);
+        $this->assertSame('frontend', $all['frontend-entry']->origin);
         $this->assertFalse($all['frontend-entry']->requiresCss);
+        $this->assertSame('App', $all['missing-frontend-entry']->extension);
         $this->assertTrue($all['layout-entry']->head);
         $this->assertTrue($all['layout-entry']->requiresCss);
         $this->assertSame('tl_layout.5', $all['layout-entry']->origin);

@@ -3,11 +3,12 @@
 namespace HeimrichHannot\EncoreBundle\Test\EventListener;
 
 use Contao\CoreBundle\Event\LayoutEvent;
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContext;
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\CoreBundle\Twig\LayoutTemplate;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPoint;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
@@ -82,15 +83,29 @@ class InjectPageEntriesListenerTest extends ContaoTestCase
 {
     use ModelMockTrait;
 
+    private function createResponseContextAccessor(?ResponseContext $responseContext = null): ResponseContextAccessor
+    {
+        $requestStack = new RequestStack();
+        $requestStack->push(new Request());
+
+        $accessor = new ResponseContextAccessor($requestStack);
+
+        if (null !== $responseContext) {
+            $accessor->setResponseContext($responseContext);
+        }
+
+        return $accessor;
+    }
+
     private function createTestInstance(array $parameters = []): InjectPageEntriesListener
     {
         return new InjectPageEntriesListener(
             $parameters['tagRenderer'] ?? $this->createMock(TagRenderer::class),
             $parameters['entrypointBuilderFactory'] ?? $this->createMock(EntryPointBuilderFactory::class),
-            $parameters['frontendAsset'] ?? $this->createMock(FrontendAsset::class),
             $parameters['globalContaoAsset'] ?? $this->createMock(GlobalContaoAsset::class),
             $parameters['configurationHelper'] ?? $this->createMock(ConfigurationHelper::class),
             $parameters['requestStack'] ?? $this->createMock(RequestStack::class),
+            $parameters['responseContextAccessor'] ?? $this->createResponseContextAccessor(),
         );
     }
 
@@ -112,10 +127,12 @@ class InjectPageEntriesListenerTest extends ContaoTestCase
         $entryPoints->add(new EntryPoint('app', head: true, requiresCss: true));
         $entryPoints->add(new EntryPoint('deferred', head: false, requiresCss: false));
 
+        $responseContextState = new ResponseContext();
+
         $builder = $this->createMock(EntryPointsBuilder::class);
         $builder->expects($this->once())->method('setPage')->with($page)->willReturnSelf();
         $builder->expects($this->once())->method('setLayout')->with($layout)->willReturnSelf();
-        $builder->expects($this->once())->method('setFrontendAsset')->with($this->isInstanceOf(FrontendAsset::class))->willReturnSelf();
+        $builder->expects($this->once())->method('setResponseContext')->with($responseContextState)->willReturnSelf();
         $builder->expects($this->once())->method('build')->willReturn($entryPoints);
 
         $entryPointBuilderFactory = $this->createMock(EntryPointBuilderFactory::class);
@@ -157,6 +174,7 @@ class InjectPageEntriesListenerTest extends ContaoTestCase
             'globalContaoAsset' => $globalContaoAsset,
             'configurationHelper' => $configurationHelper,
             'requestStack' => $requestStack,
+            'responseContextAccessor' => $this->createResponseContextAccessor($responseContextState),
         ]);
 
         $listener->onLayoutEvent(new LayoutEvent($template, $page, $layout));
