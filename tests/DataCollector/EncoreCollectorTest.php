@@ -50,7 +50,7 @@ class EncoreCollectorTest extends ContaoTestCase
         );
         $this->assertSame('@Contao/data_collector/huh_encore.html.twig', EncoreCollector::getTemplate());
         $this->assertSame(
-            InstalledVersions::getPrettyVersion('heimrichhannot/contao-encore-bundle'),
+            InstalledVersions::getPrettyVersion('heimrichhannot/contao-encore-bundle') ?? 'unknown',
             $collector->getVersion()
         );
     }
@@ -71,7 +71,7 @@ class EncoreCollectorTest extends ContaoTestCase
     public function testCollectWithInvalidEntryPointsAttributeDisablesCollector(): void
     {
         $extensionCollection = $this->createMock(ExtensionCollection::class);
-        $extensionCollection->expects($this->never())->method('getExtensions');
+        $extensionCollection->expects($this->once())->method('getExtensions')->willReturn([]);
 
         $collector = new EncoreCollector($extensionCollection);
 
