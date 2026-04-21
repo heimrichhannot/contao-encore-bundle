@@ -95,12 +95,12 @@
 
         {% for entry in collector.entries %}
             <tr>
-                <td>{{ entry.name }}</td>
-                <td>{{ entry.active }}</td>
-                <td>{{ entry.head }}</td>
-                <td>{{ entry.requiresCss }}</td>
-                <td>{{ entry.origin }}</td>
-                <td>{{ entry.extension }}</td>
+                <td class="font-normal text-bold nowrap">{{ entry.name }}</td>
+                <td class="text-center">{{ entry.active ? 'yes' : '' }}</td>
+                <td class="text-center">{{ entry.head ? 'yes' : '' }}</td>
+                <td class="text-center">{{ entry.requiresCss ? 'yes' : '' }}</td>
+                <td class="text-small break-long-words">{{ entry.origin }}</td>
+                <td class="text-small">{{ entry.extension }}</td>
             </tr>
         {% endfor %}
         </tbody>

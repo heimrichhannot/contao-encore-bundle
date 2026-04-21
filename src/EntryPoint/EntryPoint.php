@@ -2,6 +2,8 @@
 
 namespace HeimrichHannot\EncoreBundle\EntryPoint;
 
+use HeimrichHannot\EncoreBundle\Request\ResponseContext\Entry;
+
 class EntryPoint
 {
     public function __construct(
@@ -12,5 +14,14 @@ class EntryPoint
         public readonly string $origin = '',
         public readonly string $extension = '',
     ) {
+    }
+
+    public static function fromEntry(Entry $entry): self
+    {
+        return new self(
+            name: $entry->name,
+            origin: $entry->origin,
+            extension: $entry->extension,
+        );
     }
 }

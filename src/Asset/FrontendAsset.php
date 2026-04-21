@@ -30,7 +30,7 @@ class FrontendAsset
         }
 
         if (is_string($entrypoint)) {
-            $entrypoint = new Entry($entrypoint);
+            $entrypoint = new Entry($entrypoint, __METHOD__);
         }
 
         $bag->addEntry($entrypoint);

@@ -69,27 +69,29 @@ To collect or render assets in custom templates or abstinent from the normal pag
 
 namespace App\CustomController;
 
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use HeimrichHannot\EncoreBundle\Request\ResponseContext\Entry;
+use HeimrichHannot\EncoreBundle\Request\ResponseContext\EntryBag;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\WebpackEncoreBundle\Asset\TagRenderer;use Twig\Environment;
+use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
+use Twig\Environment;
 
 class CustomController
 {
     private readonly TagRenderer $tagRenderer;
     private readonly EntryPointBuilderFactory $entrypointBuilderFactory;
     private readonly Environment $twig;
-    private readonly FrontendAsset $frontendAsset;
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
         // collect entry points from the different sources
         $entryPoints = $this->entrypointBuilderFactory->create()
             // add the sources you want: 
             ->setPage($event->getPage())
             ->setLayout($event->getLayout())
-            ->setFrontendAsset($this->frontendAsset)
+            ->setResponseContext($request->attributes->get(ResponseContext::REQUEST_ATTRIBUTE_NAME))
+            ->setCustomBag((new EntryBag())->addEntry(new Entry('additional_entry', __METHOD__, 'App')))
             // build the collection:
             ->build();
 

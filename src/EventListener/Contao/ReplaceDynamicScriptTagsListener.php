@@ -10,7 +10,7 @@ namespace HeimrichHannot\EncoreBundle\EventListener\Contao;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\CoreBundle\Framework\ContaoFramework;
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
@@ -26,9 +26,9 @@ class ReplaceDynamicScriptTagsListener
         protected ConfigurationHelper $configurationHelper,
         private readonly GlobalContaoAsset $globalContaoAsset,
         private readonly EntryPointBuilderFactory $entryPointBuilderFactory,
-        private readonly FrontendAsset $frontendAsset,
         private readonly TagRenderer $tagRenderer,
         private readonly RequestStack $requestStack,
+        private readonly ResponseContextAccessor $responseContextAccessor,
     ) {
     }
 
@@ -45,7 +45,7 @@ class ReplaceDynamicScriptTagsListener
         }
 
         $entryPoints = $this->entryPointBuilderFactory->create()
-            ->setFrontendAsset($this->frontendAsset)
+            ->setResponseContext($this->responseContextAccessor->getResponseContext())
             ->setPage($pageModel)
             ->build();
 

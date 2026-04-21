@@ -4,7 +4,33 @@ This document describes different ways to add entries from your code.
 
 > For most usecases, you should use the [PageAssetTrait](../developers.md#add-encore-entries-to-custom-template) instead!
 
-### FrontendAsset service
+
+## Response context
+
+> Since version 2.2
+ 
+Use `EntryBag` of `ResponseContext` to add entries from your controller.
+
+```php
+class CustomController 
+{
+    public function __invoke(Request $request): Response
+    {
+        $responseContext = $request->attributes->get(ResponseContext::REQUEST_ATTRIBUTE_NAME);
+        if ($responseContext instanceof ResponseContext) {
+            if (!$responseContext->has(EntryBag::class)) {
+                $responseContext->add(new EntryBag());
+            }
+            $responseContext->get(EntryBag::class)
+                ?->addEntry(new Entry('contao-tagsinput', __METHOD__, 'example-vendor/example-extension'));
+        }
+    }
+}
+```
+
+Read more about the `ResponseContext` in the [contao docs](https://docs.contao.org/5.x/dev/framework/response-context/).
+
+## FrontendAsset service
 
 Encore bundle comes with a service, `FrontendAsset`, to register your entrypoints.
 

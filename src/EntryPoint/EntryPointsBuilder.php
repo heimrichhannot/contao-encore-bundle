@@ -2,12 +2,13 @@
 
 namespace HeimrichHannot\EncoreBundle\EntryPoint;
 
+use Contao\CoreBundle\Routing\ResponseContext\ResponseContext;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
-use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
+use HeimrichHannot\EncoreBundle\Request\ResponseContext\EntryBag;
 use HeimrichHannot\UtilsBundle\Util\Utils;
 
 class EntryPointsBuilder
@@ -16,9 +17,10 @@ class EntryPointsBuilder
     private string $pageField = '';
     private ?LayoutModel $layout = null;
     private string $layoutField = '';
-    private ?FrontendAsset $frontendAsset = null;
 
     private array $available = [];
+    private ?ResponseContext $responseContext = null;
+    private ?EntryBag $entryBag;
 
     public function __construct(
         private readonly Utils $utils,
@@ -42,10 +44,16 @@ class EntryPointsBuilder
         return $this;
     }
 
-    public function setFrontendAsset(?FrontendAsset $frontendAsset): self
+    public function setResponseContext(?ResponseContext $responseContext): self
     {
-        $this->frontendAsset = $frontendAsset;
+        $this->responseContext = $responseContext;
 
+        return $this;
+    }
+
+    public function setCustomBag(?EntryBag $entryBag): self
+    {
+        $this->entryBag = $entryBag;
         return $this;
     }
 
@@ -58,13 +66,10 @@ class EntryPointsBuilder
         }
         $this->available = $available;
 
-        if ($this->frontendAsset) {
-            foreach ($this->frontendAsset->getActiveEntrypoints() as $entryPoint) {
-                $this->addEntryPoint(
-                    entryPoints: $entryPoints,
-                    name: $entryPoint,
-                    origin: FrontendAsset::class,
-                );
+        if ($this->responseContext) {
+            $bag = $this->responseContext->get(EntryBag::class);
+            if ($bag instanceof EntryBag) {
+                $this->addFromBag($entryPoints, $bag);
             }
         }
 
@@ -105,7 +110,18 @@ class EntryPointsBuilder
             }
         }
 
+        if (null !== $this->entryBag) {
+            $this->addFromBag($entryPoints, $this->entryBag);
+        }
+
         return $entryPoints;
+    }
+
+    private function addFromBag(EntryPoints $entryPoints, EntryBag $bag): void
+    {
+        foreach ($bag->all() as $entry) {
+            $entryPoints->add(EntryPoint::fromEntry($entry));
+        }
     }
 
     private function addEntryPoint(EntryPoints $entryPoints, string $name, bool $active = true, string $origin = '', string $extension = ''): void
