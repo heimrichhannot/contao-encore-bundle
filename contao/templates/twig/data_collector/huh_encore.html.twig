@@ -2,31 +2,37 @@
 
 {% block toolbar %}
 
-    {% set text %}
-        {% set icon %}
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 class="lucide lucide-waypoints-icon lucide-waypoints"><path d="m10.586 5.414-5.172 5.172"/><path
-                        d="m18.586 13.414-5.172 5.172"/><path d="M6 12h12"/><circle cx="12" cy="20" r="2"/><circle
-                        cx="12" cy="4" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="4" cy="12" r="2"/></svg>
-            <span class="sf-toolbar-value">{{ collector.entries|length }}</span>
-        {% endset %}
+    {% set icon %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="lucide lucide-waypoints-icon lucide-waypoints"><path d="m10.586 5.414-5.172 5.172"/><path
+                    d="m18.586 13.414-5.172 5.172"/><path d="M6 12h12"/><circle cx="12" cy="20" r="2"/><circle
+                    cx="12" cy="4" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="4" cy="12" r="2"/></svg>
+        <span class="sf-toolbar-value">{{ collector.entries|length }}</span>
     {% endset %}
 
     {% set text %}
-        <div class="sf-toolbar-info-piece">
-            <b>Enabled</b>
-            <span class="sf-toolbar-status sf-toolbar-status-{% if collector.enabled %}green{% else %}red{% endif %}">{{ collector.enabled ? 'yes' : 'no' }}</span>
-        </div>
+        <div class="sf-toolbar-info-group">
+            <div class="sf-toolbar-info-piece">
+                <b>Enabled</b>
+                <span class="sf-toolbar-status sf-toolbar-status-{% if collector.enabled %}green{% else %}red{% endif %}">{{ collector.enabled ? 'yes' : 'no' }}</span>
+            </div>
 
-        <div class="sf-toolbar-info-piece">
-            <b>Encore Entries</b>
-            <span class="sf-toolbar-status">{{ collector.entries|length }}</span>
-        </div>
+            <div class="sf-toolbar-info-piece">
+                <b>Encore Entries</b>
+                <span class="sf-toolbar-status">{{ collector.entries|length }}</span>
+            </div>
 
-        <div class="sf-toolbar-info-piece">
-            <b>Encore Extensions</b>
-            <span class="sf-toolbar-status">{{ collector.entries|length }}</span>
+            <div class="sf-toolbar-info-piece">
+                <b>Encore Extensions</b>
+                <span class="sf-toolbar-status">{{ collector.extensions|length }}</span>
+            </div>
+        </div>
+        <div class="sf-toolbar-info-group">
+            <div class="sf-toolbar-info-piece">
+                <b>Resources</b>
+                <span><a href="https://github.com/heimrichhannot/contao-encore-bundle" target="_blank" rel="help noreferrer noopener">Read the encore bundle docs</a></span>
+            </div>
         </div>
     {% endset %}
 
@@ -34,8 +40,6 @@
         link: true,
         additional_classes: (collector.enabled ? '' : 'sf-toolbar-status-red') }
     ) }}
-
-{#    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', {link: true, name: 'contao', additional_classes: (((collector.summary.preview) ? 'sf-toolbar-status-yellow ' : '') ~ 'sf-toolbar-block-right')}) }}#}
 
 {% endblock %}
 
