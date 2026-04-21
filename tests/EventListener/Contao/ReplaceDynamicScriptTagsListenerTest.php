@@ -22,6 +22,8 @@ use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\TestUtilitiesBundle\Mock\ModelMockTrait;
 use HeimrichHannot\UtilsBundle\Util\RequestUtil;
 use HeimrichHannot\UtilsBundle\Util\Utils;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
 
 class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
@@ -36,6 +38,7 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $parameter['entryPointBuilderFactory'] = $parameter['entryPointBuilderFactory'] ?? $this->createMock(EntryPointBuilderFactory::class);
         $parameter['frontendAsset'] = $parameter['frontendAsset'] ?? $this->createMock(FrontendAsset::class);
         $parameter['tagRenderer'] = $parameter['tagRenderer'] ?? $this->createMock(TagRenderer::class);
+        $parameter['requestStack'] = $parameter['requestStack'] ?? $this->createMock(RequestStack::class);
 
         return new ReplaceDynamicScriptTagsListener(
             $parameter['utils'],
@@ -44,6 +47,7 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
             entryPointBuilderFactory: $parameter['entryPointBuilderFactory'],
             frontendAsset: $parameter['frontendAsset'],
             tagRenderer: $parameter['tagRenderer'],
+            requestStack: $parameter['requestStack']
         );
     }
 
@@ -139,12 +143,19 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
                 default => throw new \InvalidArgumentException(sprintf('Unexpected entry "%s".', $entryName)),
             });
 
+        $request = new Request();
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->expects($this->once())
+            ->method('getCurrentRequest')
+            ->willReturn($request);
+
         $instance = $this->createTestInstance([
             'utils' => $utils,
             'configurationHelper' => $configurationHelper,
             'globalContaoAsset' => $globalContaoAsset,
             'entryPointBuilderFactory' => $entryPointBuilderFactory,
             'tagRenderer' => $tagRenderer,
+            'requestStack' => $requestStack,
         ]);
 
         $nonce = '_' . ContaoFramework::getNonce();
@@ -152,5 +163,6 @@ class ReplaceDynamicScriptTagsListenerTest extends ContaoTestCase
         $expected = "[[TL_CSS$nonce]]<link-app> <script-app>[[TL_HEAD$nonce]] <script-deferred>[[TL_BODY$nonce]]";
 
         $this->assertSame($expected, $instance->__invoke($buffer));
+        $this->assertSame($entryPoints, $request->attributes->get('encore_entries'));
     }
 }

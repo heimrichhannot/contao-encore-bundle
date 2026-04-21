@@ -8,6 +8,7 @@ use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
 
 class InjectPageEntriesListener
@@ -18,6 +19,7 @@ class InjectPageEntriesListener
         private readonly FrontendAsset $frontendAsset,
         private readonly GlobalContaoAsset $globalContaoAsset,
         private readonly ConfigurationHelper $configurationHelper,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
@@ -35,6 +37,12 @@ class InjectPageEntriesListener
             ->setLayout($event->getLayout())
             ->setFrontendAsset($this->frontendAsset)
             ->build();
+
+        if ($request = $this->requestStack->getCurrentRequest()) {
+            $request->attributes->add([
+                'encore_entries' => $entryPoints,
+            ]);
+        }
 
         $this->tagRenderer->reset();
 

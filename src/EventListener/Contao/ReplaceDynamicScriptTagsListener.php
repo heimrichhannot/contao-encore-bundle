@@ -15,6 +15,7 @@ use HeimrichHannot\EncoreBundle\Asset\GlobalContaoAsset;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use HeimrichHannot\UtilsBundle\Util\Utils;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\WebpackEncoreBundle\Asset\TagRenderer;
 
 #[AsHook('replaceDynamicScriptTags')]
@@ -27,6 +28,7 @@ class ReplaceDynamicScriptTagsListener
         private readonly EntryPointBuilderFactory $entryPointBuilderFactory,
         private readonly FrontendAsset $frontendAsset,
         private readonly TagRenderer $tagRenderer,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
@@ -46,6 +48,12 @@ class ReplaceDynamicScriptTagsListener
             ->setFrontendAsset($this->frontendAsset)
             ->setPage($pageModel)
             ->build();
+
+        if ($request = $this->requestStack->getCurrentRequest()) {
+            $request->attributes->add([
+                'encore_entries' => $entryPoints,
+            ]);
+        }
 
         $css = '';
         $headJs = '';
