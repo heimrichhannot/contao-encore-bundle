@@ -22,12 +22,10 @@ class EncoreCollector extends AbstractDataCollector
             $entryPoints = $request->attributes->get('encore_entries');
             if (!($entryPoints instanceof EntryPoints)) {
                 $this->data['enabled'] = false;
-
-                return;
+            } else {
+                $this->data['entries'] = $entryPoints->all();
+                $this->data['enabled'] = true;
             }
-
-            $this->data['entries'] = $entryPoints->all();
-            $this->data['enabled'] = true;
         } else {
             $this->data['enabled'] = false;
         }
@@ -62,7 +60,7 @@ class EncoreCollector extends AbstractDataCollector
 
     public function getVersion(): string
     {
-        return InstalledVersions::getPrettyVersion('heimrichhannot/contao-encore-bundle');
+        return InstalledVersions::getPrettyVersion('heimrichhannot/contao-encore-bundle') ?? 'unknown';
     }
 
     public function getExtensions(): array
