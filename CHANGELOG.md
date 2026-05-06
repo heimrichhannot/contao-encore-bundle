@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.1] - 2026-05-06
+- Fixed: encore fields not show up on twig layouts ([#37](https://github.com/heimrichhannot/contao-encore-bundle/pull/37))
+- Deprecated: encoreStylesheetsImportsTemplate and encoreScriptsImportsTemplate fields ([#37](https://github.com/heimrichhannot/contao-encore-bundle/pull/37))
+
 ## [2.2.0] - 2026-04-20
 - Added: support for modern twig layouts of contao 5.7 ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))
 - Added: EntrypointsBuilder concept for retriving current page entrypoints ([#34](https://github.com/heimrichhannot/contao-encore-bundle/pull/34))

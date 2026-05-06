@@ -18,9 +18,9 @@ $lang['encoreEntries'][1] =
     'Select webpack entries that should be rendered on this and all inheriting pages. You can overwrite this setting on inheriting pages due page inheritance.';
 $lang['encoreEntries_entry'][0] = 'Entry';
 $lang['encoreEntries_active'][0] = 'Active';
-$lang['encoreStylesheetsImportsTemplate'][0] = 'Stylesheet import template';
+$lang['encoreStylesheetsImportsTemplate'][0] = 'Stylesheet import template (Deprecated)';
 $lang['encoreStylesheetsImportsTemplate'][1] = 'Choose an custom stylesheet import template.';
-$lang['encoreScriptsImportsTemplate'][0] = 'Javascript import template';
+$lang['encoreScriptsImportsTemplate'][0] = 'Javascript import template (Deprecated)';
 $lang['encoreScriptsImportsTemplate'][1] = 'Choose a custom javascript import template.';
 
 /*

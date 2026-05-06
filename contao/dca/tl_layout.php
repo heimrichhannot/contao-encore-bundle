@@ -20,9 +20,10 @@ $dca = &$GLOBALS['TL_DCA']['tl_layout'];
 $dca['palettes']['__selector__'][] = 'addEncore';
 
 PaletteManipulator::create()
-    ->addLegend('encore_legend', 'jquery_legend', PaletteManipulator::POSITION_BEFORE)
+    ->addLegend('encore_legend', 'modules_legend', PaletteManipulator::POSITION_AFTER)
     ->addField('addEncore', 'encore_legend', PaletteManipulator::POSITION_APPEND)
-    ->applyToPalette('default', 'tl_layout');
+    ->applyToPalette('default', 'tl_layout')
+    ->applyToPalette('modern', 'tl_layout');
 
 /*
  * Subpalettes
