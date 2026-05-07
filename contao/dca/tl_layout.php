@@ -7,6 +7,7 @@
  */
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\CoreBundle\DataContainer\PaletteNotFoundException;
 use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
 
 EncoreEntriesSelectField::register('tl_layout')
@@ -19,11 +20,18 @@ $dca = &$GLOBALS['TL_DCA']['tl_layout'];
  */
 $dca['palettes']['__selector__'][] = 'addEncore';
 
-PaletteManipulator::create()
+$pm = PaletteManipulator::create()
     ->addLegend('encore_legend', 'modules_legend', PaletteManipulator::POSITION_AFTER)
     ->addField('addEncore', 'encore_legend', PaletteManipulator::POSITION_APPEND)
-    ->applyToPalette('default', 'tl_layout')
-    ->applyToPalette('modern', 'tl_layout');
+    ->applyToPalette('default', 'tl_layout');
+
+// BC for contao < 5.6
+try {
+    $pm->applyToPalette('modern', 'tl_layout');
+} catch (PaletteNotFoundException) {
+}
+
+
 
 /*
  * Subpalettes
