@@ -144,7 +144,7 @@ class EntryPointsBuilder
             requiresCss: (bool)($this->available[$name]['requires_css'] ?? true),
             origin: $origin,
             extension: $extension,
-            defer: (bool)($this->available[$name]['defer'] ?? false),
+            defer: $this->available[$name]['defer'] ?? null,
         ));
     }
 }

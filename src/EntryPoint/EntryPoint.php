@@ -11,7 +11,7 @@ class EntryPoint
         public readonly bool $requiresCss = false,
         public readonly string $origin = '',
         public readonly string $extension = '',
-        public readonly bool $defer  = false,
+        public readonly ?bool $defer  = null,
     ) {
     }
 
@@ -19,8 +19,8 @@ class EntryPoint
     {
         $attributes = [];
 
-        if ($this->defer) {
-            $attributes['defer'] = 'defer';
+        if (is_bool($this->defer)) {
+            $attributes['defer'] = $this->defer;
         }
 
         return $attributes;
