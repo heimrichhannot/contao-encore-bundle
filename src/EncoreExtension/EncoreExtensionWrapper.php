@@ -23,7 +23,7 @@ class EncoreExtensionWrapper
     private function getBundle(): BundleInterface
     {
         if (!isset($this->bundle)) {
-            $this->bundle = $this->kernel->getBundles()[$this->getReflection()->getShortName()];
+            $this->bundle = $this->kernel->getBundles()[$this->getBundleShortName()];
         }
 
         return $this->bundle;
@@ -42,7 +42,7 @@ class EncoreExtensionWrapper
     {
         if (!isset($this->bundlePath)) {
             if ('App' === $this->extension->getBundle()) {
-                return $this->kernel->getProjectDir();
+                return '.';
             }
 
             $bundlePath = $this->getBundle()->getPath();
@@ -69,6 +69,9 @@ class EncoreExtensionWrapper
 
     public function getBundleShortName(): string
     {
+        if ('App' === $this->extension->getBundle()) {
+            return 'App';
+        }
         return $this->getReflection()->getShortName();
     }
 }

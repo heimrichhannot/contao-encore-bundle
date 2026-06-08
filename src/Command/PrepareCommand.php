@@ -87,7 +87,11 @@ class PrepareCommand extends Command
             $preparedEntry = [];
             foreach ($extension->getEntries() as $entry) {
                 $preparedEntry['name'] = $entry->getName();
-                $preparedEntry['file'] = '.' . \DIRECTORY_SEPARATOR . $bundlePath . \DIRECTORY_SEPARATOR . ltrim($entry->getPath(), \DIRECTORY_SEPARATOR);
+                $filePath = '.' . \DIRECTORY_SEPARATOR;
+                if ('.' !== $bundlePath) {
+                    $filePath .= $bundlePath . \DIRECTORY_SEPARATOR;
+                }
+                $preparedEntry['file'] =  $filePath . ltrim($entry->getPath(), \DIRECTORY_SEPARATOR);
                 $encoreJsEntries[] = $preparedEntry;
             }
 

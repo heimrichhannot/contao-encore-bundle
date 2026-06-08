@@ -29,8 +29,43 @@ This document describes how to setup your project for the encore bundle.
     
     1. Call `encoreBundles.addEntries()`
 
-5. Optional: Add entries.    
-   You can now add entries from your project, if you maintain your assets in your project code. The easiest way would be to just add them in your webpack.config.js. But you can also add them from configuration, see [Bundle Setup](setup_bundle.md) for more information. 
+[5. Optional: Add entries.
+   There are two ways to add encore entries: directly from your `webpack.config.js` or from encore extension.
+   
+   From `webpack.config.js`
+   ```js
+   // webpack.config.js
+   Encore
+   .addEntry('app_theme', './resources/themes/app/js/theme.js')
+   // ...
+   ```   
+
+   You can also create a encore extension in your App. 
+   Return `App` in the `EncoreExtensionInterface::getBundleName()` method implementation 
+   or extend the `AbstractEncoreExtension`, which already do that for you.
+
+   ```php
+    // src/Asset/EncoreExtension.php
+   namespace App\Asset;
+   
+   use HeimrichHannot\EncoreBundle\EncoreExtension\AbstractProjectEncoreExtension;
+   use HeimrichHannot\EncoreContracts\EncoreEntry;
+   
+   class EncoreExtension extends AbstractProjectEncoreExtension
+   {
+       public function getEntries(): array
+       {
+           return [
+               EncoreEntry::create('app_theme', 'resources/themes/app/js/theme.js')
+                    ->setRequiresCss(true),
+                EncoreEntry::create('app_stuff', 'resources/themes/app/js/stuff.js')
+                   ->setIsHeadScript(true)
+                   ->setDefer(true),
+           ];
+       }
+   }
+   ```
+
 
 ## Example Config
 
