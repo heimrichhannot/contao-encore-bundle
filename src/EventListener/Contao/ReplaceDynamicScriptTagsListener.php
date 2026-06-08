@@ -58,14 +58,29 @@ class ReplaceDynamicScriptTagsListener
         $css = '';
         $headJs = '';
         $bodyJs = '';
-        foreach ($entryPoints->allActive() as $entrypoint) {
+        $activeEntryPoints = $entryPoints->allActive();
+
+        foreach ($activeEntryPoints as $entrypoint) {
             if ($entrypoint->requiresCss) {
                 $css .= $this->tagRenderer->renderWebpackLinkTags($entrypoint->name);
             }
+        }
+
+        foreach ($activeEntryPoints as $entrypoint) {
             if ($entrypoint->head) {
-                $headJs .= $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
-            } else {
-                $bodyJs .= $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
+                $headJs .= $this->tagRenderer->renderWebpackScriptTags(
+                    entryName: $entrypoint->name,
+                    extraAttributes: $entrypoint->getScriptExtraAttributes(),
+                );
+            }
+        }
+
+        foreach ($activeEntryPoints as $entrypoint) {
+            if (!$entrypoint->head) {
+                $bodyJs .= $this->tagRenderer->renderWebpackScriptTags(
+                    entryName: $entrypoint->name,
+                    extraAttributes: $entrypoint->getScriptExtraAttributes(),
+                );
             }
         }
 

@@ -11,6 +11,18 @@ class EntryPoint
         public readonly bool $requiresCss = false,
         public readonly string $origin = '',
         public readonly string $extension = '',
+        public readonly bool $defer  = false,
     ) {
+    }
+
+    public function getScriptExtraAttributes(): array
+    {
+        $attributes = [];
+
+        if ($this->defer) {
+            $attributes['defer'] = 'defer';
+        }
+
+        return $attributes;
     }
 }

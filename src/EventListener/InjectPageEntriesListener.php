@@ -47,14 +47,29 @@ class InjectPageEntriesListener
 
             $this->tagRenderer->reset();
 
-            foreach ($entryPoints->allActive() as $entrypoint) {
+            $activeEntryPoints = $entryPoints->allActive();
+
+            foreach ($activeEntryPoints as $entrypoint) {
                 if ($entrypoint->requiresCss) {
                     $GLOBALS['TL_HEAD'][] = $this->tagRenderer->renderWebpackLinkTags($entrypoint->name);
                 }
+            }
+
+            foreach ($activeEntryPoints as $entrypoint) {
                 if ($entrypoint->head) {
-                    $GLOBALS['TL_HEAD'][] = $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
-                } else {
-                    $GLOBALS['TL_BODY'][] = $this->tagRenderer->renderWebpackScriptTags($entrypoint->name);
+                    $GLOBALS['TL_HEAD'][] = $this->tagRenderer->renderWebpackScriptTags(
+                        entryName: $entrypoint->name,
+                        extraAttributes: $entrypoint->getScriptExtraAttributes(),
+                    );
+                }
+            }
+
+            foreach ($activeEntryPoints as $entrypoint) {
+                if (!$entrypoint->head) {
+                    $GLOBALS['TL_BODY'][] = $this->tagRenderer->renderWebpackScriptTags(
+                        entryName: $entrypoint->name,
+                        extraAttributes: $entrypoint->getScriptExtraAttributes(),
+                    );
                 }
             }
 

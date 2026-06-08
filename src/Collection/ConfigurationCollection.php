@@ -44,6 +44,7 @@ class ConfigurationCollection
                         'file' => $entry->getPath(),
                         'requires_css' => $entry->getRequiresCss(),
                         'head' => $entry->getIsHeadScript(),
+                        'defer' => $entry->defer,
                     ];
                 }
             } else {

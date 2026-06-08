@@ -141,9 +141,10 @@ class EntryPointsBuilder
             name: $name,
             active: $active,
             head: $this->available[$name]['head'] ?? false,
-            requiresCss: (bool) ($this->available[$name]['requires_css'] ?? true),
+            requiresCss: (bool)($this->available[$name]['requires_css'] ?? true),
             origin: $origin,
             extension: $extension,
+            defer: (bool)($this->available[$name]['defer'] ?? false),
         ));
     }
 }

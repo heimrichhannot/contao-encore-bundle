@@ -10,12 +10,14 @@ namespace HeimrichHannot\EncoreBundle\Collection;
 
 use Contao\LayoutModel;
 use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
+use HeimrichHannot\EncoreContracts\EncoreEntry;
 use Psr\Cache\CacheItemPoolInterface;
 
 class EntryCollection
 {
     private bool $useCache = false;
     private array $entries;
+    private array $encoreEntries;
 
     public function __construct(
         private readonly ConfigurationCollection $configurationCollection,
@@ -25,6 +27,18 @@ class EntryCollection
         if ($this->bundleConfig['encore_cache_enabled'] ?? false) {
             $this->useCache = true;
         }
+    }
+
+    /**
+     * @return EncoreEntry[]
+     */
+    public function getEncoreEntries(): array
+    {
+        if (!isset($this->encoreEntries)) {
+            $entries = $this->configurationCollection->getJsEntries();
+        }
+
+        return $this->encoreEntries;
     }
 
     /**
