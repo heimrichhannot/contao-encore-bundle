@@ -9,7 +9,8 @@ class EncoreExtensionWrapperFactory
 {
     public function __construct(
         private readonly KernelInterface $kernel,
-    ) {}
+    ) {
+    }
 
     public function wrap(EncoreExtensionInterface $extension): EncoreExtensionWrapper
     {

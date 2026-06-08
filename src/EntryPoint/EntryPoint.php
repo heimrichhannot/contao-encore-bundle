@@ -11,7 +11,7 @@ class EntryPoint
         public readonly bool $requiresCss = false,
         public readonly string $origin = '',
         public readonly string $extension = '',
-        public readonly ?bool $defer  = null,
+        public readonly ?bool $defer = null,
     ) {
     }
 

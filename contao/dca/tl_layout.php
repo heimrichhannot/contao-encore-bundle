@@ -31,8 +31,6 @@ try {
 } catch (PaletteNotFoundException) {
 }
 
-
-
 /*
  * Subpalettes
  */

@@ -16,8 +16,9 @@ class EncoreExtensionWrapper
 
     public function __construct(
         public readonly EncoreExtensionInterface $extension,
-        private readonly KernelInterface         $kernel,
-    ) {}
+        private readonly KernelInterface $kernel,
+    ) {
+    }
 
     private function getBundle(): BundleInterface
     {
@@ -44,16 +45,12 @@ class EncoreExtensionWrapper
                 return $this->kernel->getProjectDir();
             }
 
-
             $bundlePath = $this->getBundle()->getPath();
             if (!file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'composer.json')) {
                 $bundlePath = $bundlePath . \DIRECTORY_SEPARATOR . '..';
             }
             if (!file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'composer.json')) {
-                throw new \RuntimeException(
-                    '[Encore Bundle] Could not find composer.json file for ' . $this->getBundle()->getName() . '.'
-                    . ' Skipping EncoreExtension ' . $this->extension::class . '.'
-                );
+                throw new \RuntimeException('[Encore Bundle] Could not find composer.json file for ' . $this->getBundle()->getName() . '. Skipping EncoreExtension ' . $this->extension::class . '.');
             }
 
             try {
