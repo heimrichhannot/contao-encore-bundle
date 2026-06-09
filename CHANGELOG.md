@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0-DEV] - 2026-06-08
+- Added: support for entry translations
+
 ## [2.3.0] - 2026-06-08
 - Added: support for deferred entries
 - Added: AbstractProjectEncoreExtension to simplify the creation of project-specific extensions  ([#38](https://github.com/heimrichhannot/contao-encore-bundle/pull/38))

@@ -11,6 +11,7 @@ namespace HeimrichHannot\EncoreBundle\EventListener\Callback;
 use Contao\Message;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
+use HeimrichHannot\EncoreContracts\EncoreEntry;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EncoreEntryOptionListener
@@ -26,7 +27,8 @@ class EncoreEntryOptionListener
         $choices = [];
 
         try {
-            $projectEntries = $this->entryCollection->getEntries();
+            /** @var EncoreEntry[] $projectEntries */
+            $projectEntries = $this->entryCollection->getEntries(false);
         } catch (NoEntrypointsException $e) {
             $projectEntries = [];
             Message::addError('[Encore Bundle] ' . $this->translator->trans('huh.encore.errors.noEntrypoints') . ' ' . $e->getMessage(), 'huh.encore.error.noEntryPoints');
@@ -37,7 +39,8 @@ class EncoreEntryOptionListener
         }
 
         foreach ($projectEntries as $entry) {
-            $choices[$entry['name']] = $entry['name'] . (isset($entry['file']) ? ' [' . $entry['file'] . ']' : '');
+            $title = $this->translator->trans($entry->name, domain: 'encore_entry');
+            $choices[$entry->name] = $title . ('' !== $entry->path ? ' [' . $entry->path . ']' : '');
         }
 
         asort($choices);
