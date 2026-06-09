@@ -54,23 +54,6 @@ class EntryCollection
     }
 
     /**
-     * @return string[]
-     * @throws NoEntrypointsException
-     */
-    public function getEntryNames(): array
-    {
-        if (!isset($this->entryNames)) {
-            $entries = $this->getEntries(false);
-            $names = [];
-            foreach ($entries as $entry) {
-                $names[] = $entry->getName();
-            }
-            return $names;
-        }
-        return $this->entryNames;
-    }
-
-    /**
      * @param array $entrypointJsonFiles entrypoint json files
      * @param EncoreEntry[] $bundleConfigEntries Entries defined by encore bundle config
      * @return EncoreEntry[]
