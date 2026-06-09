@@ -72,11 +72,12 @@ class EncoreExtensionWrapper
         if ('App' === $this->extension->getBundle()) {
             return 'App';
         }
+
         return $this->getReflection()->getShortName();
     }
 
     public function isAppExtension(): bool
     {
-        return $this->getBundleShortName() === 'App';
+        return 'App' === $this->getBundleShortName();
     }
 }

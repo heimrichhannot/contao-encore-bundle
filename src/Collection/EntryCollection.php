@@ -47,6 +47,7 @@ class EntryCollection
             foreach ($this->entries as $entry) {
                 $result[] = $entry->toArray();
             }
+
             return $result;
         }
 
@@ -54,8 +55,9 @@ class EntryCollection
     }
 
     /**
-     * @param array $entrypointJsonFiles entrypoint json files
+     * @param array         $entrypointJsonFiles entrypoint json files
      * @param EncoreEntry[] $bundleConfigEntries Entries defined by encore bundle config
+     *
      * @return EncoreEntry[]
      *
      * @throws NoEntrypointsException

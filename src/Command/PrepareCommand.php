@@ -91,7 +91,7 @@ class PrepareCommand extends Command
                 if ('.' !== $bundlePath) {
                     $filePath .= $bundlePath . \DIRECTORY_SEPARATOR;
                 }
-                $preparedEntry['file'] =  $filePath . ltrim($entry->getPath(), \DIRECTORY_SEPARATOR);
+                $preparedEntry['file'] = $filePath . ltrim($entry->getPath(), \DIRECTORY_SEPARATOR);
                 $encoreJsEntries[] = $preparedEntry;
             }
 
