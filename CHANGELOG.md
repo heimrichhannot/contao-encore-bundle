@@ -2,9 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.3.0-DEV] - 2026-06-08
+## [2.3.0] - 2026-06-08
 - Added: support for deferred entries
+- Added: AbstractProjectEncoreExtension to simplify the creation of project-specific extensions  ([#38](https://github.com/heimrichhannot/contao-encore-bundle/pull/38))
+- Added: EncoreExtensionWrapper to reuse variouse logic ([#38](https://github.com/heimrichhannot/contao-encore-bundle/pull/38))
 - Changed: load the runtime chunk in head when necessary
+- Changed: adjust the data_collector template ([#38](https://github.com/heimrichhannot/contao-encore-bundle/pull/38))
+- Changed: use more of EncoreEntry class ([#38](https://github.com/heimrichhannot/contao-encore-bundle/pull/38))
 
 ## [2.2.2] - 2026-05-07
 - Fixed: exception in older contao versions due palette
