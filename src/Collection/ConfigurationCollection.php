@@ -39,13 +39,7 @@ class ConfigurationCollection
         foreach ($this->extensionCollection->getExtensions() as $extension) {
             if ($options['array']) {
                 foreach ($extension->getEntries() as $entry) {
-                    $entrypoints[] = [
-                        'name' => $entry->getName(),
-                        'file' => $entry->getPath(),
-                        'requires_css' => $entry->getRequiresCss(),
-                        'head' => $entry->getIsHeadScript(),
-                        'defer' => $entry->defer,
-                    ];
+                    $entrypoints[] = $entry->toArray();
                 }
             } else {
                 $entrypoints = array_merge($entrypoints, $extension->getEntries());

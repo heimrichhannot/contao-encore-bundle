@@ -74,4 +74,9 @@ class EncoreExtensionWrapper
         }
         return $this->getReflection()->getShortName();
     }
+
+    public function isAppExtension(): bool
+    {
+        return $this->getBundleShortName() === 'App';
+    }
 }

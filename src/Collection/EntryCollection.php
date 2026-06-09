@@ -10,6 +10,7 @@ namespace HeimrichHannot\EncoreBundle\Collection;
 
 use Contao\LayoutModel;
 use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
+use HeimrichHannot\EncoreContracts\EncoreEntry;
 use Psr\Cache\CacheItemPoolInterface;
 
 class EntryCollection
@@ -32,23 +33,47 @@ class EntryCollection
      *
      * @throws NoEntrypointsException
      */
-    public function getEntries(): array
+    public function getEntries(bool $asArray = true): array
     {
         if (!isset($this->entries)) {
             $this->entries = $this->mergeEntries(
                 $this->bundleConfig['entrypoints_jsons'] ?? [],
-                $this->configurationCollection->getJsEntries([
-                    'array' => true,
-                ])
+                $this->configurationCollection->getJsEntries()
             );
+        }
+
+        if ($asArray) {
+            $result = [];
+            foreach ($this->entries as $entry) {
+                $result[] = $entry->toArray();
+            }
+            return $result;
         }
 
         return $this->entries;
     }
 
     /**
+     * @return string[]
+     * @throws NoEntrypointsException
+     */
+    public function getEntryNames(): array
+    {
+        if (!isset($this->entryNames)) {
+            $entries = $this->getEntries(false);
+            $names = [];
+            foreach ($entries as $entry) {
+                $names[] = $entry->getName();
+            }
+            return $names;
+        }
+        return $this->entryNames;
+    }
+
+    /**
      * @param array $entrypointJsonFiles entrypoint json files
-     * @param array $bundleConfigEntries Entries defined by encore bundle config
+     * @param EncoreEntry[] $bundleConfigEntries Entries defined by encore bundle config
+     * @return EncoreEntry[]
      *
      * @throws NoEntrypointsException
      */
@@ -59,25 +84,17 @@ class EntryCollection
 
             $entriesMap = [];
             foreach ($bundleConfigEntries as $entry) {
-                if (!isset($entry['name'])) {
+                if ('' === $entry->name) {
                     continue;
                 }
-                $entriesMap[$entry['name']] = true;
+                $entriesMap[$entry->name] = true;
             }
 
             foreach ($entrypoints as $name => $entrypoint) {
                 // Only add entries that not already exist in the symfony config
                 if (!isset($entriesMap[$name])) {
-                    $newEntry = [
-                        'name' => $name,
-                        'head' => false,
-                    ];
-
-                    if (isset($entrypoint['css'])) {
-                        $newEntry['requires_css'] = true;
-                    }
-
-                    $bundleConfigEntries[] = $newEntry;
+                    $bundleConfigEntries[] = EncoreEntry::create($name, '')
+                        ->setRequiresCss(isset($entrypoint['css']));
                 }
             }
         }

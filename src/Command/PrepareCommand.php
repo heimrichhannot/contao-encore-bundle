@@ -95,7 +95,7 @@ class PrepareCommand extends Command
                 $encoreJsEntries[] = $preparedEntry;
             }
 
-            if (file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'package.json')) {
+            if (!$wrapper->isAppExtension() && file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'package.json')) {
                 $packageData = json_decode(file_get_contents($bundlePath . \DIRECTORY_SEPARATOR . 'package.json'), true);
                 $extensionDependencies = array_merge($extensionDependencies, $packageData['dependencies'] ?? []);
             }

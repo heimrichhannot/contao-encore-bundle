@@ -46,7 +46,7 @@ class LayoutContainer
                 $messageAdapter->addError($messageAdapter->generateUnwrapped('huh.encore.error.noEntryPoints', true));
             } else {
                 try {
-                    $this->entryCollection->getEntries();
+                    $this->entryCollection->getEntries(false);
                 } catch (NoEntrypointsException $e) {
                     $messageAdapter->addError('[Encore Bundle] ' . $this->translator->trans('huh.encore.errors.noEntrypoints') . ' ' . $e->getMessage());
                 }
