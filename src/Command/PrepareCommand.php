@@ -8,8 +8,8 @@
 
 namespace HeimrichHannot\EncoreBundle\Command;
 
-use Composer\InstalledVersions;
 use HeimrichHannot\EncoreBundle\Collection\ExtensionCollection;
+use HeimrichHannot\EncoreBundle\EncoreExtension\EncoreExtensionWrapperFactory;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -38,6 +38,7 @@ class PrepareCommand extends Command
         private readonly KernelInterface $kernel,
         private readonly Environment $twig,
         private readonly ExtensionCollection $extensionCollection,
+        private readonly EncoreExtensionWrapperFactory $wrapperFactory,
     ) {
         parent::__construct();
     }
@@ -75,43 +76,31 @@ class PrepareCommand extends Command
         $extensionList = [];
 
         foreach ($this->extensionCollection->getExtensions() as $extension) {
-            $reflection = new \ReflectionClass($extension->getBundle());
-            $bundle = $this->kernel->getBundles()[$reflection->getShortName()];
-            $bundlePath = $bundle->getPath();
-            if (!file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'composer.json')) {
-                $bundlePath = $bundlePath . \DIRECTORY_SEPARATOR . '..';
-            }
-            if (!file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'composer.json')) {
-                trigger_error(
-                    '[Encore Bundle] Could not find composer.json file for ' . $bundle->getName() . '.'
-                    . ' Skipping EncoreExtension ' . $extension::class . '.'
-                );
+            $wrapper = $this->wrapperFactory->wrap($extension);
+            try {
+                $bundlePath = $wrapper->getBundlePath();
+            } catch (\RuntimeException $e) {
+                $this->io->warning($e->getMessage());
                 continue;
             }
-
-            try {
-                $composerData = json_decode(file_get_contents($bundlePath . '/composer.json'), null, 512, \JSON_THROW_ON_ERROR);
-            } catch (\JsonException) {
-                throw new \JsonException('composer.json of ' . $reflection->getShortName() . ' has a syntax error.');
-            }
-
-            $bundlePath = InstalledVersions::getInstallPath($composerData->name);
-
-            $bundlePath = rtrim((new Filesystem())->makePathRelative($bundlePath, $this->kernel->getProjectDir()), \DIRECTORY_SEPARATOR);
 
             $preparedEntry = [];
             foreach ($extension->getEntries() as $entry) {
                 $preparedEntry['name'] = $entry->getName();
-                $preparedEntry['file'] = '.' . \DIRECTORY_SEPARATOR . $bundlePath . \DIRECTORY_SEPARATOR . ltrim($entry->getPath(), \DIRECTORY_SEPARATOR);
+                $filePath = '.' . \DIRECTORY_SEPARATOR;
+                if ('.' !== $bundlePath) {
+                    $filePath .= $bundlePath . \DIRECTORY_SEPARATOR;
+                }
+                $preparedEntry['file'] = $filePath . ltrim($entry->getPath(), \DIRECTORY_SEPARATOR);
                 $encoreJsEntries[] = $preparedEntry;
             }
 
-            if (file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'package.json')) {
+            if (!$wrapper->isAppExtension() && file_exists($bundlePath . \DIRECTORY_SEPARATOR . 'package.json')) {
                 $packageData = json_decode(file_get_contents($bundlePath . \DIRECTORY_SEPARATOR . 'package.json'), true);
                 $extensionDependencies = array_merge($extensionDependencies, $packageData['dependencies'] ?? []);
             }
 
-            $extensionList[] = [$reflection->getShortName(), $extension::class, $bundlePath];
+            $extensionList[] = [$wrapper->getBundleShortName(), $extension::class, $bundlePath];
         }
 
         $this->io->newLine();

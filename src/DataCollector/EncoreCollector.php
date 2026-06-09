@@ -4,6 +4,7 @@ namespace HeimrichHannot\EncoreBundle\DataCollector;
 
 use Composer\InstalledVersions;
 use HeimrichHannot\EncoreBundle\Collection\ExtensionCollection;
+use HeimrichHannot\EncoreBundle\EncoreExtension\EncoreExtensionWrapperFactory;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPoints;
 use Symfony\Bundle\FrameworkBundle\DataCollector\AbstractDataCollector;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,6 +14,7 @@ class EncoreCollector extends AbstractDataCollector
 {
     public function __construct(
         private readonly ExtensionCollection $extensionCollection,
+        private readonly EncoreExtensionWrapperFactory $wrapperFactory,
     ) {
     }
 
@@ -33,9 +35,9 @@ class EncoreCollector extends AbstractDataCollector
         $extensions = $this->extensionCollection->getExtensions();
         $extensionEntries = [];
         foreach ($extensions as $extension) {
-            $reflection = new \ReflectionClass($extension->getBundle());
+            $wrapper = $this->wrapperFactory->wrap($extension);
             $extensionEntries[] = [
-                'name' => $reflection->getShortName(),
+                'name' => $wrapper->getBundleShortName(),
                 'entries' => $extension->getEntries(),
             ];
         }

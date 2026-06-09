@@ -61,7 +61,7 @@ class EntryPointsBuilder
     public function build(): EntryPoints
     {
         $entryPoints = new EntryPoints();
-        $available = $this->entryCollection->getEntries();
+        $available = $this->entryCollection->getEntries(false);
         if ([] !== $available) {
             $available = array_combine(array_column($available, 'name'), $available);
         }
@@ -137,14 +137,6 @@ class EntryPointsBuilder
             return;
         }
 
-        $entryPoints->add(new EntryPoint(
-            name: $name,
-            active: $active,
-            head: $this->available[$name]['head'] ?? false,
-            requiresCss: (bool)($this->available[$name]['requires_css'] ?? true),
-            origin: $origin,
-            extension: $extension,
-            defer: (bool)($this->available[$name]['defer'] ?? false),
-        ));
+        $entryPoints->add(EntryPoint::fromEncoreEntry($this->available[$name], $active, $origin, $extension));
     }
 }

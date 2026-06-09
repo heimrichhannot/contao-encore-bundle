@@ -11,6 +11,7 @@ declare(strict_types=1);
 use HeimrichHannot\EncoreBundle\Asset\FrontendAsset;
 use HeimrichHannot\EncoreBundle\Asset\TemplateAsset;
 use HeimrichHannot\EncoreBundle\DataCollector\EncoreCollector;
+use HeimrichHannot\EncoreBundle\EncoreExtension\EncoreExtensionWrapperFactory;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -55,4 +56,6 @@ return static function (ContainerConfigurator $container): void {
     $services->set(EncoreCollector::class)
         ->autoconfigure()
         ->autowire();
+
+    $services->set(EncoreExtensionWrapperFactory::class);
 };

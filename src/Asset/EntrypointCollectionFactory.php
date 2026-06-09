@@ -21,7 +21,7 @@ class EntrypointCollectionFactory
     public function createCollection(array $entrypoints): EntrypointCollection
     {
         $collection = new EntrypointCollection();
-        if (empty($this->entryCollection->getEntries())) {
+        if (empty($this->entryCollection->getEntries(false))) {
             return $collection;
         }
 
@@ -29,7 +29,7 @@ class EntrypointCollectionFactory
             if (isset($entrypoint['active']) && !$entrypoint['active'] || !isset($entrypoint['entry'])) {
                 continue;
             }
-            if (!($entry = ArrayHelper::getArrayRowByFieldValue('name', $entrypoint['entry'], $this->entryCollection->getEntries()))) {
+            if (!($entry = ArrayHelper::getArrayRowByFieldValue('name', $entrypoint['entry'], $this->entryCollection->getEntries(true)))) {
                 continue;
             }
 
