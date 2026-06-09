@@ -84,9 +84,9 @@
         <thead>
         <tr>
             <th>Name</th>
-            <th>Active</th>
-            <th>Head</th>
-            <th>CSS</th>
+            <th class="text-center">Active</th>
+            <th class="text-center">Head</th>
+            <th class="text-center">CSS</th>
             <th>Origin</th>
             <th>Extension</th>
         </tr>
@@ -96,9 +96,9 @@
         {% for entry in collector.entries %}
             <tr>
                 <td class="font-normal text-bold nowrap">{{ entry.name }}</td>
-                <td class="text-center">{{ entry.active ? 'yes' : '' }}</td>
-                <td class="text-center">{{ entry.head ? 'yes' : '' }}</td>
-                <td class="text-center">{{ entry.requiresCss ? 'yes' : '' }}</td>
+                <td class="text-center">{{ entry.active ? '✅' : '' }}</td>
+                <td class="text-center">{{ entry.head ? '✅' : '' }}</td>
+                <td class="text-center">{{ entry.requiresCss ? '✅' : '' }}</td>
                 <td class="text-small break-long-words">{{ entry.origin }}</td>
                 <td class="text-small">{{ entry.extension }}</td>
             </tr>
