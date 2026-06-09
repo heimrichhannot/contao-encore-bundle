@@ -14,6 +14,7 @@ use HeimrichHannot\EncoreBundle\EntryPoint\EntryPoints;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointsBuilder;
 use HeimrichHannot\EncoreBundle\Request\ResponseContext\Entry;
 use HeimrichHannot\EncoreBundle\Request\ResponseContext\EntryBag;
+use HeimrichHannot\EncoreContracts\EncoreEntry;
 use HeimrichHannot\TestUtilitiesBundle\Mock\ModelMockTrait;
 use HeimrichHannot\UtilsBundle\Util\ModelUtil;
 use HeimrichHannot\UtilsBundle\Util\Utils;
@@ -77,11 +78,11 @@ class EntryPointsBuilderTest extends ContaoTestCase
         $entryCollection->expects($this->once())
             ->method('getEntries')
             ->willReturn([
-                ['name' => 'frontend-entry', 'requires_css' => false],
-                ['name' => 'layout-entry', 'head' => true, 'requires_css' => true],
-                ['name' => 'shared-entry', 'head' => false, 'requires_css' => true],
-                ['name' => 'parent-entry'],
-                ['name' => 'page-entry', 'requires_css' => false],
+                EncoreEntry::create('frontend-entry', '')->setRequiresCss(false),
+                EncoreEntry::create('layout-entry', '')->setIsHeadScript(true)->setRequiresCss(true),
+                EncoreEntry::create('shared-entry', '')->setIsHeadScript(false)->setRequiresCss(true),
+                EncoreEntry::create('parent-entry', ''),
+                EncoreEntry::create('page-entry', '')->setRequiresCss(false),
             ]);
 
         $parentPage = $this->mockModelObject(PageModel::class, [
@@ -159,7 +160,7 @@ class EntryPointsBuilderTest extends ContaoTestCase
         $this->assertFalse($all['shared-entry']->active);
         $this->assertSame('tl_page.3', $all['shared-entry']->origin);
         $this->assertArrayNotHasKey('shared-entry', $active);
-        $this->assertTrue($all['parent-entry']->requiresCss);
+        $this->assertFalse($all['parent-entry']->requiresCss);
         $this->assertSame('tl_page.2', $all['parent-entry']->origin);
         $this->assertFalse($all['page-entry']->head);
         $this->assertFalse($all['page-entry']->requiresCss);

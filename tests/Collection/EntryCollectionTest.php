@@ -12,6 +12,7 @@ use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Collection\ConfigurationCollection;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
+use HeimrichHannot\EncoreContracts\EncoreEntry;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -69,8 +70,8 @@ class EntryCollectionTest extends ContaoTestCase
 
         $configurationCollection = $this->createMock(ConfigurationCollection::class);
         $configurationCollection->method('getJsEntries')->willReturn([
-            ['name' => 'contao-acme-bundle', 'file' => 'somefile'],
-            ['name' => 'contao-list-bundle', 'file' => '/assets/js/list-bundle.js'],
+            new EncoreEntry('contao-acme-bundle', 'somefile'),
+            new EncoreEntry('contao-list-bundle', '/assets/js/list-bundle.js'),
         ]);
 
         $instance = $this->createTestInstance([

@@ -6,6 +6,8 @@ use Composer\InstalledVersions;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Collection\ExtensionCollection;
 use HeimrichHannot\EncoreBundle\DataCollector\EncoreCollector;
+use HeimrichHannot\EncoreBundle\EncoreExtension\EncoreExtensionWrapper;
+use HeimrichHannot\EncoreBundle\EncoreExtension\EncoreExtensionWrapperFactory;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPoint;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPoints;
 use HeimrichHannot\EncoreBundle\HeimrichHannotEncoreBundle;
@@ -24,13 +26,19 @@ class EncoreCollectorTest extends ContaoTestCase
 
         $extensionEntry = EncoreEntry::create('bundle-entry', '/build/bundle-entry.js');
         $extension = $this->createMock(EncoreExtensionInterface::class);
-        $extension->expects($this->once())->method('getBundle')->willReturn(HeimrichHannotEncoreBundle::class);
         $extension->expects($this->once())->method('getEntries')->willReturn([$extensionEntry]);
 
         $extensionCollection = $this->createMock(ExtensionCollection::class);
         $extensionCollection->expects($this->once())->method('getExtensions')->willReturn([$extension]);
 
-        $collector = new EncoreCollector($extensionCollection);
+        $wrapperFactory = $this->createMock(EncoreExtensionWrapperFactory::class);
+        $wrapperFactory->method('wrap')->willReturnCallback(function (EncoreExtensionInterface $extension) {
+            $wrapper = $this->createMock(EncoreExtensionWrapper::class);
+            $wrapper->expects($this->once())->method('getBundleShortName')->willReturn('HeimrichHannotEncoreBundle');
+            return $wrapper;
+        });
+
+        $collector = new EncoreCollector($extensionCollection, $wrapperFactory);
 
         $request = new Request();
         $request->attributes->set('encore_entries', $entryPoints);
@@ -60,7 +68,9 @@ class EncoreCollectorTest extends ContaoTestCase
         $extensionCollection = $this->createMock(ExtensionCollection::class);
         $extensionCollection->expects($this->once())->method('getExtensions')->willReturn([]);
 
-        $collector = new EncoreCollector($extensionCollection);
+        $wrapperFactory = $this->createMock(EncoreExtensionWrapperFactory::class);
+
+        $collector = new EncoreCollector($extensionCollection, $wrapperFactory);
         $collector->collect(new Request(), new Response());
 
         $this->assertFalse($collector->isEnabled());
@@ -73,7 +83,9 @@ class EncoreCollectorTest extends ContaoTestCase
         $extensionCollection = $this->createMock(ExtensionCollection::class);
         $extensionCollection->expects($this->once())->method('getExtensions')->willReturn([]);
 
-        $collector = new EncoreCollector($extensionCollection);
+        $wrapperFactory = $this->createMock(EncoreExtensionWrapperFactory::class);
+
+        $collector = new EncoreCollector($extensionCollection, $wrapperFactory);
 
         $request = new Request();
         $request->attributes->set('encore_entries', 'invalid');
