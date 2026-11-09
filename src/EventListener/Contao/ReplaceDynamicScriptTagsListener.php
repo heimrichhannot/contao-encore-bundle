@@ -44,6 +44,17 @@ class ReplaceDynamicScriptTagsListener
             return $buffer;
         }
 
+        $nonce = '_' . ContaoFramework::getNonce();
+        $hasCssPlaceholder = str_contains($buffer, "[[TL_CSS$nonce]]");
+        $hasHeadPlaceholder = str_contains($buffer, "[[TL_HEAD$nonce]]");
+        $hasBodyPlaceholder = str_contains($buffer, "[[TL_BODY$nonce]]");
+
+        // Legacy fragments also trigger this hook. Rendering tags without a matching
+        // placeholder would consume Encore's assets before the page can output them.
+        if (!$hasCssPlaceholder && !$hasHeadPlaceholder && !$hasBodyPlaceholder) {
+            return $buffer;
+        }
+
         $entryPoints = $this->entryPointBuilderFactory->create()
             ->setResponseContext($this->responseContextAccessor->getResponseContext())
             ->setPage($pageModel)
@@ -61,13 +72,13 @@ class ReplaceDynamicScriptTagsListener
         $activeEntryPoints = $entryPoints->allActive();
 
         foreach ($activeEntryPoints as $entrypoint) {
-            if ($entrypoint->requiresCss) {
+            if ($hasCssPlaceholder && $entrypoint->requiresCss) {
                 $css .= $this->tagRenderer->renderWebpackLinkTags($entrypoint->name);
             }
         }
 
         foreach ($activeEntryPoints as $entrypoint) {
-            if ($entrypoint->head) {
+            if ($hasHeadPlaceholder && $entrypoint->head) {
                 $headJs .= $this->tagRenderer->renderWebpackScriptTags(
                     entryName: $entrypoint->name,
                     extraAttributes: $entrypoint->getScriptExtraAttributes(),
@@ -76,7 +87,7 @@ class ReplaceDynamicScriptTagsListener
         }
 
         foreach ($activeEntryPoints as $entrypoint) {
-            if (!$entrypoint->head) {
+            if ($hasBodyPlaceholder && !$entrypoint->head) {
                 $bodyJs .= $this->tagRenderer->renderWebpackScriptTags(
                     entryName: $entrypoint->name,
                     extraAttributes: $entrypoint->getScriptExtraAttributes(),
@@ -86,7 +97,6 @@ class ReplaceDynamicScriptTagsListener
 
         $this->globalContaoAsset->cleanGlobalArrayFromConfiguration();
 
-        $nonce = '_' . ContaoFramework::getNonce();
         $replace = [];
         $replace["[[TL_CSS$nonce]]"] = "[[TL_CSS$nonce]]" . trim($css);
         $replace["[[TL_HEAD$nonce]]"] = trim($headJs) . "[[TL_HEAD$nonce]]";
