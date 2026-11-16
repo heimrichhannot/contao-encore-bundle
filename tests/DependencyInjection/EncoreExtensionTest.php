@@ -21,77 +21,48 @@ class EncoreExtensionTest extends ContaoTestCase
         $this->assertSame('huh_encore', $extension->getAlias());
     }
 
-    public function testPrepend()
+    /**
+     * @dataProvider outputPathProvider
+     */
+    public function testPrepend(array $configs, string $projectDir, string $expectedOutputPath): void
     {
-        //
-        // Preconfigured public path
-        //
-
         $extension = new EncoreExtension();
-        $container = $this->createMock(ContainerBuilder::class);
-        $container->method('getExtensionConfig')->willReturn([
-            ['output_path' => 'web/build'],
-        ]);
-        $container->expects($this->never())->method('getParameter');
-        $extension->prepend($container);
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', $projectDir);
 
-        //
-        // test without composer public_path setting
-        //
-
-        $container = $this->createMock(ContainerBuilder::class);
-        $container->method('getExtensionConfig')->willReturn([]);
-        $container->method('prependExtensionConfig')->with(
-            $this->stringContains('webpack_encore'),
-            $this->callback(function ($subject) {
-                return str_contains(($subject['output_path'] ?? ''), '%kernel.project_dir%');
-            }));
-        $extension->prepend($container);
-
-        //
-        // test with public_path = web
-        //
-
-        $container = $this->createMock(ContainerBuilder::class);
-        $container->method('getExtensionConfig')->willReturn([]);
-        $container->method('getParameter')->willReturn(__DIR__.'/../Fixtures/DependencyInjection/public_dir_web');
-        $container->method('prependExtensionConfig')->with(
-            $this->stringContains('webpack_encore'),
-            $this->callback(function ($subject) {
-                return str_contains(($subject['output_path'] ?? ''), '/web/build');
-            }));
-        $extension->prepend($container);
-
-        //
-        // test with public_path = public
-        //
-
-        $container = $this->createMock(ContainerBuilder::class);
-        $container->method('getExtensionConfig')->willReturn([]);
-        $container->method('getParameter')->willReturn(__DIR__.'/../Fixtures/DependencyInjection/public_dir_public');
-        $container->method('prependExtensionConfig')->with(
-            $this->stringContains('webpack_encore'),
-            $this->callback(function ($subject) {
-                return str_contains(($subject['output_path'] ?? ''), '/public/build');
-            }));
-        $extension->prepend($container);
-
-        //
-        // With multiple builds
-        //
-
-        $container = $this->createMock(ContainerBuilder::class);
-        $container->method('getExtensionConfig')->willReturn([
-            ['output_path' => false],
-        ]);
-
-        $exception = false;
-        try {
-            $extension->prepend($container);
-        } catch (FeatureNotSupportedException $e) {
-            $exception = true;
+        foreach ($configs as $config) {
+            $container->prependExtensionConfig('webpack_encore', $config);
         }
 
-        $this->assertTrue($exception);
+        $extension->prepend($container);
+        $extension->load([], $container);
+
+        $this->assertSame($expectedOutputPath, $container->getExtensionConfig('webpack_encore')[0]['output_path']);
+        $this->assertSame($expectedOutputPath, $container->getParameter('huh_encore')['outputPath']);
+        $this->assertSame([$expectedOutputPath . '/entrypoints.json'], $container->getParameter('huh_encore')['entrypoints_jsons']);
+    }
+
+    public function outputPathProvider(): array
+    {
+        $fixtures = \dirname(__DIR__) . '/Fixtures/DependencyInjection';
+
+        return [
+            'default without composer file' => [[], $fixtures, '%kernel.project_dir%/public/build'],
+            'default without public-dir setting' => [[], __DIR__ . '/../..', '%kernel.project_dir%/public/build'],
+            'explicit output path' => [[['output_path' => 'custom/assets']], $fixtures . '/public_dir_web', 'custom/assets'],
+            'explicit web output path' => [[['output_path' => 'web/build']], $fixtures, 'web/build'],
+            'custom web directory' => [[], $fixtures . '/public_dir_web', $fixtures . '/public_dir_web/web/build'],
+            'custom public directory' => [[], $fixtures . '/public_dir_public', $fixtures . '/public_dir_public/public/build'],
+        ];
+    }
+
+    public function testMultipleBuildsAreNotSupported(): void
+    {
+        $container = new ContainerBuilder();
+        $container->prependExtensionConfig('webpack_encore', ['output_path' => false]);
+
+        $this->expectException(FeatureNotSupportedException::class);
+
+        (new EncoreExtension())->prepend($container);
     }
 }
