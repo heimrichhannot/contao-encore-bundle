@@ -7,7 +7,7 @@ Approved design: Theme checkbox enables Encore; theme entries have no per-entry 
 - [x] Verify rendered output with the real Encore renderer; run PHPUnit, PHPStan and ECS.
 - [x] Self-review and fix valid findings.
 - [ ] Claude Opus 5.5 high CLI review: blocked by missing login (attempted; API calls and cost both zero).
-- [ ] Commit, push feature/theme-entries and create GitHub PR against v2.
+- [x] Commit, push feature/theme-entries and create GitHub PR against v2: https://github.com/heimrichhannot/contao-encore-bundle/pull/41 (draft pending authenticated Claude review).
 
 Constraints: PHP >=8.1, Contao 4.13 and 5; inspect vendor APIs before use. Preserve response-context/custom-bag priority and request/event behavior. Do not extend deprecated asset helpers. Test missing themes/layouts, cross-theme isolation, all activation combinations, migration repeatability and real CSS/JS output.
 
