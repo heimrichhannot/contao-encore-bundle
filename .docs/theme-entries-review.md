@@ -11,14 +11,21 @@ Addressed findings:
 
 ## Verification
 
-- Full suite: 87 tests, 324 assertions each on Contao 4.13/PHP 8.2, Contao 5.3/PHP 8.2 and Contao 5.7/PHP 8.4.
+- Full suite: 89 tests, 326 assertions each on Contao 4.13/PHP 8.2, Contao 5.3/PHP 8.2 and Contao 5.7/PHP 8.4.
 - All runs use `SYMFONY_DEPRECATIONS_HELPER=max[total]=0`; no warnings are suppressed.
 - Rendering integration exercises the real entry builder and Encore tag renderer for classic placeholders and the modern lazy response context. Contao 5.7 supplies the real LayoutEvent; older versions use the existing compatibility fixtures.
 - Migration executes against SQLite, preserves entry data and explicit choices, tolerates missing tables/columns and is repeatable.
 - PHPStan and ECS pass. Only changed production files were formatted.
 
-## Requested external review
+## External review completed
 
-Claude Code CLI 2.1.325 was installed temporarily outside the repository. The read-only invocation used `--model claude-opus-5-5 --effort high --tools '' --no-session-persistence` and supplied the approved requirements plus the full patch as input.
+The globally installed Claude Code CLI 2.1.325 completed the read-only review with `claude-opus-5-5` and effort `high`. The result confirms that exact model; no substitute was used. The earlier unauthenticated attempt made no API calls.
 
-The invocation returned `Not logged in · Please run /login` before making any API call. No external review or model-availability confirmation was obtained, and no substitute model was used. An authenticated CLI is required to complete this review. The user has been notified.
+Claude reported no high- or medium-priority defects and two actionable P3 findings. Both were independently checked and fixed:
+
+- Explicit labels configured through `setFieldLabel()` could be overwritten by language files loaded after the DCA. Preserve an explicitly requested custom label in the field definition; ordinary fields continue to use automatic table-label resolution. A regression test simulates later language loading.
+- A builder reading a custom layout field also collected the default theme entries. Merge default theme entries only when the layout field is `encoreEntries`, preserving isolated custom collections. A regression test verifies the resulting collection.
+
+Both regression tests failed before the fixes. The final complete suites pass with 89 tests and 326 assertions on each supported test environment, without deprecations; PHPStan and ECS also pass.
+
+The full independent review is saved in [claude-theme-entries-review.md](claude-theme-entries-review.md). Optional notes about unmigrated imports, a pre-existing backend warning lookup and test global-state cleanup are documented there and were not included as unrelated production changes.

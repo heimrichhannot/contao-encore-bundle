@@ -107,6 +107,25 @@ class EntryPointsBuilderTest extends ContaoTestCase
         $this->assertSame([], (new EntryPointsBuilder($utils, $collection))->build()->all());
     }
 
+    public function testCustomLayoutFieldDoesNotIncludeDefaultThemeEntries(): void
+    {
+        $collection = $this->createMock(EntryCollection::class);
+        $collection->method('getEntries')->willReturn([
+            EncoreEntry::create('theme', ''), EncoreEntry::create('custom', ''),
+        ]);
+        $theme = $this->mockModelObject(ThemeModel::class, ['id' => 7, 'encoreEntries' => serialize([
+            ['entry' => 'theme'],
+        ])]);
+        $layout = $this->mockModelObject(LayoutModel::class, ['id' => 8, 'customEntries' => serialize([
+            ['entry' => 'custom'],
+        ])]);
+        $layout->method('getRelated')->willReturn($theme);
+        $builder = new EntryPointsBuilder($this->createMock(Utils::class), $collection);
+        $result = $builder->setLayout($layout, 'customEntries')->build();
+
+        $this->assertSame(['custom'], array_keys($result->allActive()));
+    }
+
     public function testBuildCombinesFrontendLayoutAndPageEntries(): void
     {
         $entryCollection = $this->createMock(EntryCollection::class);

@@ -81,16 +81,18 @@ class EntryPointsBuilder
         }
 
         if ($this->layout) {
-            /** @var ThemeModel|null $theme The layout belongs to a theme. */
-            $theme = $this->layout->getRelated('pid');
-            if ($theme instanceof ThemeModel) {
-                foreach (StringUtil::deserialize($theme->{EncoreEntriesSelectField::NAME_DEFAULT}, true) as $entrypoint) {
-                    $this->addEntryPoint(
-                        entryPoints: $entryPoints,
-                        name: $entrypoint['entry'] ?? '',
-                        origin: 'tl_theme.' . $theme->id,
-                        extension: 'App',
-                    );
+            if (EncoreEntriesSelectField::NAME_DEFAULT === $this->layoutField) {
+                /** @var ThemeModel|null $theme The layout belongs to a theme. */
+                $theme = $this->layout->getRelated('pid');
+                if ($theme instanceof ThemeModel) {
+                    foreach (StringUtil::deserialize($theme->{EncoreEntriesSelectField::NAME_DEFAULT}, true) as $entrypoint) {
+                        $this->addEntryPoint(
+                            entryPoints: $entryPoints,
+                            name: $entrypoint['entry'] ?? '',
+                            origin: 'tl_theme.' . $theme->id,
+                            extension: 'App',
+                        );
+                    }
                 }
             }
 

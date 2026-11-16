@@ -62,7 +62,7 @@ PaletteManipulator::create()
 
 ## Add encore entries to custom template
 
-To collect or render assets in custom templates or abstinent from the normal page rendering, use the `EntryPointsBuilder`.
+To collect or render assets in custom templates or abstinent from the normal page rendering, use the `EntryPointsBuilder`. When using the default layout entry field, it also collects the entries of that layout's theme. Passing a custom field to `setLayout()` keeps that collection independent of the default theme entries.
 
 ```php
 <?php

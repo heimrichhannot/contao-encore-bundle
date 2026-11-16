@@ -23,9 +23,7 @@ class EncoreEntriesSelectFieldListener
 
         $options = EncoreEntriesSelectField::getRegistrations()[$table];
 
-        $GLOBALS['TL_LANG'][$table][$options->getFieldName()] = $options->getFieldLabel()
-            ?? $GLOBALS['TL_LANG'][$table][$options->getFieldName()]
-            ?? $this->getLabel('encoreEntriesSelect');
+        $GLOBALS['TL_LANG'][$table][$options->getFieldName()] ??= $this->getLabel('encoreEntriesSelect');
 
         $field = [
             'exclude' => true,
@@ -59,6 +57,11 @@ class EncoreEntriesSelectFieldListener
                 'notnull' => false,
             ],
         ];
+        // Explicit API overrides must survive subsequent language loading.
+        if (null !== $options->getFieldLabel()) {
+            $field['label'] = $options->getFieldLabel();
+        }
+
         if ($options->isIncludeActiveCheckbox()) {
             $field['eval']['multiColumnEditor']['fields'] = array_merge(
                 [
