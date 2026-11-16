@@ -48,7 +48,7 @@ class EncoreExtensionTest extends ContaoTestCase
 
         return [
             'default without composer file' => [[], $fixtures, '%kernel.project_dir%/public/build'],
-            'default without public-dir setting' => [[], __DIR__ . '/../..', '%kernel.project_dir%/public/build'],
+            'default without public-dir setting' => [[], $fixtures . '/no_public_dir', '%kernel.project_dir%/public/build'],
             'explicit output path' => [[['output_path' => 'custom/assets']], $fixtures . '/public_dir_web', 'custom/assets'],
             'explicit web output path' => [[['output_path' => 'web/build']], $fixtures, 'web/build'],
             'custom web directory' => [[], $fixtures . '/public_dir_web', $fixtures . '/public_dir_web/web/build'],
