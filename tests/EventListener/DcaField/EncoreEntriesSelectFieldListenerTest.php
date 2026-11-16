@@ -36,6 +36,16 @@ class EncoreEntriesSelectFieldListenerTest extends TestCase
         static::assertArrayHasKey('entry', $GLOBALS['TL_DCA']['tl_test']['fields']['encoreEntries']['eval']['multiColumnEditor']['fields']);
         static::assertArrayNotHasKey('active', $GLOBALS['TL_DCA']['tl_test']['fields']['encoreEntries']['eval']['multiColumnEditor']['fields']);
     }
+    public function testTableTranslationsTakePrecedenceOverFallbackLabels(): void
+    {
+        EncoreEntriesSelectField::register('tl_theme');
+        $GLOBALS['TL_LANG']['tl_theme']['encoreEntries'] = ['Theme entries', 'Inherited by layouts.'];
+        $this->createTestInstance()->onLoadDataContainer('tl_theme');
+
+        $this->assertArrayNotHasKey('label', $GLOBALS['TL_DCA']['tl_theme']['fields']['encoreEntries']);
+        $this->assertSame(['Theme entries', 'Inherited by layouts.'], $GLOBALS['TL_LANG']['tl_theme']['encoreEntries']);
+    }
+
     public function testActiveCheckbox()
     {
         $GLOBALS['TL_DCA']['tl_test'] = [];

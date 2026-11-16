@@ -16,6 +16,7 @@ use Contao\LayoutModel;
 use Contao\Message;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Exception\NoEntrypointsException;
+use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -28,6 +29,7 @@ class LayoutContainer
         private readonly ScopeMatcher $scopeMatcher,
         private readonly EntryCollection $entryCollection,
         private readonly TranslatorInterface $translator,
+        private readonly ConfigurationHelper $configurationHelper,
     ) {
     }
 
@@ -40,8 +42,9 @@ class LayoutContainer
             return;
         }
 
+        $enabled = $this->configurationHelper->isEnabledForLayout($layout);
         $messageAdapter = $this->contaoFramework->getAdapter(Message::class);
-        if ($layout->addEncore) {
+        if ($enabled) {
             if ($messageAdapter->hasMessages('huh.encore.error.noEntryPoints')) {
                 $messageAdapter->addError($messageAdapter->generateUnwrapped('huh.encore.error.noEntryPoints', true));
             } else {
@@ -53,7 +56,7 @@ class LayoutContainer
             }
         }
 
-        if ($layout->addEncore && $layout->addJQuery && (!isset($this->bundleConfig['unset_jquery']) || true !== $this->bundleConfig['unset_jquery'])) {
+        if ($enabled && $layout->addJQuery && (!isset($this->bundleConfig['unset_jquery']) || true !== $this->bundleConfig['unset_jquery'])) {
             $messageAdapter->addInfo($GLOBALS['TL_LANG']['tl_layout']['INFO']['jquery_order_conflict'] ?: '');
         }
     }

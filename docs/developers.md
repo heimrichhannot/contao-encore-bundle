@@ -124,6 +124,8 @@ class CustomController
 
 The `ConfigurationHelper` service can be used to obtain some configuration information. Following methods are available:
 
+`isEnabledForLayout(LayoutModel $layout): bool` - Resolve the layout activation mode, inheriting the theme setting when selected. This method can also be used in the backend.
+
 `isEnabledOnPage(PageModel $page, ?LayoutModel $layout = null): bool` - Return if encore is enabled for the current frontend page.
 
 `getRelativeOutputPath(): string` - Return the relative output path configured by webpack encore bundle. Typical this is `build`.

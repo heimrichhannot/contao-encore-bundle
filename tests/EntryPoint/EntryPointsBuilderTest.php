@@ -7,6 +7,7 @@ use Contao\CoreBundle\Routing\ResponseContext\ResponseContextAccessor;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
+use Contao\ThemeModel;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPoint;
 use HeimrichHannot\EncoreBundle\EntryPoint\EntryPointBuilderFactory;
@@ -70,6 +71,40 @@ class EntryPointsBuilderTest extends ContaoTestCase
         $this->assertSame('tl_page.1', $all['app']->origin);
         $this->assertArrayNotHasKey('app', $active);
         $this->assertSame('deferred', $active['deferred']->name);
+    }
+
+    public function testThemeEntriesCanBeOverriddenAndReactivated(): void
+    {
+        $collection = $this->createMock(EntryCollection::class);
+        $collection->method('getEntries')->willReturn([
+            EncoreEntry::create('theme', ''), EncoreEntry::create('shared', ''), EncoreEntry::create('disabled', ''),
+        ]);
+        $theme = $this->mockModelObject(ThemeModel::class, ['id' => 7, 'addEncore' => '', 'encoreEntries' => serialize([
+            ['entry' => 'theme'], ['entry' => 'shared'], ['entry' => 'disabled'], ['entry' => 'unknown'], ['entry' => ''],
+        ])]);
+        $layout = $this->mockModelObject(LayoutModel::class, ['id' => 8, 'addEncore' => '1', 'encoreEntries' => serialize([
+            ['entry' => 'shared', 'active' => ''], ['entry' => 'disabled', 'active' => ''],
+        ])]);
+        $layout->method('getRelated')->with('pid')->willReturn($theme);
+        $page = $this->mockModelObject(PageModel::class, ['id' => 9, 'encoreEntries' => serialize([
+            ['entry' => 'shared', 'active' => '1'],
+        ])]);
+        $modelUtil = $this->createMock(ModelUtil::class);
+        $modelUtil->method('findParentsRecursively')->willReturn([]);
+        $utils = $this->createMock(Utils::class);
+        $utils->method('model')->willReturn($modelUtil);
+        $result = (new EntryPointsBuilder($utils, $collection))->setLayout($layout)->setPage($page)->build();
+
+        $this->assertSame(['theme', 'shared'], array_keys($result->allActive()));
+        $this->assertSame('tl_theme.7', $result->all()['theme']->origin);
+        $this->assertSame('tl_page.9', $result->all()['shared']->origin);
+        $this->assertSame('tl_layout.8', $result->all()['disabled']->origin);
+        $this->assertFalse($result->all()['disabled']->active);
+
+        $otherLayout = $this->mockModelObject(LayoutModel::class, ['id' => 10]);
+        $otherLayout->method('getRelated')->with('pid')->willReturn(null);
+        $this->assertSame([], (new EntryPointsBuilder($utils, $collection))->setLayout($otherLayout)->build()->all());
+        $this->assertSame([], (new EntryPointsBuilder($utils, $collection))->build()->all());
     }
 
     public function testBuildCombinesFrontendLayoutAndPageEntries(): void

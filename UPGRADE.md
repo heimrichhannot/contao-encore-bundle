@@ -2,6 +2,18 @@
 
 Upgrade notice for breaking changes
 
+## Theme-level Encore configuration
+
+Run `contao:migrate` after updating the bundle to apply the data migration and database schema changes.
+
+Encore can now be activated at theme level. Layouts use "Inherit", "Enable" or "Disable" instead of a checkbox. New themes start disabled and new layouts inherit their theme's setting.
+
+The migration preserves existing behavior: previously enabled layouts remain explicitly enabled, and previously disabled layouts become explicitly disabled. Existing entry selections are unchanged. To use theme activation for an existing layout, switch that layout to "Inherit" after the migration.
+
+For integrations reading `tl_layout.addEncore` directly, the values are now `i` (inherit), `1` (enable), and `0` (disable). Do not evaluate the field as a boolean: use `ConfigurationHelper::isEnabledForLayout()` to resolve the theme setting. Legacy empty values remain disabled until migrated.
+
+Theme entries are inherited by layouts and pages. Layout and page entries retain their per-entry "Active" checkbox and can override inherited entries.
+
 
 ## 0.* to 1.0
 

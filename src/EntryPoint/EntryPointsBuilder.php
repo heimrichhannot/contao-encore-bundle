@@ -6,6 +6,7 @@ use Contao\CoreBundle\Routing\ResponseContext\ResponseContext;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\ThemeModel;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
 use HeimrichHannot\EncoreBundle\Request\ResponseContext\EntryBag;
@@ -80,6 +81,19 @@ class EntryPointsBuilder
         }
 
         if ($this->layout) {
+            /** @var ThemeModel|null $theme The layout belongs to a theme. */
+            $theme = $this->layout->getRelated('pid');
+            if ($theme instanceof ThemeModel) {
+                foreach (StringUtil::deserialize($theme->{EncoreEntriesSelectField::NAME_DEFAULT}, true) as $entrypoint) {
+                    $this->addEntryPoint(
+                        entryPoints: $entryPoints,
+                        name: $entrypoint['entry'] ?? '',
+                        origin: 'tl_theme.' . $theme->id,
+                        extension: 'App',
+                    );
+                }
+            }
+
             foreach (StringUtil::deserialize($this->layout->{$this->layoutField}, true) as $entrypoint) {
                 $this->addEntryPoint(
                     entryPoints: $entryPoints,

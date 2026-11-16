@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/heimrichhannot/contao-encore-bundle/badge.svg?branch=v2)](https://coveralls.io/github/heimrichhannot/contao-encore-bundle?branch=v2)
 ![](https://img.shields.io/badge/PHPStan-level%205-brightgreen.svg?style=flat)
 
-Use the power and simplicity of symfony webpack encore in contao. This bundle let you decide on layout and page level, which encore entries should be loaded. If you want more, you can prepare your bundles define their own encore entries, so never need to manually add or remove encore entries again.
+Use the power and simplicity of symfony webpack encore in contao. This bundle let you decide on theme, layout and page level, which encore entries should be loaded. If you want more, you can prepare your bundles define their own encore entries, so never need to manually add or remove encore entries again.
 
 ## Features
 - use symfony encore ([symfony/webpack-encore](https://github.com/symfony/webpack-encore) and [symfony/webpack-encore-bundle](https://github.com/symfony/webpack-encore-bundle)) to enhance your contao assets workflow
@@ -49,13 +49,15 @@ Setup your project for encore bundle:
 
 ### Activate encore entries
 
-1. In the contao backend, go to page layout configuration
-1. Check "Activate Webpack Encore" and fill the mandatory fields
-1. If you have a main project bundle entry containing the main stylesheets, add it as active entry, add also all other entries you want to have activated on every page. 
-1. For page specific features, you can activate additional entries in page setting (site structure).
-    * Be aware, that child pages will inherit settings from their parants
-    * Pay attention that you check entries as active (if you want them to be loaded)!
-    * If you want an already added entry to be not loaded on an specific page, select it as entry and don't check "active".
+1. In the Contao backend, edit a theme and check "Activate Webpack Encore".
+1. Select the entries that all layouts of this theme should inherit. Theme entries are always active; there is no per-entry activation checkbox at theme level.
+1. In each page layout, choose "Inherit", "Enable" or "Disable" for Webpack Encore. New layouts inherit the theme setting. "Enable" also works when Encore is disabled at theme level.
+1. Add layout-specific entries with "Active" checked. To disable a theme entry for a layout, select the same entry and uncheck "Active".
+1. For page-specific features, add or override entries in the page settings (site structure). Child pages inherit the settings of their parents and can override them again.
+
+Entries are resolved in this order: **theme → layout → parent pages → current page**. The more specific setting wins. If Encore is enabled explicitly in a layout, it also receives the theme's entries even when the theme's activation checkbox is unchecked.
+
+When upgrading an existing installation, run the Contao migrations. Existing layouts retain their activation settings; see [Upgrade](UPGRADE.md#theme-level-encore-configuration).
 
 ### Prepare command
 

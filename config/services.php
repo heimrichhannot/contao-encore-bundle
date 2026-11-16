@@ -33,7 +33,7 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $services
-        ->load('HeimrichHannot\\EncoreBundle\\', '../src/{Asset,Collection,Command,DataContainer,EventListener,Helper}/*')
+        ->load('HeimrichHannot\\EncoreBundle\\', '../src/{Asset,Collection,Command,DataContainer,EventListener,Helper,Migration}/*')
             ->exclude('../src/Asset/{EntrypointCollection.php}')
             ->public()
             ->autoconfigure()
