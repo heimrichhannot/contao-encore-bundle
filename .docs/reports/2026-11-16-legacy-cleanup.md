@@ -9,3 +9,4 @@ Plan: `.docs/plans/2026-11-16-contao-legacy-cleanup.md`
 - Ausgangsläufe: Contao 5.3.54/PHP 8.2 und Contao 5.7.17/PHP 8.5 jeweils 56 Tests / 256 Assertions grün.
 - Aufgabe 1: Regressionstests vor Produktionsänderung grün (8 Tests / 20 Assertions); anfängliche Testfehler durch nicht normalisierte erwartete Fixture-Pfade korrigiert.
 - Aufgabe 1: Standardpfad vereinfacht, Versionsabfrage und unbenutzten Import entfernt. Gesamtsuite: 62 Tests / 273 Assertions; PHPStan und ECS grün.
+- Aufgabe 2: Direkte Tests und verwendete Hilfsbibliotheken verwenden Contao-Namespaces; keine benötigten globalen Aliase gefunden. Nach Entfernung des Loaders sind unter 5.3.54/PHP 8.2 und 5.7.17/PHP 8.5 jeweils 62 Tests / 273 Assertions grün; keine Ersatz-Alias-Schicht nötig.
