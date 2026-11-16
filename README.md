@@ -18,8 +18,6 @@ Use the power and simplicity of symfony webpack encore in contao. This bundle le
 
 ### Prerequisites
 
-* Contao 5.3 or later (5.x) and PHP 8.2 or later.
-
 * Read the [Encore Documentation](https://symfony.com/doc/current/frontend.html) in order to install Encore and understand the core concepts of Webpack and Symfony Encore.
 
 ### Prepare your project and bundle
