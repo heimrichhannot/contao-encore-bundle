@@ -49,14 +49,14 @@ class ConfigurationHelperTest extends ContaoTestCase
         return $instance;
     }
 
-    public function testIsEnabledOnCurrentPage()
+    public function testIsEnabledOnPage()
     {
         $scopeMatcher = $this->createMock(ScopeMatcher::class);
         $scopeMatcher->method('isFrontendRequest')->willReturn(false);
         $instance = $this->createTestInstance([
             'scopeMatcher' => $scopeMatcher,
         ]);
-        $this->assertFalse($instance->isEnabledOnCurrentPage());
+        $this->assertFalse($instance->isEnabledOnPage($instance->getPageModel() ?? $this->mockClassWithProperties(PageModel::class, [])));
 
         $scopeMatcher = $this->createMock(ScopeMatcher::class);
         $scopeMatcher->method('isFrontendRequest')->willReturn(true);
@@ -66,7 +66,7 @@ class ConfigurationHelperTest extends ContaoTestCase
             'scopeMatcher' => $scopeMatcher,
             'requestStack' => $requestStack,
         ]);
-        $this->assertFalse($instance->isEnabledOnCurrentPage());
+        $this->assertFalse($instance->isEnabledOnPage($instance->getPageModel() ?? $this->mockClassWithProperties(PageModel::class, [])));
 
         $requestStack = $this->createMock(RequestStack::class);
         $requestStack->method('getParentRequest')->willReturn(null);
@@ -76,7 +76,7 @@ class ConfigurationHelperTest extends ContaoTestCase
             'requestStack' => $requestStack,
         ]);
         $pageModel = $this->mockClassWithProperties(PageModel::class, []);
-        $this->assertFalse($instance->isEnabledOnCurrentPage($pageModel));
+        $this->assertFalse($instance->isEnabledOnPage($pageModel));
 
         $layoutModelAdapter = $this->mockAdapter(['findByPk']);
         $layoutModelAdapter->method('findByPk')->willReturnCallback(function ($id) {
@@ -101,12 +101,12 @@ class ConfigurationHelperTest extends ContaoTestCase
             'contaoFramework' => $contaoFramework,
         ]);
         $pageModel = $this->mockClassWithProperties(PageModel::class, ['layoutId' => 2]);
-        $this->assertFalse($instance->isEnabledOnCurrentPage($pageModel));
+        $this->assertFalse($instance->isEnabledOnPage($pageModel));
 
         $pageModel = $this->mockClassWithProperties(PageModel::class, ['layoutId' => 3]);
-        $this->assertTrue($instance->isEnabledOnCurrentPage($pageModel));
+        $this->assertTrue($instance->isEnabledOnPage($pageModel));
 
-        $this->assertFalse($instance->isEnabledOnCurrentPage());
+        $this->assertFalse($instance->isEnabledOnPage($instance->getPageModel() ?? $this->mockClassWithProperties(PageModel::class, [])));
 
         $requestStack = $this->createMock(RequestStack::class);
         $requestStack->method('getParentRequest')->willReturn(null);
@@ -119,7 +119,7 @@ class ConfigurationHelperTest extends ContaoTestCase
             'requestStack' => $requestStack,
             'contaoFramework' => $contaoFramework,
         ]);
-        $this->assertTrue($instance->isEnabledOnCurrentPage());
+        $this->assertTrue($instance->isEnabledOnPage($instance->getPageModel() ?? $this->mockClassWithProperties(PageModel::class, [])));
 
         unset($GLOBALS['objPage']);
 
@@ -132,7 +132,7 @@ class ConfigurationHelperTest extends ContaoTestCase
             'scopeMatcher' => $scopeMatcher,
             'requestStack' => $requestStack,
         ]);
-        $this->assertFalse($instance->isEnabledOnCurrentPage());
+        $this->assertFalse($instance->isEnabledOnPage($instance->getPageModel() ?? $this->mockClassWithProperties(PageModel::class, [])));
 
         $requestStack = $this->createMock(RequestStack::class);
         $requestStack->method('getCurrentRequest')->willReturn(new Request());
@@ -144,7 +144,7 @@ class ConfigurationHelperTest extends ContaoTestCase
             'scopeMatcher' => $scopeMatcher,
             'requestStack' => $requestStack,
         ]);
-        $this->assertFalse($instance->isEnabledOnCurrentPage());
+        $this->assertFalse($instance->isEnabledOnPage($instance->getPageModel() ?? $this->mockClassWithProperties(PageModel::class, [])));
 
         $requestStack = $this->createMock(RequestStack::class);
         $requestStack->method('getCurrentRequest')->willReturn(new Request([], [], [
@@ -162,7 +162,7 @@ class ConfigurationHelperTest extends ContaoTestCase
             'requestStack' => $requestStack,
             'contaoFramework' => $contaoFramework,
         ]);
-        $this->assertTrue($instance->isEnabledOnCurrentPage());
+        $this->assertTrue($instance->isEnabledOnPage($instance->getPageModel() ?? $this->mockClassWithProperties(PageModel::class, [])));
     }
 
     public function testGetRelativeOutputPath()
