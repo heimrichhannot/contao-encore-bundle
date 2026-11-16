@@ -9,7 +9,7 @@ Approved design: Theme checkbox enables Encore; theme entries have no per-entry 
 - [x] Claude Opus 5.5 high CLI review completed with the global authenticated CLI; both validated P3 findings fixed with failing-then-passing regression tests.
 - [x] Commit, push feature/theme-entries and create GitHub PR against v2: https://github.com/heimrichhannot/contao-encore-bundle/pull/41 (external review completed; ready for review).
 
-Constraints: PHP >=8.1, Contao 4.13 and 5; inspect vendor APIs before use. Preserve response-context/custom-bag priority and request/event behavior. Do not extend deprecated asset helpers. Test missing themes/layouts, cross-theme isolation, all activation combinations, migration repeatability and real CSS/JS output.
+Current constraints after v2 update #42: PHP >=8.2, Contao >=5.3; inspect vendor APIs before use. Preserve response-context/custom-bag priority and request/event behavior. Do not extend deprecated asset helpers. Test missing themes/layouts, cross-theme isolation, all activation combinations, migration repeatability and real CSS/JS output.
 
 Workspace: .worktrees/theme-entries, baseline a449606. Execution is inline as requested. No changes in the original checkout.
 
@@ -34,3 +34,9 @@ Self-review findings addressed:
 Final verification: Contao 4.13/PHP 8.2, Contao 5.3/PHP 8.2 and Contao 5.7/PHP 8.4 each pass 89 tests / 326 assertions with SYMFONY_DEPRECATIONS_HELPER=max[total]=0. PHPStan and ECS pass. The modern integration uses the actual Contao 5.7 LayoutEvent and lazy response context.
 
 External review fixes: explicit custom labels survive later language loading; builders using a custom layout field do not inherit default theme entries. Full external report and finding dispositions are saved alongside this plan.
+
+## Rebase onto updated v2
+
+Rebased onto `8a18470` (CI fixes and PHP 8.2 / Contao 5.3 minimums). Resolved conflicts in the changelog, entry-option tests and activation tests. Both changelog entries and all upstream tests are preserved; the duplicated earlier option-test adjustment is superseded by the stronger upstream real-translator tests. Feature production code is unchanged; the only source difference from pre-rebase head `baa9914` is the upstream dependency-injection cleanup.
+
+Validated against the new dependency constraints, with the simplified upstream test bootstrap (no restored global aliases): Contao 5.3.54 on PHP 8.2, 8.3, 8.4 and 8.5, plus Contao 5.7.17 on PHP 8.5. Every run passes 96 tests / 345 assertions with zero deprecations. PHPStan, ECS and Composer validation pass. No further feature corrections were necessary. Earlier Contao 4.13 results above are historical; it is no longer supported by v2.

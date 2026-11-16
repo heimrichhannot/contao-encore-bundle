@@ -9,7 +9,7 @@ Addressed findings:
 - Doctrine schema representation must preserve the existing BLOB size rather than widening existing columns. Retain a 65535-byte capacity.
 - Missing modern palettes must not instantiate the deprecated Contao exception hierarchy. Check palette existence before applying the extension (deprecated base class since Contao 4.7, removal announced for 5.0).
 
-## Verification
+## Verification before rebase
 
 - Full suite: 89 tests, 326 assertions each on Contao 4.13/PHP 8.2, Contao 5.3/PHP 8.2 and Contao 5.7/PHP 8.4.
 - All runs use `SYMFONY_DEPRECATIONS_HELPER=max[total]=0`; no warnings are suppressed.
@@ -29,3 +29,11 @@ Claude reported no high- or medium-priority defects and two actionable P3 findin
 Both regression tests failed before the fixes. The final complete suites pass with 89 tests and 326 assertions on each supported test environment, without deprecations; PHPStan and ECS also pass.
 
 The full independent review is saved in [claude-theme-entries-review.md](claude-theme-entries-review.md). Optional notes about unmigrated imports, a pre-existing backend warning lookup and test global-state cleanup are documented there and were not included as unrelated production changes.
+
+## Verification after rebase onto v2 `8a18470`
+
+- All three feature commits were rebased; the production feature changes and Claude finding fixes are preserved.
+- Retained the new v2 dependency constraints, stricter deprecation configuration, dependency-injection tests, real-translator tests and simplified test bootstrap unchanged.
+- Resolved the overlapping changelog and test edits without removing upstream or feature regression coverage.
+- Full suite: 96 tests / 345 assertions per run on Contao 5.3.54 with PHP 8.2–8.5, and Contao 5.7.17 with PHP 8.5. No deprecations.
+- PHPStan, ECS and Composer validation pass. Self-review of the range-diff and the combined source found no additional correctness issues. The external review above predates the rebase; no feature production logic changed during rebasing.
