@@ -8,7 +8,6 @@
 
 namespace HeimrichHannot\EncoreBundle\DependencyInjection;
 
-use Composer\InstalledVersions;
 use HeimrichHannot\EncoreBundle\Exception\FeatureNotSupportedException;
 use HeimrichHannot\EncoreContracts\EncoreExtensionInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -41,11 +40,7 @@ class EncoreExtension extends Extension implements PrependExtensionInterface
 
         if (false !== $outputPath) {
             if (empty($outputPath)) {
-                if (version_compare(InstalledVersions::getPrettyVersion('contao/core-bundle'), '4.12', '>=')) {
-                    $outputPath = '%kernel.project_dir%/public/build';
-                } else {
-                    $outputPath = '%kernel.project_dir%/web/build';
-                }
+                $outputPath = '%kernel.project_dir%/public/build';
                 if (\is_string($projectDir = $container->getParameter('kernel.project_dir'))) {
                     $publicPath = $this->getComposerPublicDir($projectDir);
                     if (null !== $publicPath) {
