@@ -5,9 +5,12 @@ use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
 
 EncoreEntriesSelectField::register('tl_theme');
 
+$GLOBALS['TL_DCA']['tl_theme']['palettes']['__selector__'][] = 'addEncore';
+$GLOBALS['TL_DCA']['tl_theme']['subpalettes']['addEncore'] = EncoreEntriesSelectField::NAME_DEFAULT;
+
 PaletteManipulator::create()
     ->addLegend('encore_legend', 'config_legend', PaletteManipulator::POSITION_AFTER)
-    ->addField(['addEncore', EncoreEntriesSelectField::NAME_DEFAULT], 'encore_legend', PaletteManipulator::POSITION_APPEND)
+    ->addField('addEncore', 'encore_legend', PaletteManipulator::POSITION_APPEND)
     ->applyToPalette('default', 'tl_theme');
 
 $GLOBALS['TL_DCA']['tl_theme']['fields']['addEncore'] = [
@@ -15,6 +18,7 @@ $GLOBALS['TL_DCA']['tl_theme']['fields']['addEncore'] = [
     'inputType' => 'checkbox',
     'eval' => [
         'tl_class' => 'w50',
+        'submitOnChange' => true,
     ],
     'sql' => [
         'type' => 'string',

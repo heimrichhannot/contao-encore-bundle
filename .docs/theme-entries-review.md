@@ -37,3 +37,11 @@ The full independent review is saved in [claude-theme-entries-review.md](claude-
 - Resolved the overlapping changelog and test edits without removing upstream or feature regression coverage.
 - Full suite: 96 tests / 345 assertions per run on Contao 5.3.54 with PHP 8.2–8.5, and Contao 5.7.17 with PHP 8.5. No deprecations.
 - PHPStan, ECS and Composer validation pass. Self-review of the range-diff and the combined source found no additional correctness issues. The external review above predates the rebase; no feature production logic changed during rebasing.
+
+## Conditional field visibility follow-up
+
+Theme entries now use the native checkbox subpalette. Layout entries and import-template fields use the native enable subpalette; an attributed palette callback adds them when inheriting from an enabled theme. The callback reads submitted selectors (including bulk-edit ids) before saved values. No write operation or frontend activation behavior changed.
+
+Regression tests exercise the real DC_Table palette resolution on Contao 5.3 and the real PaletteBuilder service on Contao 5.7, covering disabled/enabled themes, inheritance, explicit overrides, missing themes, immediate selector changes and bulk editing. They failed before implementation. Test fixtures were adjusted to supply the real Contao 5.7 service and its explicit record lookup parameters.
+
+Final validation: 110 tests / 397 assertions per environment, no deprecations, on Contao 5.3/PHP 8.2–8.5 and Contao 5.7/PHP 8.5. PHPStan and ECS pass. Self-review found no outstanding issue. Claude Opus 5.5/high returned no actionable findings; see [claude-visibility-review.md](claude-visibility-review.md). Its source inspection covered 5.3; the implementer verified 5.7 directly.

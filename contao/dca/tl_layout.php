@@ -13,13 +13,15 @@ EncoreEntriesSelectField::register('tl_layout')
     ->setIncludeActiveCheckbox(true);
 
 $dca = &$GLOBALS['TL_DCA']['tl_layout'];
+$dca['palettes']['__selector__'][] = 'addEncore';
+$dca['subpalettes']['addEncore_1'] = EncoreEntriesSelectField::NAME_DEFAULT . ',encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
 
 /*
  * Palettes
  */
 $pm = PaletteManipulator::create()
     ->addLegend('encore_legend', 'modules_legend', PaletteManipulator::POSITION_AFTER)
-    ->addField(['addEncore', EncoreEntriesSelectField::NAME_DEFAULT, 'encoreStylesheetsImportsTemplate', 'encoreScriptsImportsTemplate'], 'encore_legend', PaletteManipulator::POSITION_APPEND)
+    ->addField('addEncore', 'encore_legend', PaletteManipulator::POSITION_APPEND)
     ->applyToPalette('default', 'tl_layout');
 
 // BC for contao < 5.6
@@ -39,6 +41,7 @@ $fields = [
         'reference' => &$GLOBALS['TL_LANG']['tl_layout']['encoreActivationOptions'],
         'eval' => [
             'tl_class' => 'w50',
+            'submitOnChange' => true,
         ],
         'sql' => [
             'type' => 'string',

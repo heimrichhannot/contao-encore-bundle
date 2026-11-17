@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Changed: Theme and layout entry settings are shown only when Encore is enabled, including activation inherited from the theme.
+
 - Added: Encore can be activated and entries selected at theme level, with overridable activation and entries in layouts and pages; existing layout activation is preserved when migrating.
 - Removed: support for Contao versions below 5.3 and PHP versions below 8.2.
 
