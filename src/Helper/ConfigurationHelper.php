@@ -12,6 +12,7 @@ use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\LayoutModel;
 use Contao\PageModel;
+use Contao\ThemeModel;
 use HeimrichHannot\EncoreBundle\Event\EncoreEnabledEvent;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Path;
@@ -71,7 +72,7 @@ class ConfigurationHelper
                 ->findByPk($page->layoutId ?? $page->layout);
         }
 
-        if (!$layout?->addEncore) {
+        if (!$layout || !$this->isEnabledForLayout($layout)) {
             return $this->dispatchEvent(false, $request, $page, $layout);
         }
 
@@ -82,6 +83,18 @@ class ConfigurationHelper
         }
 
         return $this->dispatchEvent(true, $request, $page, $layout);
+    }
+
+    public function isEnabledForLayout(LayoutModel $layout): bool
+    {
+        if ('i' !== (string) $layout->addEncore) {
+            return '1' === (string) $layout->addEncore;
+        }
+
+        /** @var ThemeModel|null $theme The layout belongs to a theme. */
+        $theme = $layout->getRelated('pid');
+
+        return $theme instanceof ThemeModel && (bool) $theme->addEncore;
     }
 
     private function dispatchEvent(bool $result, ?Request $request = null, ?PageModel $page = null, ?LayoutModel $layout = null): bool

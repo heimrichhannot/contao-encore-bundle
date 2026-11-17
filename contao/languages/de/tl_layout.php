@@ -11,8 +11,12 @@ $lang = &$GLOBALS['TL_LANG']['tl_layout'];
 /*
  * Fields
  */
-$lang['addEncore'][0] = 'Webpack Encore aktivieren';
-$lang['addEncore'][1] = 'Wählen Sie diese Option, wenn Sie die Encore-Unterstützung aktivieren möchten.';
+$lang['addEncore'] = ['Webpack Encore', 'Übernehmen Sie die Aktivierung vom Theme oder überschreiben Sie sie für dieses Layout.'];
+$lang['encoreActivationOptions'] = [
+    'i' => 'Erben',
+    '1' => 'Aktivieren',
+    '0' => 'Deaktivieren',
+];
 $lang['encoreEntries'][0] = 'Aktive Entries';
 $lang['encoreEntries'][1] =
     'Legen Sie hier fest, welche webpack-Entrys auf welchen Seiten gerendert werden sollen. Sie können diese Festlegungen auf eventuellen Unterseiten mit Seitenvererbung überschreiben.';

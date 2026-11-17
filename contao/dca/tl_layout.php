@@ -7,48 +7,48 @@
  */
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
-use Contao\CoreBundle\DataContainer\PaletteNotFoundException;
 use HeimrichHannot\EncoreBundle\Dca\EncoreEntriesSelectField;
 
 EncoreEntriesSelectField::register('tl_layout')
     ->setIncludeActiveCheckbox(true);
 
 $dca = &$GLOBALS['TL_DCA']['tl_layout'];
+$dca['palettes']['__selector__'][] = 'addEncore';
+$dca['subpalettes']['addEncore_1'] = EncoreEntriesSelectField::NAME_DEFAULT . ',encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
 
 /*
  * Palettes
  */
-$dca['palettes']['__selector__'][] = 'addEncore';
-
 $pm = PaletteManipulator::create()
     ->addLegend('encore_legend', 'modules_legend', PaletteManipulator::POSITION_AFTER)
     ->addField('addEncore', 'encore_legend', PaletteManipulator::POSITION_APPEND)
     ->applyToPalette('default', 'tl_layout');
 
 // BC for contao < 5.6
-try {
+if (isset($dca['palettes']['modern'])) {
     $pm->applyToPalette('modern', 'tl_layout');
-} catch (PaletteNotFoundException) {
 }
-
-/*
- * Subpalettes
- */
-$dca['subpalettes']['addEncore'] = EncoreEntriesSelectField::NAME_DEFAULT . ',encoreStylesheetsImportsTemplate,encoreScriptsImportsTemplate';
 
 /**
  * Fields.
  */
 $fields = [
     'addEncore' => [
-        'label' => &$GLOBALS['TL_LANG']['tl_layout']['addEncore'],
         'exclude' => true,
-        'inputType' => 'checkbox',
+        'inputType' => 'select',
+        'default' => 'i',
+        'options' => ['i', '1', '0'],
+        'reference' => &$GLOBALS['TL_LANG']['tl_layout']['encoreActivationOptions'],
         'eval' => [
             'tl_class' => 'w50',
             'submitOnChange' => true,
         ],
-        'sql' => "char(1) NOT NULL default ''",
+        'sql' => [
+            'type' => 'string',
+            'length' => 1,
+            'fixed' => true,
+            'default' => 'i',
+        ],
     ],
     'encoreStylesheetsImportsTemplate' => [
         'exclude' => true,

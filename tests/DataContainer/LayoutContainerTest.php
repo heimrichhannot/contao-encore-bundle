@@ -13,9 +13,13 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\DataContainer;
 use Contao\LayoutModel;
 use Contao\Message;
+use Contao\ThemeModel;
 use Contao\TestCase\ContaoTestCase;
 use HeimrichHannot\EncoreBundle\Collection\EntryCollection;
 use HeimrichHannot\EncoreBundle\DataContainer\LayoutContainer;
+use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -38,7 +42,8 @@ class LayoutContainerTest extends ContaoTestCase
             $requestStack,
             $scopeMatcher,
             $entryCollection,
-            $translator
+            $translator,
+            new ConfigurationHelper($requestStack, new ParameterBag(), $scopeMatcher, $contaoFramework, $this->createMock(EventDispatcherInterface::class))
         );
     }
 
@@ -115,6 +120,31 @@ class LayoutContainerTest extends ContaoTestCase
             'requestStack' => $requestStack,
         ]);
         $instance->onLoadCallback($dc);
+    }
+
+    /** @dataProvider inheritedActivationProvider */
+    public function testThemeActivationControlsLayoutWarnings(string $mode, string $themeEnabled, bool $expected): void
+    {
+        $GLOBALS['TL_LANG']['tl_layout']['INFO']['jquery_order_conflict'] = 'Info';
+        $theme = $this->mockClassWithProperties(ThemeModel::class, ['addEncore' => $themeEnabled]);
+        $layout = $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => $mode, 'addJQuery' => '1']);
+        $layout->method('getRelated')->with('pid')->willReturn($theme);
+        $layoutAdapter = $this->mockAdapter(['findByPk']);
+        $layoutAdapter->method('findByPk')->willReturn($layout);
+        $messages = $this->mockAdapter(['addError', 'addInfo', 'hasMessages']);
+        $messages->expects($expected ? $this->once() : $this->never())->method('addInfo')->with('Info');
+        $framework = $this->mockContaoFramework([LayoutModel::class => $layoutAdapter, Message::class => $messages]);
+        $requestStack = new RequestStack();
+        $requestStack->push(new Request());
+        $scope = $this->createMock(ScopeMatcher::class);
+        $scope->method('isBackendRequest')->willReturn(true);
+        $this->createTestInstance(['requestStack' => $requestStack, 'scopeMatcher' => $scope, 'contaoFramework' => $framework])
+            ->onLoadCallback($this->mockClassWithProperties(DataContainer::class, ['id' => 1]));
+    }
+
+    public function inheritedActivationProvider(): array
+    {
+        return [['i', '1', true], ['i', '', false], ['0', '1', false], ['1', '', true]];
     }
 
     public function testOnImportTemplateOptionsCallback()

@@ -12,6 +12,7 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\TestCase\ContaoTestCase;
+use Contao\ThemeModel;
 use HeimrichHannot\EncoreBundle\Helper\ConfigurationHelper;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,6 +48,41 @@ class ConfigurationHelperTest extends ContaoTestCase
         );
 
         return $instance;
+    }
+
+    /** @dataProvider layoutActivationProvider */
+    public function testLayoutActivation(string $mode, ?string $themeEnabled, bool $expected): void
+    {
+        $theme = null === $themeEnabled ? null : $this->mockClassWithProperties(ThemeModel::class, ['addEncore' => $themeEnabled]);
+        $layout = $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => $mode]);
+        $layout->method('getRelated')->with('pid')->willReturn($theme);
+
+        $this->assertSame($expected, $this->createTestInstance()->isEnabledForLayout($layout));
+    }
+
+    public function layoutActivationProvider(): array
+    {
+        return [
+            ['i', '1', true], ['i', '', false], ['i', null, false],
+            ['1', '1', true], ['1', '', true], ['1', null, true],
+            ['0', '1', false], ['0', '', false], ['0', null, false],
+            ['', '1', false],
+        ];
+    }
+
+    /** @dataProvider layoutActivationProvider */
+    public function testFrontendUsesLayoutActivation(string $mode, ?string $themeEnabled, bool $expected): void
+    {
+        $theme = null === $themeEnabled ? null : $this->mockClassWithProperties(ThemeModel::class, ['addEncore' => $themeEnabled]);
+        $layout = $this->mockClassWithProperties(LayoutModel::class, ['addEncore' => $mode, 'type' => 'modern']);
+        $layout->method('getRelated')->with('pid')->willReturn($theme);
+        $requestStack = new RequestStack();
+        $requestStack->push(new Request());
+        $scopeMatcher = $this->createMock(ScopeMatcher::class);
+        $scopeMatcher->method('isFrontendRequest')->willReturn(true);
+        $helper = $this->createTestInstance(['requestStack' => $requestStack, 'scopeMatcher' => $scopeMatcher]);
+
+        $this->assertSame($expected, $helper->isEnabledOnPage($this->createMock(PageModel::class), $layout));
     }
 
     public function testIsEnabledOnPage()

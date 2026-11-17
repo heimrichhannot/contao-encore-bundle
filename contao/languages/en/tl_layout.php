@@ -11,8 +11,12 @@ $lang = &$GLOBALS['TL_LANG']['tl_layout'];
 /*
  * Fields
  */
-$lang['addEncore'][0] = 'Activate Webpack Encore';
-$lang['addEncore'][1] = 'Choose this option if you want to activate Encore support.';
+$lang['addEncore'] = ['Webpack Encore', 'Inherit activation from the theme or override it for this layout.'];
+$lang['encoreActivationOptions'] = [
+    'i' => 'Inherit',
+    '1' => 'Enable',
+    '0' => 'Disable',
+];
 $lang['encoreEntries'][0] = 'Active Entries';
 $lang['encoreEntries'][1] =
     'Select webpack entries that should be rendered on this and all inheriting pages. You can overwrite this setting on inheriting pages due page inheritance.';

@@ -62,7 +62,7 @@ PaletteManipulator::create()
 
 ## Add encore entries to custom template
 
-To collect or render assets in custom templates or abstinent from the normal page rendering, use the `EntryPointsBuilder`.
+To collect or render assets in custom templates or abstinent from the normal page rendering, use the `EntryPointsBuilder`. When using the default layout entry field, it also collects the entries of that layout's theme. Passing a custom field to `setLayout()` keeps that collection independent of the default theme entries.
 
 ```php
 <?php
@@ -123,6 +123,8 @@ class CustomController
 ## ConfigurationHelper
 
 The `ConfigurationHelper` service can be used to obtain some configuration information. Following methods are available:
+
+`isEnabledForLayout(LayoutModel $layout): bool` - Resolve the layout activation mode, inheriting the theme setting when selected. This method can also be used in the backend.
 
 `isEnabledOnPage(PageModel $page, ?LayoutModel $layout = null): bool` - Return if encore is enabled for the current frontend page.
 
