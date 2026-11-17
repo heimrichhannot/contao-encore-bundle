@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-
-- Changed: Theme and layout entry settings are shown only when Encore is enabled, including activation inherited from the theme.
-
 - Added: Encore can be activated and entries selected at theme level, with overridable activation and entries in layouts and pages; existing layout activation is preserved when migrating.
 - Removed: support for Contao versions below 5.3 and PHP versions below 8.2.
 
-## [2.4.0-DEV] - 2026-06-08
-- Fixed: legacy fragments without matching asset placeholders no longer consume CSS and JavaScript entries needed by the page layout.
+## [2.3.1] - 2026-11-09
 - Added: support for entry translations
+- Fixed: legacy fragments without matching asset placeholders no longer consume CSS and JavaScript entries needed by the page layout.
 
 ## [2.3.0] - 2026-06-08
 - Added: support for deferred entries

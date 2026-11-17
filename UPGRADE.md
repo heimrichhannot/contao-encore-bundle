@@ -2,7 +2,7 @@
 
 Upgrade notice for breaking changes
 
-## Theme-level Encore configuration
+## to 2.4
 
 Run `contao:migrate` after updating the bundle to apply the data migration and database schema changes.
 
